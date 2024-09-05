@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace SG.Domain;
 
-public interface IBaseGenericRepository<TEntity> where TEntity : class
+public interface IBaseGenericRepository<TEntity> where TEntity : class 
 {
      bool SaveChanges();
      Task<bool> SaveChangesAsync();
@@ -26,4 +26,10 @@ public interface IBaseGenericRepository<TEntity> where TEntity : class
      Task<bool> DeleteManySave(Expression<Func<TEntity, bool>> where);
      Task<bool> Any(Expression<Func<TEntity, bool>> predicate);
      Task<int> Count(Expression<Func<TEntity, bool>> predicate);
+     Task<(int, IEnumerable<TEntity>)> Paginate(
+        int pageNumber,
+        int pageSize,
+        string? searchTerm = null ,       
+        Dictionary<string, string>? columnFilters = null, 
+        Dictionary<string, string>? orderByColumns = null);
 }

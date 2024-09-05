@@ -9,12 +9,10 @@ Este repositorio contiene una solución completa desarrollado en C# utilizando .
 El proyecto sigue la **Arquitectura Clean**  asegurando la separación de preocupaciones, alta testabilidad, y facilidad para realizar cambios o escalar.
 
 ### Componentes del Proyecto  📁
-
-- **ProtectionPrograms**:
   - **Domain** (`src/SG.Domain`): Contiene las entidades, interfaces y lógica de negocio.
   - **Infrastructure** (`src/SG.Infrastructure`): Implementaciones de repositorios, acceso a datos usando Entity Framework Core, y migraciones.
   - **Application** (`src/SG.Application`): Manejo de casos de uso, validaciones, y lógica de aplicación (Dtos,ViewModels,Automapper).
- # - **Services** (`PANI.ProtectionPrograms.Services.API`): Exposición de los endpoints HTTP y controladores de la API.
+  - **API Rest** (`src/SG.API/SG.API`): Exposición de los endpoints HTTP y controladores de la API.
 
 ## Requisitos previos 📋
 
@@ -28,13 +26,14 @@ El proyecto sigue la **Arquitectura Clean**  asegurando la separación de preocu
 
 1. **Configurar la cadena de conexión:**
 
-Editar el archivo `appsettings.json` (para desarrollo seria: `appsettings.Development.json`) para configurar la cadena de conexión a tu base de datos:
-
+Editar el archivo `appsettings.json` (para desarrollo seria: `appsettings.Development.json`) para configurar la cadena de conexión a tu base de datos, se basa en la variable `DatabaseProvider` la cual se establece el gestor de Base de Datos (Postgresql y SQL Server) siendo los valores permitidos los valores existentes dentro de `ConnectionStrings`, posterior configurar la ConnectionStrings correspondiente al DatabaseProvider.
 ```json
 {
+  "DatabaseProvider": "PostgreSql", 
   "ConnectionStrings": {
-    "DefaultConnection": "Server=myServer;Database=myDataBase;User Id=myUserConexion;Password=myPassword;Encrypt=True;TrustServerCertificate=True;"
-  }
+    "PostgreSql": "User ID =driverAdmin;Password=12345678;Server=localhost;Port=5432;Database=SampleDriverDb; Integrated Security=true;Pooling=true;",
+    "SqlServer": "Server=localhost;Database=YourDatabase;User Id=YourUsername;Password=XXXX;"
+  }  
 }
 ```
 
@@ -54,10 +53,15 @@ dotnet ef migrations  add _MY_NEW_MIGRATION_ --verbose --project "src/SG.Infrast
 ```
 
 
+## Ejecutar el proyecto
+```
+dotnet run  --project  "src/SG.API" 
+```
+<!-- 
 Acceder al swagger: 
 
 http://localhost:5203/swagger/index.html
 
 APi dev:
 
-http://localhost:5203/api/home
+http://localhost:5203/api/home -->

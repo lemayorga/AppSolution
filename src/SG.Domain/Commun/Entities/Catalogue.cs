@@ -7,5 +7,5 @@ public class Catalogue : Entity
     public required string Group  { get; set; }
     public required string Value  { get; set; }
     public bool IsActive { get; set; }
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; }
 }

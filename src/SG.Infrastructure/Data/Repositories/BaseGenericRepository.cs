@@ -103,7 +103,7 @@ public class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> wh
         TEntity? _entity = await GetById(id);
         if (_entity != null)
         {
-            _entities.Update(entity);
+             _context.Entry(_entity).CurrentValues.SetValues(entity);
             return await SaveChangesAsync();
         }
         return false;
@@ -114,10 +114,9 @@ public class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> wh
         TEntity? _entity = await GetById(id);
         if (_entity != null)
         {
-            _entities.Update(entity);
+            _context.Entry(_entity).CurrentValues.SetValues(entity);
             await SaveChangesAsync();
         }
-
         return _entity;
     }
 
@@ -137,7 +136,7 @@ public class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> wh
         TEntity? _entity = await GetOne(where: where);
         if (_entity != null)
         {
-           _entities.Update(entity);
+           _context.Entry(_entity).CurrentValues.SetValues(entity);
            await SaveChangesAsync();
         }
         
@@ -198,4 +197,15 @@ public class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> wh
     {
         return await _entities.CountAsync(predicate);
     }
+
+    public virtual async Task<(int, IEnumerable<TEntity>)> Paginate(
+        int pageNumber,
+        int pageSize,
+        string? searchTerm = null ,       
+        Dictionary<string, string>? columnFilters = null, 
+        Dictionary<string, string>? orderByColumns = null)
+    {                
+        await Task.FromResult(() =>  "");
+        return (0, new List<TEntity>());
+    }    
 }

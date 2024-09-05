@@ -9,6 +9,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddServicesApplication(this IServiceCollection services) =>
         services
-           .AddScoped(typeof(IBaseGenericService<,>), typeof(BaseGenericService<,>))
+           .AddScoped(typeof(IBaseGenericService<,,,>), typeof(BaseGenericService<,,,>))
            .AddScoped<ICatalogueService, CatalogueService>();                 
 }
