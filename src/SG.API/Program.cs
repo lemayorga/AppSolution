@@ -44,7 +44,6 @@ builder.Services.AddSwaggerConfigurationOpenApi();
 
 var app = builder.Build();
 
-
 // Usar CORS
 app.UseCors("AllowAllOrigins");
 
@@ -52,6 +51,7 @@ app.AddSwaggerConfigurationUI();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 
 app.UseRouting();
 

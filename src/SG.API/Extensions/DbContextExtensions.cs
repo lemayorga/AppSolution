@@ -43,5 +43,3 @@ internal  static  class DbContextExtensions
         return services;
     }
 }
-
-

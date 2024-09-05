@@ -1,6 +1,11 @@
 namespace SG.Domain;
 
-public abstract class Entity
+public interface IEntity
+{
+  public int Id { get; set; }
+}
+
+public abstract class Entity : IEntity
 {
       public int Id { get; set; }
 }

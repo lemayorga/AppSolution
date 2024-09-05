@@ -12,6 +12,6 @@ public class CatalogueMap : IEntityTypeConfiguration<Catalogue>
         builder.Property(c => c.Group).HasColumnOrder(1).HasMaxLength(80).IsRequired();
         builder.Property(c => c.Value).HasColumnOrder(2).HasMaxLength(200).IsRequired();
         builder.Property(c => c.IsActive).HasColumnOrder(3).HasDefaultValue(true).IsRequired();
-        builder.Property(c => c.Description).HasColumnOrder(4).HasMaxLength(DataSchemaConstants.DEFAULT_MAX_LENGTH_TEXT);
+        builder.Property(c => c.Description).HasColumnOrder(4).HasMaxLength(DataSchemaConstants.DEFAULT_MAX_LENGTH_TEXT).IsRequired(false);
     }
 }

@@ -1,5 +1,6 @@
 using System.Reflection;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace SG.API.Extensions;
@@ -25,7 +26,26 @@ internal static class SwaggerExtensions
                 Type = SecuritySchemeType.ApiKey,
                 Scheme = "Bearer",
                 BearerFormat = "JWT"
-            });*/
+            })*/
+
+         // swaggerOptions.OperationFilter<FromQueryDictionaryFilter>()
+
+            swaggerOptions.ExampleFilters();
+           
+
+
+            swaggerOptions.SwaggerDoc("v1", new OpenApiInfo()
+            {
+                Title = "SG API Documentation",
+                Version = "v1",
+                Description = "Description of your API",
+                Contact = new OpenApiContact()
+                {
+                    Name = "Your name",
+                    Email = "your@email.com",
+                }
+
+            });         
 
             swaggerOptions.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
@@ -45,11 +65,10 @@ internal static class SwaggerExtensions
             swaggerOptions.ResolveConflictingActions(apiDescription => apiDescription.FirstOrDefault());
 
             // Set the comments path for the Swagger JSON and UI.
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            swaggerOptions.IncludeXmlComments(xmlPath, true);
+            swaggerOptions.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"), true);
         });
 
+        services.AddSwaggerExamplesFromAssemblies(Assembly.GetEntryAssembly());
         return services;
     }
 
