@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+  sg.api:
+    image: ${DOCKER_REGISTRY-}sg-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+
+  sg.database:
+    image: postgres:bullseye
+    container_name: postgresql
+    environment:
+      - POSTGRES_DB=products
+      - POSTGRES_USER=postgresql     
+      - POSTGRES_PASSWORD=postgresql     
+    volumes:
+      - ./.containers/sg-db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+    # image: mcr.microsoft.com/mssql/server:2019-latest
+    # environment:
+    #   ACCEPT_EULA: "Y"
+    #   SA_PASSWORD: "Aa123456!"
+    # ports:
+    #   - "1433:1433"

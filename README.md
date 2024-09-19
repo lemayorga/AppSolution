@@ -21,6 +21,7 @@ El proyecto sigue la **Arquitectura Clean**  asegurando la separación de preocu
 - **Herramientas de desarrollo**: Un editor o IDE como Visual Studio o Visual Studio Code.
 - **SQL Server** (o base de datos compatible con EF Core): Base de datos predeterminada para las APIs.
 - **Postgre Sql** (o base de datos compatible con EF Core): Base de datos predeterminada para las APIs.
+- **Docker**: Requerido para ejecutar las imagenes en conteneores.
 
 ## Configuraciones ⚙️
 
@@ -37,14 +38,37 @@ Editar el archivo `appsettings.json` (para desarrollo seria: `appsettings.Develo
 }
 ```
 
-2. **Aplicar migraciones:**
+2. **Ejecutar la aplicación desde la consola en la carpeta raíz del proyecto:**
+
+- Con dotnet cli:
+```
+dotnet run  --project  "src/SG.API" 
+```
+- Con docker:
+```
+docker compose up --build --force-recreate
+```
+
+3. **Acceder desde el navegador:**
+
+- Si ejecuto desde el dotnet cli, acceda a: [http://localhost:5203/api/home](http://localhost:5203/api/home).
+
+- Si ejecuto desde el docker, acceda a: [http://localhost:8080/api/home](http://localhost:8080/api/home).
+
+ Para el swagger:
+- [Si ejecuto desde el dotnet cli](http://localhost:5203/swagger/index.html).
+- [Si ejecuto desde docker ](http://localhost:8080/swagger/index.html).
+
+## Migraciones con el entity framework core
+
+1. **Aplicar migraciones:**
 
 Ejecutarlo en el powershell en la carpeta de tu repositorio. 
 ```
 dotnet ef database update --verbose --project "src/SG.Infrastructure" --startup-project "src/SG.API"
 ```
 
-3. **Crear una nueva migración:**
+2. **Crear una nueva migración:**
 
 Ejecutarlo en el powershell en la carpeta de tu repositorio. Reemplazar en el comando de abajo la palabra `_MY_NEW_MIGRATION_` con el nombre de la nueva migración a crear.
 
@@ -52,11 +76,6 @@ Ejecutarlo en el powershell en la carpeta de tu repositorio. Reemplazar en el co
 dotnet ef migrations  add _MY_NEW_MIGRATION_ --verbose --project "src/SG.Infrastructure" --startup-project "src/SG.API" -o "Data/Migrations"
 ```
 
-
-## Ejecutar el proyecto
-```
-dotnet run  --project  "src/SG.API" 
-```
 <!-- 
 Acceder al swagger: 
 
