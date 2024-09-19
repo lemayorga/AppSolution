@@ -10,5 +10,7 @@ if (-not $startupProject) {
 # Ejecutar el proyecto de inicio
 dotnet run --project "src/$startupProject/$startupProject.csproj"
 
-#  Ejecutar en poweshell en windows .\run.ps1
+# Ejecutar en poweshell en windows .\run.ps1
+# En windows ejecutar antes: Win + R y pegar: powershell Set-ExecutionPolicy -Scope "CurrentUser" -ExecutionPolicy "RemoteSigned"
+
 #  Ejecutar en poweshell en linux   ./run.sh
