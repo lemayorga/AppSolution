@@ -19,18 +19,14 @@ public sealed class ApplicationDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (_databaseProvider == nameof(EnumGestoresBD.SqlServer))
+        var databaseConexion = _configuration.GetConnectionString(_databaseProvider);
+        _ = _databaseProvider switch 
         {
-            optionsBuilder.UseSqlServer(_configuration.GetConnectionString(_databaseProvider));
-        }
-        else if (_databaseProvider == nameof(EnumGestoresBD.PostgreSql))
-        {
-            optionsBuilder.UseNpgsql(_configuration.GetConnectionString(_databaseProvider));
-        }
-        else
-        {
-            throw new Exception("Unsupported database provider");
-        }               
+             nameof(EnumGestoresBD.SqlServer) => optionsBuilder.UseSqlServer(databaseConexion),
+             nameof(EnumGestoresBD.PostgreSql) => optionsBuilder.UseNpgsql(databaseConexion),
+             _ => throw new NotImplementedException("Unsupported database provider"),
+        };
+
         base.OnConfiguring(optionsBuilder);
     }
     
