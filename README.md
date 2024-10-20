@@ -63,17 +63,24 @@ docker compose up --build --force-recreate
 
 1. **Aplicar migraciones:**
 
-Ejecutarlo en el powershell en la carpeta de tu repositorio. 
+Ejecutarlo en el powershell en la carpeta de tu repositorio. Cualquiera de los siguientes dos comandos:
 ```
 dotnet ef database update --verbose --project "src/SG.Infrastructure" --startup-project "src/SG.API"
+```
+```
+ dotnet ef database update --verbose -p "src/SG.Infrastructure" -s "src/SG.API"
 ```
 
 2. **Crear una nueva migración:**
 
 Ejecutarlo en el powershell en la carpeta de tu repositorio. Reemplazar en el comando de abajo la palabra `_MY_NEW_MIGRATION_` con el nombre de la nueva migración a crear.
+Los siguientes comandos:
 
 ```
 dotnet ef migrations  add _MY_NEW_MIGRATION_ --verbose --project "src/SG.Infrastructure" --startup-project "src/SG.API" -o "Data/Migrations"
+```
+```
+dotnet ef migrations  add Tables_ActionModulePermission --verbose -p "src/SG.Infrastructure" -s "src/SG.API" -o "Data/Migrations" 
 ```
 
 <!-- 
@@ -83,4 +90,9 @@ http://localhost:5203/swagger/index.html
 
 APi dev:
 
-http://localhost:5203/api/home -->
+http://localhost:5203/api/home 
+
+// https://dev.to/isaacojeda/fluentresults-simplificando-el-manejo-de-resultados-y-errores-en-aplicaciones-net-2kgl
+// https://github.com/altmann/FluentResults
+
+-->

@@ -5,6 +5,7 @@ public class DataBaseProviderConfiguration
 {
     private readonly string _connectionString;
     public DataBaseProviderConfiguration Witch() => this;
+    
     public static DataBaseProviderConfiguration Build(string connnString)
     {
         return new DataBaseProviderConfiguration(connnString);

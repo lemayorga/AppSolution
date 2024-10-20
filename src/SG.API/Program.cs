@@ -73,7 +73,7 @@ try {
     app.Logger.LogInformation("----- Database Server: {Connection}", connectionString);
     app.Logger.LogInformation("----- Database Server: Checking for pending migrations...");
 
-    if ((await context.Database.GetPendingMigrationsAsync()).Any())
+    /*if ((await context.Database.GetPendingMigrationsAsync()).Any())
     {
         app.Logger.LogInformation("----- Database Server: Creating and migrating the database...");
 
@@ -84,7 +84,7 @@ try {
     else
     {
         app.Logger.LogInformation("----- Database Server: Migrations are up to date");
-    }  
+    }  */
 
     //app.Logger.LogInformation("----- Populating data base...")
     //await context.EnsureSeedDataAsync()

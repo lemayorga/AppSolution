@@ -16,10 +16,10 @@ public class CatalogueService : BaseGenericService<Catalogue, CatalogueDto, Cata
     {
         try 
         {
+
            var (filters, orders) = this.GetDataDictionaryColumnsByPaginate(columns);
            var(total, data) =  await _unitOfWork.CatalogueRepository.Paginate(pageNumber, pageSize, searchTerm, filters, orders);
            var modelMapper = _mapper.Map<IEnumerable<CatalogueDto>>(data);
-
             var pagedList = new PagedList<IEnumerable<CatalogueDto>>(modelMapper, total, pageNumber, pageSize);                                    
             return pagedList;
         }

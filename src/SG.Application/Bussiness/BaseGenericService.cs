@@ -1,5 +1,6 @@
 
 using AutoMapper;
+using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SG.Application.Responses;
@@ -26,72 +27,72 @@ public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> :
         _logger = logger;
     }
 
-    public virtual async Task<ResultGeneric<IEnumerable<TDtoRecord>>> GetAll()
+    public virtual async Task<Result<IEnumerable<TDtoRecord>>> GetAll()
     {
         try 
         {
             var result = await _unitOfWork.Repository<TEntity>().GetAll().ToListAsync();
-            return ResultGeneric<IEnumerable<TDtoRecord>>.Ok(_mapper.Map<IEnumerable<TDtoRecord>>(result));
+            return Result.Ok(_mapper.Map<IEnumerable<TDtoRecord>>(result));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
-            return ResultGeneric<IEnumerable<TDtoRecord>>.Failure(ex.Message);
+            return Result.Fail(ex.Message);
         }
     }
 
-    public virtual async Task<ResultGeneric<TDtoRecord>> GetById(int id)
+    public virtual async Task<Result<TDtoRecord>> GetById(int id)
     {
         try 
         {
             var result = await _unitOfWork.Repository<TEntity>().GetById(id);
             if(result == null)
             {
-                 return ResultGeneric<TDtoRecord>.Failure(Constantes.NOT_ITEM_FOUND_DATABASE);
+                 return Result.Fail(Constantes.NOT_ITEM_FOUND_DATABASE);
             }
-            return ResultGeneric<TDtoRecord>.Ok(_mapper.Map<TDtoRecord>(result));
+            return Result.Ok(_mapper.Map<TDtoRecord>(result));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
-            return ResultGeneric<TDtoRecord>.Failure(ex.Message);
+            return Result.Fail(ex.Message);
         }        
     }    
 
-    public virtual async Task<ResultGeneric<TDtoRecord>> AddSave(TDtoCreate dto)
+    public virtual async Task<Result<TDtoRecord>> AddSave(TDtoCreate dto)
     {
         try 
         {
             var result =  await _unitOfWork.Repository<TEntity>().AddSave(_mapper.Map<TEntity>(dto));
-            return ResultGeneric<TDtoRecord>.Ok(_mapper.Map<TDtoRecord>(result));
+            return Result.Ok(_mapper.Map<TDtoRecord>(result));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
-            return ResultGeneric<TDtoRecord>.Failure(ex.Message);
+            return Result.Fail(ex.Message);
         }         
     }
 
-    public virtual async Task<ResultGeneric<bool>> DeleteById(int id)
+    public virtual async Task<Result<bool>> DeleteById(int id)
     {
         try 
         {
              var result = await _unitOfWork.Repository<TEntity>().DeleteByIdSave(id);
             if(!result)
             {
-                return ResultGeneric<bool>.Failure(Constantes.NOT_ITEM_FOUND_DATABASE);
+                return Result.Fail(Constantes.NOT_ITEM_FOUND_DATABASE);
             }
 
-            return ResultGeneric<bool>.Ok(result);
+            return Result.Ok(result);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
-            return ResultGeneric<bool>.Failure(ex.Message);
+            return Result.Fail(ex.Message);
         }         
     }
 
-    public virtual async Task<ResultGeneric<TDtoRecord>> UpdateById(int id, TDtoUpdate dto)
+    public virtual async Task<Result<TDtoRecord>> UpdateById(int id, TDtoUpdate dto)
     {
         try 
         {
@@ -100,14 +101,14 @@ public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> :
             var result = await _unitOfWork.Repository<TEntity>().UpdateByIdSave(id, entity);
             if(result == null)
             {
-                 return ResultGeneric<TDtoRecord>.Failure(Constantes.NOT_ITEM_FOUND_DATABASE);
+                 return Result.Fail(Constantes.NOT_ITEM_FOUND_DATABASE);
             }            
-            return ResultGeneric<TDtoRecord>.Ok(_mapper.Map<TDtoRecord>(result));
+            return Result.Ok(_mapper.Map<TDtoRecord>(result));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
-            return ResultGeneric<TDtoRecord>.Failure(ex.Message);
+            return Result.Fail(ex.Message);
         }         
     }   
 
