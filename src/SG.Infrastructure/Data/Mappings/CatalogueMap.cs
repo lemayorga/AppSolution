@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SG.Domain.Commun.Entities;
+using SG.Infrastructure.Data.Config;
 
 namespace SG.Infrastructure.Data.Mappings;
 
@@ -8,6 +9,7 @@ public class CatalogueMap : IEntityTypeConfiguration<Catalogue>
 {
     public void Configure(EntityTypeBuilder<Catalogue> builder)
     {
+        builder.ToTable("Catalogue");
         builder.Property(c => c.Id).HasColumnOrder(0);
         builder.Property(c => c.Group).HasColumnOrder(1).HasMaxLength(80).IsRequired();
         builder.Property(c => c.Value).HasColumnOrder(2).HasMaxLength(200).IsRequired();

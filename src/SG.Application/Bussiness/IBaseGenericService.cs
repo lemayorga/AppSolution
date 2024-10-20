@@ -1,3 +1,4 @@
+using FluentResults;
 using SG.Application.Responses;
 using SG.Domain;
 
@@ -9,9 +10,9 @@ public interface  IBaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdat
     where TDtoCreate : class
     where TDtoUpdate : class
 {
-    Task<ResultGeneric<IEnumerable<TDtoRecord>>> GetAll();
-    Task<ResultGeneric<TDtoRecord>> GetById(int id);
-    Task<ResultGeneric<TDtoRecord>> AddSave(TDtoCreate dto);
-    Task<ResultGeneric<bool>> DeleteById(int id);
-    Task<ResultGeneric<TDtoRecord>> UpdateById(int id, TDtoUpdate dto);
+    Task<Result<IEnumerable<TDtoRecord>>> GetAll();
+    Task<Result<TDtoRecord>> GetById(int id);
+    Task<Result<TDtoRecord>> AddSave(TDtoCreate dto);
+    Task<Result<bool>> DeleteById(int id);
+    Task<Result<TDtoRecord>> UpdateById(int id, TDtoUpdate dto);
 }

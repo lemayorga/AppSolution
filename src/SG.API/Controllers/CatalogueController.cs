@@ -1,3 +1,4 @@
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using SG.Application.Bussiness.Commun.Dtos;
 using SG.Application.Bussiness.Commun.Intefaces;
@@ -21,13 +22,11 @@ public class CatalogueController : BaseController<CatalogueDto, CatalogueCreateD
     /// </summary> 
     /// <returns>Retornar todos los regisrtos.</returns>
     [HttpGet("")]
-    [ProducesResponseType(typeof(ResultGeneric<IEnumerable<CatalogueDto>>), StatusCodes.Status200OK)]   
+    [ProducesResponseType(typeof(OperationResult<IEnumerable<CatalogueDto>>), StatusCodes.Status200OK)]   
     public override async Task<IActionResult> Get()
    {
         var response = await _application.GetAll();
-        if (response.IsSuccess) return Ok(response);
-
-        return BadRequest(response.Message);
+        return Ok(response.ToOperationResult());
     }
 
     /// <summary>
@@ -36,13 +35,11 @@ public class CatalogueController : BaseController<CatalogueDto, CatalogueCreateD
     /// <param name="id" example="1">id del registro</param>    
     /// <returns>Retornar el registro.</returns>
     [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(ResultGeneric<CatalogueDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(OperationResult<CatalogueDto>), StatusCodes.Status200OK)]
     public override async Task<IActionResult> Get(int id)
     {
         var response = await _application.GetById(id);
-        if (response.IsSuccess) return Ok(response);
-
-        return BadRequest(response.Message);
+        return Ok(response.ToOperationResult());
     }
 
 
@@ -52,14 +49,12 @@ public class CatalogueController : BaseController<CatalogueDto, CatalogueCreateD
     /// <param name="id" example="1">id del registro</param>   
     /// <returns>Retornar si fue exitoso la eliminación.</returns>
     [HttpDelete("")]
-    [ProducesResponseType(typeof(ResultGeneric<bool>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(OperationResult<bool>), StatusCodes.Status200OK)]
 
     public override async Task<IActionResult> Delete(int id)
     {
         var response = await _application.DeleteById(id);
-        if (response.IsSuccess)  return Ok(response);
-
-        return BadRequest(response.Message);
+        return Ok(response.ToOperationResult());
     }
 
     /// <summary>
@@ -67,13 +62,11 @@ public class CatalogueController : BaseController<CatalogueDto, CatalogueCreateD
     /// </summary>
     /// <param name="request">Objeto con los datos a insertar</param>    
     [HttpPost("")]
-    [ProducesResponseType(typeof(ResultGeneric<CatalogueDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(OperationResult<CatalogueDto>), StatusCodes.Status201Created)]
     public override async Task<IActionResult> Post([FromBody] CatalogueCreateDto request)
     {
         var response = await _application.AddSave(request);
-        if (response.IsSuccess)  return Ok(response);
-
-        return BadRequest(response.Message);
+        return Ok(response.ToOperationResult());
     }
 
     /// <summary>
@@ -82,13 +75,11 @@ public class CatalogueController : BaseController<CatalogueDto, CatalogueCreateD
     /// <param name="id" example="1">id del registro</param>  
     /// <param name="request">Objeto con los datos a insertar</param>    
     [HttpPut("{id:int}")]
-    [ProducesResponseType(typeof(ResultGeneric<CatalogueDto>), StatusCodes.Status200OK)]    
+    [ProducesResponseType(typeof(OperationResult<CatalogueDto>), StatusCodes.Status200OK)]    
     public override async Task<IActionResult> Put(int id,[FromBody] CatalogueUpdateDto request)
     {
         var response = await _application.UpdateById(id, request);
-        if (response.IsSuccess)  return Ok(response);
-
-        return BadRequest(response.Message);
+        return Ok(response);
     }
     
     /// <summary>

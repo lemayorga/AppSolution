@@ -5,7 +5,9 @@ public class ResultGeneric<T>
     public T Data  { get; set; }
     public bool IsSuccess  { get; set; }
     public string Message  { get; set; }
+    public List<string>? Errors { get; set; }
     public object? Error  { get; set; }
+
     public ResultGeneric()
     {
         Data = default(T)!;
@@ -38,7 +40,15 @@ public class ResultGeneric<T>
         IsSuccess = isSuccess;
         Error = error;
         Message = string.Empty;
-    }    
+    }  
+
+    private ResultGeneric(bool isSuccess, List<string> errors)
+    {
+        Data = default(T)!;
+        IsSuccess = isSuccess;
+        Message = string.Empty;
+        Errors = errors;
+    }         
 
     public static ResultGeneric<T> Ok(T data)
     {
@@ -52,5 +62,9 @@ public class ResultGeneric<T>
     public static ResultGeneric<T> Failure(object error)
     {
         return new ResultGeneric<T>(false, error);
-    }    
+    }   
+    public static ResultGeneric<T> Failure(List<string> errors)
+    {
+        return new ResultGeneric<T>(false, errors);
+    }           
 }
