@@ -3,6 +3,7 @@ using SG.API.Extensions;
 using SG.Infrastructure.Data.Context;
 using SG.Infrastructure.Services;
 using SG.Application;
+using SG.Infrastructure.Data.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +65,7 @@ app.MapControllers();
 await using var serviceScope = app.Services.CreateAsyncScope();
 await using var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 // var inMemoryOptions = serviceScope.ServiceProvider.GetOptions<InMemoryOptions>()
+await SeederExecute.SeedAsync(context,app.Configuration);
 
 try {
 

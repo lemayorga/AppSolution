@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SG.Application.Bussiness.Security.Dtos;
 using SG.Application.Bussiness.Security.Interfaces;
@@ -78,6 +77,6 @@ public class RoleController : BaseController<RoleDto, RoleCreateDto, RoleUpdateD
     public override async Task<IActionResult> Put(int id,[FromBody] RoleUpdateDto request)
     {
         var response = await _application.UpdateById(id, request);
-        return Ok(response);
+        return Ok(response.ToOperationResult());
     }
 }

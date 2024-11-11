@@ -22,7 +22,7 @@ public class UserController : BaseController<UserDto, UserCreateDto, UserUpdateD
     [HttpGet("")]
     [ProducesResponseType(typeof(OperationResult<IEnumerable<UserDto>>), StatusCodes.Status200OK)]   
     public override async Task<IActionResult> Get()
-   {
+    {
         var response = await _application.GetAll();
         return Ok(response.ToOperationResult());
     }
@@ -77,6 +77,6 @@ public class UserController : BaseController<UserDto, UserCreateDto, UserUpdateD
     public override async Task<IActionResult> Put(int id,[FromBody] UserUpdateDto request)
     {
         var response = await _application.UpdateById(id, request);
-        return Ok(response);
+        return Ok(response.ToOperationResult());
     }
 }

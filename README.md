@@ -80,7 +80,7 @@ Los siguientes comandos:
 dotnet ef migrations  add _MY_NEW_MIGRATION_ --verbose --project "src/SG.Infrastructure" --startup-project "src/SG.API" -o "Data/Migrations"
 ```
 ```
-dotnet ef migrations  add Tables_ActionModulePermission --verbose -p "src/SG.Infrastructure" -s "src/SG.API" -o "Data/Migrations" 
+dotnet ef migrations  add _MY_NEW_MIGRATION_  --verbose -p "src/SG.Infrastructure" -s "src/SG.API" -o "Data/Migrations" 
 ```
 
 <!-- 

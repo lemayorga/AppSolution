@@ -20,6 +20,7 @@ public sealed class ApplicationDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
+        optionsBuilder.LogTo(Console.WriteLine).EnableSensitiveDataLogging();
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,6 +38,7 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<PasswordPolicy> PasswordPolicy { get; set; }
     public DbSet<Role> Role { get; set; }
     public DbSet<User> User { get; set; }
+    public DbSet<UsersRoles> UsersRoles { get; set; }
     public DbSet<Action> Actions { get; set; }
     public DbSet<Module> Modules { get; set; }
     public DbSet<Permission> Permissions { get; set; }    
