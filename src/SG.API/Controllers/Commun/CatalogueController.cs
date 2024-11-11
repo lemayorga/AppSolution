@@ -79,7 +79,7 @@ public class CatalogueController : BaseController<CatalogueDto, CatalogueCreateD
     public override async Task<IActionResult> Put(int id,[FromBody] CatalogueUpdateDto request)
     {
         var response = await _application.UpdateById(id, request);
-        return Ok(response);
+        return Ok(response.ToOperationResult());
     }
     
     /// <summary>

@@ -32,4 +32,8 @@ public interface IBaseGenericRepository<TEntity> where TEntity : class
         string? searchTerm = null ,       
         Dictionary<string, string>? columnFilters = null, 
         Dictionary<string, string>? orderByColumns = null);
+
+     IQueryable<TEntity> FindAll(bool trackChanges);
+
+     IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges);
 }

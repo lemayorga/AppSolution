@@ -59,11 +59,11 @@ public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> :
         }        
     }    
 
-    public virtual async Task<Result<TDtoRecord>> AddSave(TDtoCreate dto)
+    public virtual async Task<Result<TDtoRecord>> AddSave(TDtoCreate modelDto)
     {
         try 
         {
-            var result =  await _unitOfWork.Repository<TEntity>().AddSave(_mapper.Map<TEntity>(dto));
+            var result =  await _unitOfWork.Repository<TEntity>().AddSave(_mapper.Map<TEntity>(modelDto));
             return Result.Ok(_mapper.Map<TDtoRecord>(result));
         }
         catch (Exception ex)
@@ -92,11 +92,11 @@ public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> :
         }         
     }
 
-    public virtual async Task<Result<TDtoRecord>> UpdateById(int id, TDtoUpdate dto)
+    public virtual async Task<Result<TDtoRecord>> UpdateById(int id, TDtoUpdate modelDto)
     {
         try 
         {
-            var entity = _mapper.Map<TEntity>(dto);
+            var entity = _mapper.Map<TEntity>(modelDto);
             entity.Id  = entity.Id == 0 ?  id : entity.Id;
             var result = await _unitOfWork.Repository<TEntity>().UpdateByIdSave(id, entity);
             if(result == null)
@@ -110,7 +110,7 @@ public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> :
             _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
             return Result.Fail(ex.Message);
         }         
-    }   
+    }
 
     public virtual async Task<PagedList<IEnumerable<TDtoRecord>>> Paginate(int pageNumber,int pageSize, string? searchTerm, Dictionary<string, Dictionary<string, string>>? columns)
     {

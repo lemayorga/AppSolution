@@ -8,7 +8,7 @@ internal static class AutoMapperConfig
 {
     internal  static IServiceCollection AddAutoMapperConfiguration(this IServiceCollection services)
     {
-         services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>(), AppDomain.CurrentDomain.GetAssemblies());
+        services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>(), AppDomain.CurrentDomain.GetAssemblies());
         return services;
     }
 }

@@ -197,6 +197,15 @@ public class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> wh
     {
         return await _entities.CountAsync(predicate);
     }
+    public IQueryable<TEntity> FindAll(bool trackChanges)
+    {
+        return trackChanges ? _entities.AsNoTracking() : _entities;
+    }
+
+    public IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges)
+    {
+        return trackChanges ?_entities .Where(expression) .AsNoTracking() : _entities .Where(expression);    
+    }
 
     public virtual async Task<(int, IEnumerable<TEntity>)> Paginate(
         int pageNumber,

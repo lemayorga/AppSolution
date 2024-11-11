@@ -11,5 +11,7 @@ public class User  : Entity
     public required string Password { get; set; }            
     public bool IsActive { get; set; }
     public bool IsLocked { get; set; }
+
+    public ICollection<UsersRoles>? UsersRoles { get; set; }
 }
 
