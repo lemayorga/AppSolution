@@ -28,4 +28,11 @@ public class AppConfiguration
 
         Configuration = builder.Build();
     }
+
+    public static void AddFileConfiguration(IConfigurationManager configuration,string directorio, string fileName)
+    {
+        configuration.SetBasePath(directorio)
+                         .AddJsonFile(fileName, optional: false, reloadOnChange: true);
+      
+    }
 }

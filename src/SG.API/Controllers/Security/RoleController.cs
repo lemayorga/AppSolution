@@ -22,7 +22,7 @@ public class RoleController : BaseController<RoleDto, RoleCreateDto, RoleUpdateD
     [HttpGet("")]
     [ProducesResponseType(typeof(OperationResult<IEnumerable<RoleDto>>), StatusCodes.Status200OK)]   
     public override async Task<IActionResult> Get()
-   {
+    {
         var response = await _application.GetAll();
         return Ok(response.ToOperationResult());
     }

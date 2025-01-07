@@ -1,0 +1,48 @@
+{
+  "ApplyLog": true,  
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Debug",
+      "Override": {
+        "Microsoft": "Warning",
+        "System": "Warning"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{Application}/{Server}] {Message:lj}{NewLine}{Exception}"
+        }
+      },
+     /* {
+        "Name": "MSSqlServer",
+        "Args": {
+          "connectionString": "SqlServer",
+          "sinkOptionsSection": {
+            "tableName": "Logs",
+            "autoCreateSqlDatabase": false,
+            "autoCreateSqlTable": true
+          }
+        }
+      },*/
+      {
+        "Name": "PostgreSQL",
+        "Args": {
+          "connectionString": "PostgreSql",
+          "tableName": "_Logs",
+          "needAutoCreateTable": true
+        }
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "D:\\Logs\\log.json",
+          "rollingInterval": "Day",
+          "rollOnFileSizeLimit": true,
+          "formatter": "Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact"
+        }
+      }
+    ]
+  }
+}

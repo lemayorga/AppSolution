@@ -83,6 +83,16 @@ dotnet ef migrations  add _MY_NEW_MIGRATION_ --verbose --project "src/SG.Infrast
 dotnet ef migrations  add _MY_NEW_MIGRATION_  --verbose -p "src/SG.Infrastructure" -s "src/SG.API" -o "Data/Migrations" 
 ```
 
+Nota. **remover ultima migración:**
+
+Ejecutarlo en el powershell en la carpeta de tu repositorio. Cualquiera de los siguientes dos comandos:
+```
+dotnet ef migrations remove --force --verbose --project "src/SG.Infrastructure" --startup-project "src/SG.API"
+```
+```
+ dotnet ef migrations remove --force--verbose -p "src/SG.Infrastructure" -s "src/SG.API"
+```
+
 <!-- 
 Acceder al swagger: 
 

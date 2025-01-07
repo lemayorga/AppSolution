@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SG.Domain.Security.Entities;
@@ -7,92 +6,40 @@ using SG.Shared.Helpers;
 
 namespace SG.Infrastructure.Data.Seeders;
 
-
-public static class SeederExecute
+public partial class SeederExecute
 {
+    private readonly IConfiguration configuration;
+    private ApplicationDbContext context;
+    private const string APP_SEEDERS = "DataApplicationSeeders";
+    
+    private SeederExecute(IConfiguration _configuration, ApplicationDbContext _context)
+    {
+        configuration = _configuration;
+        context = _context;
+    }
+ 
     public static async Task SeedAsync(ApplicationDbContext context, IConfiguration configuration)
     {
+        SeederExecute seederExec = new(configuration, context);
         DataApplication seedersConfig = new();
-        configuration.GetSection("DataApplicationSeeders").Bind(seedersConfig);
+        
+        seederExec.configuration.GetSection(APP_SEEDERS).Bind(seedersConfig);
 
         if(seedersConfig.Execute)
         {
-            await InsertDataInitial(context, seedersConfig);
+            await seederExec.InsertDataInitial(seedersConfig);
         }
     }
 
-    private static async Task InsertDataInitial(ApplicationDbContext context, DataApplication seedersConfig)
+    private async Task InsertDataInitial(DataApplication seedersConfig)
     {
         try
         {
-            var roles = new List<Role>()
+            var roles = await CreateRoles(seedersConfig.Roles);
+            if (roles.Any())
             {
-                new Role {CodeRol = "SADMIN", Name = "Super Admin", IsActive = true },
-                new Role {CodeRol = "ADMIN", Name = "Admin", IsActive = true },
-                new Role {CodeRol = "SALER", Name = "Saler", IsActive = true },
-                new Role {CodeRol = "MANAGER", Name = "Manager", IsActive = true },            
-            }; 
-
-
-            var users = new List<User>() 
-            {
-                new User{Username= "sadmin", Email="sadmin@demo.com", Firstname= "sadmin", Lastname= "sadmin", Password ="", IsActive = true, IsLocked = false }
-            };
-
-            for (int i = 0; i < roles.Count(); i++)
-            {
-                if(!context.Role.Any(y => y.CodeRol == roles[i].CodeRol))
-                {
-                    await context.Role.AddAsync(roles[i]);
-                }
+                await CreateUsers(roles, seedersConfig.Users);
             }
-
-
-            if(seedersConfig.Users.Any())
-            {
-                for (int i = 0; i < seedersConfig.Users.Count(); i++)
-                {
-                    var userConfig = seedersConfig.Users[i];
-                    if(!context.User.Any(y => y.Email == userConfig.Email))
-                    {
-                        var user = new User
-                        {
-                            Username= userConfig.UserName, 
-                            Email= userConfig.Email, 
-                            Firstname=  userConfig.UserName, 
-                            Lastname= userConfig.UserName, 
-                            Password = EncryptionUtils.HashText(userConfig.Password), 
-                            IsActive = true, 
-                            IsLocked = false 
-                        };
-
-                        await context.User.AddAsync(user);
-                    }
-                }
-
-               await  context.SaveChangesAsync();
-
-                for (int i = 0; i < seedersConfig.Users.Count(); i++)
-                {
-                    var userConfig = seedersConfig.Users[i];
-                    if(!string.IsNullOrWhiteSpace(userConfig?.CodeRol))
-                    {
-                        var rol = await context.Role.FirstOrDefaultAsync(x => x.CodeRol == userConfig.CodeRol);
-                        var user = await context.User.FirstOrDefaultAsync(x => x.Username == userConfig.UserName);
-                        if(user != null && rol != null)
-                        {
-                            context.UsersRoles.Add(new UsersRoles
-                            {
-                                IdUser = user.Id,
-                                IdRol = rol.Id,
-                                State = true
-                            });
-                        }
-                    }
-                }                
-            }
-
-           await  context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -100,17 +47,83 @@ public static class SeederExecute
         }
     }
 
-    internal class DataApplication
+    private async Task<IQueryable<Role>> CreateRoles(List<AppSettingRoles> appSettingRoles )
     {
-        public bool Execute { get; set; }
-        public List<AppSettingUsuarios>? Users { get; set; }
-        public Dictionary<string, bool>? FilesExecute { get; set; }
+
+        int countSave = 0;
+        for (int i = 0; i < appSettingRoles.Count(); i++)
+        {
+            if(!context.Role.Any(y => y.CodeRol == appSettingRoles[i].Code))
+            {
+                var roleAdd =  new Role 
+                {
+                    CodeRol = appSettingRoles[i].Code, 
+                    Name = appSettingRoles[i].Name, 
+                    IsActive = true 
+                };
+
+                await context.Role.AddAsync(roleAdd);
+                countSave ++;
+            }
+        }
+
+        if(countSave > 0) 
+        {
+            await  context.SaveChangesAsync();
+        }
+
+        return context.Role.AsQueryable();
     }
-    internal class AppSettingUsuarios
+
+    private async Task CreateUsers(IQueryable<Role> roles, List<AppSettingUsers> appSettingUsers)
     {
-        public required string UserName { get; set; }
-        public required string Email { get; set; }
-        public required string Password { get; set; }
-        public required string CodeRol { get; set; }
-    }    
+        List<UsersRoles> userRolesAdd = new();
+        for (int i = 0; i < appSettingUsers.Count(); i++)
+        {
+            var userConfig = appSettingUsers[i];
+            User? user = await context.User.FirstOrDefaultAsync(y => y.Email == userConfig.Email);
+
+            if(user is null && userConfig is not null)
+            {
+                user = new User
+                {
+                    Username = userConfig.UserName, 
+                    Email = userConfig.Email, 
+                    Firstname =  userConfig?.Firstname ?? "", 
+                    Lastname= userConfig?.Lastname ?? "", 
+                    Password = EncryptionUtils.HashText(userConfig!.Password), 
+                    IsActive = true, 
+                    IsLocked = false 
+                };
+
+                await context.User.AddAsync(user);
+            }
+
+             await AddUserToRole(roles, userConfig!, user!);
+        }
+
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddUserToRole(IQueryable<Role> roles, AppSettingUsers appSettingUser, User user)
+    {
+        if(!string.IsNullOrWhiteSpace(appSettingUser?.CodeRol))
+        {
+            var rol = await roles.FirstOrDefaultAsync(x => x.CodeRol == appSettingUser.CodeRol);
+            if(rol is null)
+            {
+                return;
+            }
+              
+            user.UsersRoles = new HashSet<UsersRoles>()
+            {
+                new UsersRoles
+                {
+                    IdUser = user.Id,  
+                    IdRol = rol.Id,  
+                    State = true
+                }
+            };  
+        }
+    }
 }
