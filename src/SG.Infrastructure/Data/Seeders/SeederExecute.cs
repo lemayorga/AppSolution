@@ -99,31 +99,38 @@ public partial class SeederExecute
                 await context.User.AddAsync(user);
             }
 
-             await AddUserToRole(roles, userConfig!, user!);
+             await AddUserToRole(roles.ToList(), userConfig!, user!);
         }
 
         await context.SaveChangesAsync();
     }
 
-    private async Task AddUserToRole(IQueryable<Role> roles, AppSettingUsers appSettingUser, User user)
+    private async Task AddUserToRole(List<Role> listRoles, AppSettingUsers appSettingUser, User user)
     {
-        if(!string.IsNullOrWhiteSpace(appSettingUser?.CodeRol))
+        if(string.IsNullOrWhiteSpace(appSettingUser?.CodeRol))
         {
-            var rol = await roles.FirstOrDefaultAsync(x => x.CodeRol == appSettingUser.CodeRol);
-            if(rol is null)
-            {
-                return;
-            }
-              
-            user.UsersRoles = new HashSet<UsersRoles>()
-            {
-                new UsersRoles
-                {
-                    IdUser = user.Id,  
-                    IdRol = rol.Id,  
-                    State = true
-                }
-            };  
+            return;
         }
+
+        var rol =  listRoles.FirstOrDefault(x => x.CodeRol == appSettingUser.CodeRol);
+        if(rol is null)
+        {
+            return;
+        }
+    
+        if(await context.UsersRoles.AnyAsync(f => f.IdRol == rol.Id && f.IdUser == user.Id && user.Id != 0))
+        {
+             return;
+        }
+        
+        user.UsersRoles = new HashSet<UsersRoles>()
+        {
+            new UsersRoles
+            {
+                IdUser = user.Id,  
+                IdRol = rol.Id,  
+                State = true
+            }
+        }; 
     }
 }

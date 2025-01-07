@@ -68,7 +68,7 @@ public class RoleController : BaseController<RoleDto, RoleCreateDto, RoleUpdateD
     }
 
     /// <summary>
-    /// Acctualizar campos de un nuevo registro por su Id
+    /// Actualizar campos de un nuevo registro por su Id
     /// </summary>
     /// <param name="id" example="1">id del registro</param>  
     /// <param name="request">Objeto con los datos a insertar</param>    
@@ -77,6 +77,45 @@ public class RoleController : BaseController<RoleDto, RoleCreateDto, RoleUpdateD
     public override async Task<IActionResult> Put(int id,[FromBody] RoleUpdateDto request)
     {
         var response = await _application.UpdateById(id, request);
+        return Ok(response.ToOperationResult());
+    }
+
+    /// <summary>
+    /// Agrega usuarios a un rol
+    /// </summary>
+    /// <param name="idRole">Id del rol</param>  
+    /// <param name="listIdUsers">Objeto con los datos id usuarios a insertar</param>    
+    [HttpPost("AddUsersToRoleById/{idRole}")]
+    [ProducesResponseType(typeof(OperationResult<bool>), StatusCodes.Status201Created)]
+    public async Task<IActionResult> AddUsersToRole(int idRole, [FromBody] List<int> listIdUsers)
+    {
+        var response = await _application.AddUsersToRole(idRole, listIdUsers);
+        return Ok(response.ToOperationResult());
+    }
+
+    /// <summary>
+    /// Agrega usuarios a un rol
+    /// </summary>
+    /// <param name="codeRole">Id del rol</param>  
+    /// <param name="listIdUsers">Objeto con los datos id usuarios a insertar</param>    
+    [HttpPost("AddUsersToRoleByCode/{codeRole}")]
+    [ProducesResponseType(typeof(OperationResult<bool>), StatusCodes.Status201Created)]
+    public async Task<IActionResult> AddUsersToRole(string codeRole, [FromBody] List<int> listIdUsers)
+    {
+        var response = await _application.AddUsersToRole(codeRole, listIdUsers);
+        return Ok(response.ToOperationResult());
+    }
+
+    /// <summary>
+    /// Obtener los datos de usuarios y roles asociados
+    /// </summary>
+    /// <param name="filters"></param>
+    /// <returns></returns>
+    [HttpPost("usersWithRoles")]
+    [ProducesResponseType(typeof(OperationResult<IEnumerable<UserRolesDto>>), StatusCodes.Status201Created)]
+    public async Task<IActionResult> GetUsersWithRoles([FromBody] FilterUsersRoles filters)
+    {
+        var response = await _application.GetFilterUsersAndRoles(filters);
         return Ok(response.ToOperationResult());
     }
 }

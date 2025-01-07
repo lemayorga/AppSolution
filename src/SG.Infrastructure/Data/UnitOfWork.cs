@@ -19,6 +19,7 @@ public class UnitOfWork : IUnitOfWork
     public IPasswordPolicyRepository PasswordPolicyRepository { get; }
     public IRoleRepository RoleRepository { get; }
     public IUserRepository UserRepository { get; }
+    public IUsersRolesRepository UsersRolesRepository { get; }
     #endregion
 
     public UnitOfWork
@@ -28,7 +29,8 @@ public class UnitOfWork : IUnitOfWork
         IPasswordHistoryRepository _passwordHistoryRepository,
         IPasswordPolicyRepository _passwordPolicyRepository,
         IRoleRepository _roleRepository,
-        IUserRepository _userRepository
+        IUserRepository _userRepository,
+        IUsersRolesRepository _usersRolesRepository
     ) {
         _context = context;
         CatalogueRepository = _catalogueRepository;
@@ -36,6 +38,7 @@ public class UnitOfWork : IUnitOfWork
         PasswordPolicyRepository = _passwordPolicyRepository;
         RoleRepository = _roleRepository;
         UserRepository = _userRepository;
+        UsersRolesRepository = _usersRolesRepository;
     }
 
     public async Task<bool> SaveChangesAsync()

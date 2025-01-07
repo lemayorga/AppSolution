@@ -17,5 +17,6 @@ public interface IUnitOfWork : IDisposable
     IPasswordPolicyRepository PasswordPolicyRepository { get; }
     IRoleRepository RoleRepository { get; }
     IUserRepository UserRepository { get; }
+    IUsersRolesRepository UsersRolesRepository { get; }
     #endregion    
 }

@@ -23,13 +23,15 @@ public static class DependencyInjection
         #endregion
 
         #region Security
+
         services.AddScoped<IPasswordHistoryRepository, PasswordHistoryRepository>()
                 .AddScoped<IPasswordPolicyRepository, PasswordPolicyRepository>()
                 .AddScoped<IRoleRepository, RoleRepository>()
                 .AddScoped<IUserRepository, UserRepository>()
                 .AddScoped<IActionRepository, ActionRepository>()
                 .AddScoped<IModuleRepository, ModuleRepository>()
-                .AddScoped<IPermissionRepository, PermissionRepository>();     
+                .AddScoped<IPermissionRepository, PermissionRepository>()
+                .AddScoped<IUsersRolesRepository, UsersRolesRepository>();     
         #endregion
  
         
