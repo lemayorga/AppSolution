@@ -44,6 +44,11 @@ Editar el archivo `appsettings.json` (para desarrollo seria: `appsettings.Develo
 ```
 dotnet run  --project  "src/SG.API" 
 ```
+
+```
+dotnet watch  --project  "src/SG.API" 
+```
+
 - Con docker:
 ```
 docker compose up --build --force-recreate

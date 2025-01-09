@@ -48,7 +48,7 @@ public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> :
             var result = await _unitOfWork.Repository<TEntity>().GetById(id);
             if(result == null)
             {
-                 return Result.Fail(Constantes.NOT_ITEM_FOUND_DATABASE);
+                 return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
             }
             return Result.Ok(_mapper.Map<TDtoRecord>(result));
         }
@@ -80,7 +80,7 @@ public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> :
              var result = await _unitOfWork.Repository<TEntity>().DeleteByIdSave(id);
             if(!result)
             {
-                return Result.Fail(Constantes.NOT_ITEM_FOUND_DATABASE);
+                return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
             }
 
             return Result.Ok(result);
@@ -101,7 +101,7 @@ public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> :
             var result = await _unitOfWork.Repository<TEntity>().UpdateByIdSave(id, entity);
             if(result == null)
             {
-                 return Result.Fail(Constantes.NOT_ITEM_FOUND_DATABASE);
+                 return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
             }            
             return Result.Ok(_mapper.Map<TDtoRecord>(result));
         }

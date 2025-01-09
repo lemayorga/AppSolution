@@ -67,6 +67,7 @@ internal  static  class DbContextExtensions
         }
     }
     
+    
     public static async Task ExecuteSeeders(WebApplication app)
     {
         await using var serviceScope = app.Services.CreateAsyncScope();

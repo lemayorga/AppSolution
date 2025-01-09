@@ -7,4 +7,5 @@ public interface IUserRepository : IBaseGenericRepository<User>
     Task<IQueryable<User>> FilterByUserNameOrEmail(string search);
     Task<IQueryable<User>> FilterByOrEmail(string search);
     Task<IQueryable<User>> FilterByUserName(string search);
+    Task UpdateRefreshToken(int idUser, string refreshToken, DateTime refreshTokenExpiry);
 }

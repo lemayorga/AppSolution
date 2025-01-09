@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -23,6 +23,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SG.Shared", "src\SG.Shared\SG.Shared.csproj", "{46B76846-7467-47D4-A1AC-54FA3DDF36F9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{F32DACA5-4BAF-44D1-A50E-979DF7369D16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SG.Infrastructure.Auth", "src\SG.Infrastructure.Auth\SG.Infrastructure.Auth.csproj", "{4761BA4B-8AE9-497A-99F2-EFD50DF8AE7E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +52,10 @@ Global
 		{46B76846-7467-47D4-A1AC-54FA3DDF36F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46B76846-7467-47D4-A1AC-54FA3DDF36F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46B76846-7467-47D4-A1AC-54FA3DDF36F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4761BA4B-8AE9-497A-99F2-EFD50DF8AE7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4761BA4B-8AE9-497A-99F2-EFD50DF8AE7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4761BA4B-8AE9-497A-99F2-EFD50DF8AE7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4761BA4B-8AE9-497A-99F2-EFD50DF8AE7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,5 +66,6 @@ Global
 		{37DE5B6E-A0AE-412D-981B-3D6D99BB3F48} = {3F8BA258-F7CB-4AA6-9F40-A51A239DD341}
 		{0EF62E7A-0CB4-4601-8DE8-7AEE5BBD329C} = {3F8BA258-F7CB-4AA6-9F40-A51A239DD341}
 		{46B76846-7467-47D4-A1AC-54FA3DDF36F9} = {3F8BA258-F7CB-4AA6-9F40-A51A239DD341}
+		{4761BA4B-8AE9-497A-99F2-EFD50DF8AE7E} = {3F8BA258-F7CB-4AA6-9F40-A51A239DD341}
 	EndGlobalSection
 EndGlobal

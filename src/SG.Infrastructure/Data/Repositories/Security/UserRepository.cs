@@ -26,5 +26,15 @@ public class UserRepository : BaseGenericRepository<User>, IUserRepository
     {
         string likeSearch = $"%{search ?? ""}%";
         return await  Task.FromResult(FindByCondition(x => EF.Functions.Like(x.Username, likeSearch), true));
-    }    
+    }  
+
+
+    public async Task UpdateRefreshToken(int idUser, string refreshToken, DateTime refreshTokenExpiry)
+    {
+       await _entities.AsNoTracking().Where(x => x.Id == idUser)
+            .ExecuteUpdateAsync(p => 
+                p.SetProperty(b => b.RefreshToken, refreshToken)
+                 .SetProperty(b => b.RefreshTokenExpiry, refreshTokenExpiry)
+            );
+    }  
 }

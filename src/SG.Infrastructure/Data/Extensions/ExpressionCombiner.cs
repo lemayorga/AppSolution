@@ -63,7 +63,7 @@ public static class ExpressionCombiner
 
         // Convert to string if needed (e.g., if the property is not already a string)
         var toStringMethod = typeof(object).GetMethod("ToString");
-        var toStringCall = Expression.Call(property, toStringMethod);
+        var toStringCall = Expression.Call(property, toStringMethod!);
 
         // Create the lambda expression (u => u.Email)
         return Expression.Lambda<Func<T, string>>(toStringCall, parameter);

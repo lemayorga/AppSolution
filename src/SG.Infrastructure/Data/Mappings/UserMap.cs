@@ -17,6 +17,8 @@ public class UserMap : IEntityTypeConfiguration<User>
         builder.Property(c => c.Password).HasColumnOrder(5).HasMaxLength(DataSchemaConstants.DEFAULT_MAX_LENGTH_TEXT_CSharp).IsRequired();
         builder.Property(c => c.IsActive).HasColumnOrder(6).HasDefaultValue(true).IsRequired();
         builder.Property(c => c.IsLocked).HasColumnOrder(7).HasDefaultValue(false).IsRequired();
+        builder.Property(c => c.RefreshToken).HasColumnOrder(8).HasMaxLength(DataSchemaConstants.DEFAULT_MAX_LENGTH_TEXT).IsRequired(false);
+        builder.Property(c => c.RefreshTokenExpiry).HasColumnOrder(9).IsRequired(false);       
     }
 }
  

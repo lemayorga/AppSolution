@@ -1,6 +1,8 @@
 using SG.API.Extensions;
 using SG.Infrastructure.Services;
 using SG.Application;
+using SG.Infrastructure.Auth;
+using SG.Infrastructure.Auth.JwtAuthentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,11 +32,12 @@ builder.Services.AddSwaggerGen();
 #region Configure Services
 
 //var healthChecksBuilder = builder.Services.AddHealthChecks()
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDatabaseConfiguration(builder.Configuration)
                 .AddInfrastructure()
                 .AddServicesApplication()
-                .AddAutoMapperConfiguration();
+                .AddAutoMapperConfiguration()
+                .AddInfrastructureAuth(builder.Configuration);
 
 #endregion
 
@@ -46,6 +49,20 @@ builder.Services.AddSwaggerConfigurationOpenApi();
 var app = builder.Build();
 
 
+// 👇 This add the Authentication Middleware
+app.UseAuthentication();
+// 👇 This add the Authorization Middleware
+app.UseAuthorization();
+
+
+// 👇 The routes / and /public allow anonymous requests
+app.MapGet("/", () => "Hello World!");
+app.MapGet("/public", () => "Public Hello World!")
+	.AllowAnonymous();
+
+// 👇 The routes /private require authorized request
+app.MapGet("/private", () => "Private Hello World!")
+	.RequireAuthorization();   
 
 app.UseSerilogRequestLogging_(builder.Configuration);
 

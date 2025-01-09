@@ -5,15 +5,14 @@ using SG.Application.Bussiness.Security.Dtos;
 using SG.Application.Bussiness.Security.Interfaces;
 using SG.Domain;
 using SG.Domain.Security.Entities;
+using SG.Shared.Constants;
 using SG.Shared.Helpers;
 
 namespace SG.Application.Bussiness.Security.Services;
 
 public class UserService : BaseGenericService<User, UserDto, UserCreateDto, UserUpdateDto>, IUserService
 {
-    public UserService(IUnitOfWork unitOfWork, IMapper mapper,  ILogger<UserService> logger) : base(unitOfWork, mapper, logger)
-    {        
-    }
+    public UserService(IUnitOfWork unitOfWork, IMapper mapper,  ILogger<UserService> logger) : base(unitOfWork, mapper, logger) {  }
 
     public override async Task<Result<UserDto>> AddSave(UserCreateDto modelDto)
     {
@@ -24,12 +23,12 @@ public class UserService : BaseGenericService<User, UserDto, UserCreateDto, User
 
         if(resultFilterUsername.Any())
         {
-            errorMessages.Append("Username is already registered");
+            errorMessages.Append(MESSAGE_CONSTANTES.USER_NAME_REGISTERED);
         }
 
         if(resultFilterEmail.Any())
         {
-           errorMessages.Append("Email is already registered");
+           errorMessages.Append(MESSAGE_CONSTANTES.USER_EMAIL_REGISTERED);
         }
 
         if(errorMessages.Any())

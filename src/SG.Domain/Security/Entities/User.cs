@@ -12,6 +12,10 @@ public class User  : Entity
     public bool IsActive { get; set; }
     public bool IsLocked { get; set; }
 
+    public string? RefreshToken { get; set; }
+
+    public DateTime? RefreshTokenExpiry { get; set; }
+
     public ICollection<UsersRoles>? UsersRoles { get; set; }
 }
 

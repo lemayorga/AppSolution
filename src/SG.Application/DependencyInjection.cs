@@ -20,8 +20,10 @@ public static class DependencyInjection
         #endregion
 
         #region Security
+        
         services.AddScoped<IRoleService, RoleService>()
-                .AddScoped<IUserService, UserService>();     
+                .AddScoped<IUserService, UserService>()
+                .AddScoped<IAuthService, AuthService>();     
         #endregion
  
         

@@ -26,6 +26,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.2" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SG.Infrastructure.Auth\SG.Infrastructure.Auth.csproj" />
     <ProjectReference Include="..\SG.Shared\SG.Shared.csproj" />
     <ProjectReference Include="..\SG.Application\SG.Application.csproj" />
     <ProjectReference Include="..\SG.Infrastructure\SG.Infrastructure.csproj" />
