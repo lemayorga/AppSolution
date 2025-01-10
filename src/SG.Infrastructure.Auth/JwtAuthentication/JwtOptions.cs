@@ -1,7 +1,7 @@
 
 namespace SG.Infrastructure.Auth.JwtAuthentication;
 
-public  class JwtOptions
+public sealed class JwtOptions
 {
     public string Issuer { get; init; }  = default!; 
     public string Audience { get; set; }  = default!; 

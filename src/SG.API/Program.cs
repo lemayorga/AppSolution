@@ -1,18 +1,14 @@
 using SG.API.Extensions;
-using SG.Infrastructure.Services;
-using SG.Application;
-using SG.Infrastructure.Auth;
-using SG.Infrastructure.Auth.JwtAuthentication;
+using SG.API.Configuration;
+
+const string AllowOrigins = "AllowAllOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
-
-SerilogExt.Configure(builder,builder.Configuration);
-
 
 // Configurar CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins", builder =>
+    options.AddPolicy(AllowOrigins, builder =>
     {
         builder.AllowAnyOrigin()
                 .AllowAnyMethod()
@@ -29,22 +25,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-#region Configure Services
 
-//var healthChecksBuilder = builder.Services.AddHealthChecks()
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddDatabaseConfiguration(builder.Configuration)
-                .AddInfrastructure()
-                .AddServicesApplication()
-                .AddAutoMapperConfiguration()
-                .AddInfrastructureAuth(builder.Configuration);
 
-#endregion
+builder.Services.AddDependencyInjection(builder.Configuration);
+
 
 
 builder.Services.AddSwaggerConfigurationOpenApi();
 
+await builder.Services.EnsureSeedData(builder.Configuration);
 
+builder.ConfigureSerilog(builder.Configuration);
 
 var app = builder.Build();
 
@@ -64,16 +56,16 @@ app.MapGet("/public", () => "Public Hello World!")
 app.MapGet("/private", () => "Private Hello World!")
 	.RequireAuthorization();   
 
-app.UseSerilogRequestLogging_(builder.Configuration);
+app.IfUseSerilogRequestLogging(builder.Configuration);
 
 // Usar CORS
-app.UseCors("AllowAllOrigins");
+app.UseCors(AllowOrigins);
 
 app.AddSwaggerConfigurationUI();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.MapHealthChecks("health");
 
 app.UseRouting();
 
@@ -82,8 +74,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-await DbContextExtensions.ExecuteInformation(app);
-await DbContextExtensions.ExecuteSeeders(app);
+await app.ExecuteInformationDataBase();
 
 app.Logger.LogInformation("----- Application started...");
 await app.RunAsync();
