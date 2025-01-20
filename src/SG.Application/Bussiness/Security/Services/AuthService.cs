@@ -2,8 +2,9 @@ using FluentResults;
 using Microsoft.Extensions.Logging;
 using SG.Application.Bussiness.Security.Dtos;
 using SG.Application.Bussiness.Security.Interfaces;
-using SG.Domain.Security.Repositories;
+using SG.Domain;
 using SG.Infrastructure.Auth.JwtAuthentication;
+using SG.Infrastructure.Auth.JwtAuthentication.Models;
 using SG.Shared.Constants;
 using SG.Shared.Helpers;
 
@@ -13,12 +14,21 @@ public class AuthService : IAuthService
 {
     private readonly ILogger _logger;
     private readonly IJwtBuilder _jwtBuilder;
-    private  readonly IUserRepository _userRepository;
-    public AuthService(IUserRepository userRepository, IJwtBuilder jwtBuilder,  ILogger<AuthService> logger) 
+    private  readonly IUnitOfWork _unitOfWork;
+    private readonly IRoleService  _roleService;
+
+    public AuthService
+    (
+        ILogger<AuthService> logger,
+        IJwtBuilder jwtBuilder,        
+        IUnitOfWork unitOfWork,  
+        IRoleService roleService 
+    ) 
     {
         _logger = logger;
         _jwtBuilder = jwtBuilder;
-        _userRepository = userRepository;        
+        _unitOfWork = unitOfWork;   
+        _roleService = roleService;     
     }
 
     public async Task<Result<LoginResponseDto>> Authenticate(LoginDto loginModel)
@@ -28,12 +38,12 @@ public class AuthService : IAuthService
             var (userName, password) = loginModel;
 
             var userResult =  (loginModel.EvaluateEmail.HasValue && loginModel?.EvaluateEmail == true)
-                            ?  (await _userRepository.FilterByUserNameOrEmail(userName))
-                            :  (await _userRepository.FilterByUserName(userName));
+                            ?  (await _unitOfWork.UserRepository.FilterByUserNameOrEmail(userName))
+                            :  (await _unitOfWork.UserRepository.FilterByUserName(userName));
 
-            string messageError = !userResult.Any() ? MESSAGE_CONSTANTES.USER_DOESNT_EXIST
-                                : !userResult.ElementAt(0).IsActive ? MESSAGE_CONSTANTES.USER_IS_DISABLED
-                                : userResult.ElementAt(0).IsLocked ? MESSAGE_CONSTANTES.USER_IS_BLOCKED
+            string messageError = !userResult.Any() ? MESSAGE_CONSTANTES.VALIDATION_USER_DOESNT_EXIST
+                                : !userResult.ElementAt(0).IsActive ? MESSAGE_CONSTANTES.VALIDATION_USER_IS_BLOCKED
+                                : userResult.ElementAt(0).IsLocked ? MESSAGE_CONSTANTES.VALIDATION_USER_IS_BLOCKED
                                 : string.Empty;   
 
             if (!string.IsNullOrWhiteSpace(messageError))
@@ -46,13 +56,15 @@ public class AuthService : IAuthService
             bool resultComparePassword = EncryptionUtils.Verify(user.Password, password);
             if(!resultComparePassword)
             {
-                return Result.Fail<LoginResponseDto>(MESSAGE_CONSTANTES.INVALID_CREDENTIALS);
+                return Result.Fail<LoginResponseDto>(MESSAGE_CONSTANTES.VALIDATION_INVALID_CREDENTIALS);
             }
 
-            var accessToken  = _jwtBuilder.GenerateAccessToken(user);
+          
+            var userRoles = await  GetRolesFromUserId(user.Id);
+            var accessToken  = _jwtBuilder.GenerateAccessToken(user, userRoles);
             var refreshToken = _jwtBuilder.GenerateRefreshToken();
 
-            await _userRepository.UpdateRefreshToken(user.Id, refreshToken, DateTime.UtcNow.AddHours(12));
+            await _unitOfWork.UserRepository.UpdateRefreshToken(user.Id, refreshToken, DateTime.UtcNow.AddHours(12));
 
             return Result.Ok(new LoginResponseDto(user, accessToken, refreshToken));
         }
@@ -69,20 +81,24 @@ public class AuthService : IAuthService
         {
             var principalClaim =  _jwtBuilder.GetTokenPrincipal(model.AccessToken);
 
-            if(principalClaim?.Identity?.Name  is null){
+            if(principalClaim?.Identity?.Name  is null)
+            {
                 return Result.Fail<LoginResponseDto>(MESSAGE_CONSTANTES.REFRESH_TOKEN_ERROR);
             }
 
             int idUser = int.Parse(principalClaim.Identity.Name ?? "0");
-            var user = await _userRepository.GetById(idUser);
+            var user = await _unitOfWork.UserRepository.GetById(idUser);
 
             if(user is null ||  user?.RefreshToken != model.RefreshToken || user?.RefreshTokenExpiry < DateTime.UtcNow)
+            {
                 return Result.Fail<LoginResponseDto>(MESSAGE_CONSTANTES.REFRESH_TOKEN_ERROR);
+            }
 
-            var accessToken  = _jwtBuilder.GenerateAccessToken(user!);
+            var userRoles = await  GetRolesFromUserId(user!.Id);
+            var accessToken  = _jwtBuilder.GenerateAccessToken(user!, userRoles);
             var refreshToken = _jwtBuilder.GenerateRefreshToken();
 
-            await _userRepository.UpdateRefreshToken(user!.Id, refreshToken, DateTime.UtcNow.AddHours(12));
+            await _unitOfWork.UserRepository.UpdateRefreshToken(user!.Id, refreshToken, DateTime.UtcNow.AddHours(12));
 
             return Result.Ok(new LoginResponseDto(user, accessToken, refreshToken));
         }
@@ -92,4 +108,11 @@ public class AuthService : IAuthService
             return Result.Fail(ex.Message);
         } 
     } 
+
+    private async Task<IEnumerable<JwtRolData>> GetRolesFromUserId(int idUser)
+    {
+          var userRolesResult = await _roleService.GetFilterUsersAndRoles(new FilterUsersRoles { IdUser = idUser });
+          var userRoleData =  userRolesResult.Value.Select(x => new JwtRolData(x.IdRol, x.RolName));
+          return userRoleData;
+    }
 }

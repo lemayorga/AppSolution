@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+using SG.Shared.Constants;
 
 namespace SG.Application.CustomValidations;
 
@@ -29,8 +30,10 @@ public class PasswordValidationRegexAttribute : ValidationAttribute
 {
     public PasswordValidationRegexAttribute()
     {
-        ErrorMessage = string.Empty;
+        ErrorMessage = MESSAGE_CONSTANTES.VALIDATION_PASSWORD_REGEX;
     }
+
+    
     public override bool IsValid(object? value)
     {
         if (value == null) return true;

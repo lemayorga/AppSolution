@@ -8,15 +8,3 @@ public sealed class JwtOptions
     public string SigningKey { get; set; }  = default!; 
     public int ExpirationSeconds { get; set; }
 }
-
-public class TokenResponse 
-{
-    public string AccessToken { get; set; } = default!;
-    public string RefreshToken { get; set; } = default!;
-}
-
-public class RefreshTokenModel 
-{
-    public string AccessToken { get; set; } = default!;
-    public string RefreshToken { get; set; } = default!;
-}

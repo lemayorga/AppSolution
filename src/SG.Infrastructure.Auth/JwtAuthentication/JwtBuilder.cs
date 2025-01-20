@@ -2,9 +2,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SG.Domain.Security.Entities;
+using SG.Infrastructure.Auth.JwtAuthentication.Models;
 using SG.Shared.Utils;
 
 namespace SG.Infrastructure.Auth.JwtAuthentication;
@@ -20,7 +22,7 @@ public class JwtBuilder : IJwtBuilder
         _jwtOptions = jwtOptions;
     }
 
-    public string GenerateAccessToken(User user, string[]? permissions = null) 
+    public string GenerateAccessToken(User user, IEnumerable<JwtRolData>? roles = null, string[]? permissions = null) 
     {
         var claims = new List<Claim> 
         {
@@ -35,9 +37,17 @@ public class JwtBuilder : IJwtBuilder
             new Claim("aud", _jwtOptions.Audience)
         };
 
+
+        roles ??= (new List<JwtRolData>()).AsEnumerable();
+        if(roles is not null)
+        {
+            var rolesJson = JsonSerializer.Serialize(roles);
+            claims.Add(new Claim("role", rolesJson));
+        }
+       
         permissions ??= new string[]{ };
         var roleClaims = permissions.Select(x => new Claim("role", x));
-        claims.AddRange(roleClaims);
+       // claims.AddRange(roleClaims);
 
         var (hours , _ ,_ , _) = ConvertUtil.SecondTo(_jwtOptions.ExpirationSeconds);
         var tokenExpiration = DateTime.UtcNow.AddHours(hours); //DateTime.UtcNow.AddDays(30),;

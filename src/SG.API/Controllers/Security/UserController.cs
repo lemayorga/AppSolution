@@ -68,7 +68,7 @@ public class UserController : BaseController<UserDto, UserCreateDto, UserUpdateD
     }
 
     /// <summary>
-    /// Acctualizar campos de un nuevo registro por su Id
+    /// Actualizar campos de un nuevo registro por su Id
     /// </summary>
     /// <param name="id" example="1">id del registro</param>  
     /// <param name="request">Objeto con los datos a insertar</param>    
@@ -79,4 +79,66 @@ public class UserController : BaseController<UserDto, UserCreateDto, UserUpdateD
         var response = await _application.UpdateById(id, request);
         return Ok(response.ToOperationResult());
     }
+
+    /// <summary>
+    /// Actualizar contrase;an del usuario
+    /// </summary>
+    /// <param name="request">Objeto con los datos utilizar</param>    
+    [HttpPut("changePassword")]
+    [ProducesResponseType(typeof(OperationResult<bool>), StatusCodes.Status200OK)]    
+    public async Task<IActionResult> ChangePassword([FromBody] UserChangePassword request)
+    {
+        var response = await _application.ChangePassword(request);
+        return Ok(response.ToOperationResult());
+    }  
+
+    /// <summary>
+    /// Resetear contrase;an del usuario
+    /// </summary>
+    /// <param name="request">Objeto con los datos utilizar</param>    
+    [HttpPut("resetPassword")]
+    [ProducesResponseType(typeof(OperationResult<bool>), StatusCodes.Status200OK)]    
+    public async Task<IActionResult> ResetPassword([FromBody] UserResetPassword request)
+    {
+        var response = await _application.ResetPassword(request);
+        return Ok(response.ToOperationResult());
+    }      
+
+    /// <summary>
+    /// Resetear contrase;an por id usuario
+    /// </summary>
+    /// <param name="idUser" example="1">id del usuario</param>      
+    [HttpPut("resetPasswordBydIdUser/{idUser:int}")]
+    [ProducesResponseType(typeof(OperationResult<bool>), StatusCodes.Status200OK)]    
+    public async Task<IActionResult> ResetPasswordBydIdUser(int idUser)
+    {
+        var response = await _application.ResetPasswordBydIdUser(idUser);
+        return Ok(response.ToOperationResult());
+    } 
+
+    /// <summary>
+    /// Actualizar estado bloqueado
+    /// </summary>
+    /// <param name="idUser" example="1">id del usuario</param>  
+    /// <param name="newStatusLocked">nuevo  valor a aplicar</param>     
+    [HttpPut("updateStatusIsLocked/{idUser:int}")]
+    [ProducesResponseType(typeof(OperationResult<bool>), StatusCodes.Status200OK)]    
+    public async Task<IActionResult> UpdateStatusIsLocked(int idUser,[FromQuery(Name = "status")] bool newStatusLocked)
+    {
+        var response = await _application.UpdateStatusIsLocked(idUser, newStatusLocked);
+        return Ok(response.ToOperationResult());
+    } 
+
+    /// <summary>
+    /// Actualizar estado activo
+    /// </summary>
+    /// <param name="idUser" example="1">id del usuario</param>  
+    /// <param name="newStatusActive">nuevo  valor a aplicar</param>     
+    [HttpPut("updateStatusIsActived/{idUser:int}")]
+    [ProducesResponseType(typeof(OperationResult<bool>), StatusCodes.Status200OK)]    
+    public async Task<IActionResult> UpdateStatusIsActived(int idUser,[FromQuery(Name = "status")] bool newStatusActive)
+    {
+        var response = await _application.UpdateStatusIsActived(idUser, newStatusActive);
+        return Ok(response.ToOperationResult());
+    } 
 }

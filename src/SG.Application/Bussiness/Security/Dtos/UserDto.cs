@@ -47,3 +47,44 @@ public class UserUpdateDto
     public bool IsActive { get; set; }
     public bool IsLocked { get; set; }
 }
+
+
+public class UserChangePassword
+{
+    [Required(ErrorMessage = "Please enter your username.")]
+    [MinLength(2)]  
+    public required string UserName { get; set; }
+
+    [PasswordValidationRegexAttribute()]
+    [StringLength(100, ErrorMessage = "Field {0} should be between {2} and {1} characters long.", MinimumLength = 8)]
+    public required string CurrentPassword { get; set; } 
+
+    [PasswordValidationRegexAttribute()]
+    [StringLength(100, ErrorMessage = "Field {0} should be between {2} and {1} characters long.", MinimumLength = 8)]
+    public required string NewPassword { get; set; }
+
+    public bool? EvaluateEmail { get; set; }
+
+    public void Deconstruct(out string userName, out string currentPassword , out string newPassword)
+    {
+        userName = UserName.Trim();
+        currentPassword = CurrentPassword.Trim();
+        newPassword = NewPassword.Trim();
+    }
+}
+
+public class UserResetPassword
+{
+    [Required(ErrorMessage = "Please enter your username.")]
+    [MinLength(2)]  
+    public required string UserName { get; set; }
+
+    public bool? EvaluateEmail { get; set; }
+}
+
+public class UserResetPasswordById
+{
+    [Required(ErrorMessage = "Please enter your user id.")]
+    [MinLength(2)]  
+    public required string UserId { get; set; }
+}

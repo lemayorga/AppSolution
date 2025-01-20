@@ -1,31 +1,44 @@
 {
-  "ApplyLog": true,  
   "Serilog": {
     "MinimumLevel": {
-      "Default": "Debug",
+      "Default": "Information",
       "Override": {
         "Microsoft": "Warning",
-        "System": "Warning"
+        "System": "Warning",
+        "Microsoft.AspNetCore": "Warning"
       }
     },
+    "Using": [
+       "Serilog.Enrichers.CorrelationId" ,
+       "Serilog.Sinks.Console", 
+       "Serilog.Sinks.Seq",
+       "Serilog.Sinks.MSSqlServer" 
+    ],
+    "Enrich": [ 
+      "WithMachineName",
+      "WithCorrelationId" 
+    ],
     "WriteTo": [
+      {
+        "Name": "Debug",
+        "Args": {
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {CorrelationId} [{Level:u3}] [{Application}/{Server}] {Message:lj}{NewLine}{Exception}"
+        }
+      },
       {
         "Name": "Console",
         "Args": {
-          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{Application}/{Server}] {Message:lj}{NewLine}{Exception}"
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {CorrelationId} [{Level:u3}] [{Application}/{Server}] {Message:lj}{NewLine}{Exception}"
         }
       },
-     /* {
-        "Name": "MSSqlServer",
+      {
+        "Name": "Seq",
         "Args": {
-          "connectionString": "SqlServer",
-          "sinkOptionsSection": {
-            "tableName": "Logs",
-            "autoCreateSqlDatabase": false,
-            "autoCreateSqlTable": true
-          }
+          "restrictedToMinimumLevel": "Verbose",
+          "serverUrl": "http://localhost:5341"
         }
-      },*/
+      },
+
       {
         "Name": "PostgreSQL",
         "Args": {

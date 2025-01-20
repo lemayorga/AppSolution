@@ -1,5 +1,6 @@
 using SG.API.Extensions;
 using SG.API.Configuration;
+using Serilog;
 
 const string AllowOrigins = "AllowAllOrigins";
 
@@ -38,6 +39,8 @@ await builder.Services.EnsureSeedData(builder.Configuration);
 
 builder.ConfigureSerilog(builder.Configuration);
 
+
+ builder.Services.AddSerilog(); // <-- add this
 var app = builder.Build();
 
 
@@ -56,8 +59,6 @@ app.MapGet("/public", () => "Public Hello World!")
 app.MapGet("/private", () => "Private Hello World!")
 	.RequireAuthorization();   
 
-app.IfUseSerilogRequestLogging(builder.Configuration);
-
 // Usar CORS
 app.UseCors(AllowOrigins);
 
@@ -73,6 +74,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseSerilogRequestLogging();
 
 await app.ExecuteInformationDataBase();
 

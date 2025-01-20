@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SG.Application.Bussiness.Security.Dtos;
 using SG.Application.Bussiness.Security.Interfaces;
 using SG.Application.Responses;
-using SG.Infrastructure.Auth.JwtAuthentication;
+using SG.Infrastructure.Auth.JwtAuthentication.Models;
 
 namespace SG.API.Controllers.Security;
 
@@ -35,7 +35,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Refresh Token
+    /// Refrescar Token
     /// </summary>
     /// <param name="tokenResponse"></param>
     /// <returns></returns>

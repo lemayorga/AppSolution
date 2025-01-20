@@ -1,6 +1,6 @@
 using FluentResults;
 using SG.Application.Bussiness.Security.Dtos;
-using SG.Infrastructure.Auth.JwtAuthentication;
+using SG.Infrastructure.Auth.JwtAuthentication.Models;
 
 namespace SG.Application.Bussiness.Security.Interfaces;
 
