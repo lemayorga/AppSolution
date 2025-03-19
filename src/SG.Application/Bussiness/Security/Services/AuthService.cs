@@ -62,11 +62,12 @@ public class AuthService : IAuthService
           
             var userRoles = await  GetRolesFromUserId(user.Id);
             var accessToken  = _jwtBuilder.GenerateAccessToken(user, userRoles);
-            var refreshToken = _jwtBuilder.GenerateRefreshToken();
+            var newRefreshToken = _jwtBuilder.GenerateRefreshToken();
+            var newRefreshTokenExpiry = _jwtBuilder.NewTimeTokenExpiration();
 
-            await _unitOfWork.UserRepository.UpdateRefreshToken(user.Id, refreshToken, DateTime.UtcNow.AddHours(12));
+            await _unitOfWork.UserRepository.UpdateRefreshToken(user.Id, newRefreshToken, newRefreshTokenExpiry);
 
-            return Result.Ok(new LoginResponseDto(user, accessToken, refreshToken));
+            return Result.Ok(new LoginResponseDto(user, accessToken, newRefreshToken));
         }
         catch (Exception ex)
         {
@@ -80,27 +81,30 @@ public class AuthService : IAuthService
         try
         {
             var principalClaim =  _jwtBuilder.GetTokenPrincipal(model.AccessToken);
+            var claimIdUser = principalClaim?.Claims?.FirstOrDefault(f => f.Type == "idUser");
 
-            if(principalClaim?.Identity?.Name  is null)
+            if(principalClaim?.Identity?.Name  is null || claimIdUser is null)
             {
                 return Result.Fail<LoginResponseDto>(MESSAGE_CONSTANTES.REFRESH_TOKEN_ERROR);
             }
 
-            int idUser = int.Parse(principalClaim.Identity.Name ?? "0");
+            int idUser = int.Parse(claimIdUser.Value.ToString());
             var user = await _unitOfWork.UserRepository.GetById(idUser);
+            var (refreshToken, refreshTokenExpiry)  = await _unitOfWork.UserRepository.GetValuesRefreshTokenByUser(idUser);
 
-            if(user is null ||  user?.RefreshToken != model.RefreshToken || user?.RefreshTokenExpiry < DateTime.UtcNow)
+            if(user is null || (refreshToken is not null && refreshToken != model.RefreshToken) || (refreshTokenExpiry is not null && refreshTokenExpiry < DateTime.UtcNow))
             {
                 return Result.Fail<LoginResponseDto>(MESSAGE_CONSTANTES.REFRESH_TOKEN_ERROR);
             }
 
             var userRoles = await  GetRolesFromUserId(user!.Id);
             var accessToken  = _jwtBuilder.GenerateAccessToken(user!, userRoles);
-            var refreshToken = _jwtBuilder.GenerateRefreshToken();
+            var newRefreshToken = _jwtBuilder.GenerateRefreshToken();
+            var newRefreshTokenExpiry = _jwtBuilder.NewTimeTokenExpiration();
 
-            await _unitOfWork.UserRepository.UpdateRefreshToken(user!.Id, refreshToken, DateTime.UtcNow.AddHours(12));
+            await _unitOfWork.UserRepository.UpdateRefreshToken(user!.Id, newRefreshToken, newRefreshTokenExpiry);
 
-            return Result.Ok(new LoginResponseDto(user, accessToken, refreshToken));
+            return Result.Ok(new LoginResponseDto(user, accessToken, newRefreshToken));
         }
         catch (Exception ex)
         {

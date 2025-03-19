@@ -11,4 +11,9 @@ public static class ConvertUtil
 
         return (hours,minutes, seconds, t);
     }
+
+    public  static int MinutesToSeconds(int minutos)
+    {
+        return minutos * 60;
+    }
 }

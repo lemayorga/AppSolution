@@ -101,7 +101,7 @@ Ejecutarlo en el powershell en la carpeta de tu repositorio. Cualquiera de los s
 dotnet ef migrations remove --force --verbose --project "src/SG.Infrastructure" --startup-project "src/SG.API"
 ```
 ```
- dotnet ef migrations remove --force--verbose -p "src/SG.Infrastructure" -s "src/SG.API"
+ dotnet ef migrations remove --force --verbose -p "src/SG.Infrastructure" -s "src/SG.API"
 ```
 
 <!-- 

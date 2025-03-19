@@ -7,6 +7,7 @@ namespace SG.Infrastructure.Auth.JwtAuthentication;
 
 public interface IJwtBuilder
 {
+    DateTime NewTimeTokenExpiration();
     string GenerateAccessToken(User user,IEnumerable<JwtRolData>? roles, string[]? permissions = null);
     bool ValidateJwtToken(string token);
     string GenerateRefreshToken();

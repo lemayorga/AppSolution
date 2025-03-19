@@ -42,5 +42,6 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<Action> Actions { get; set; }
     public DbSet<Module> Modules { get; set; }
     public DbSet<Permission> Permissions { get; set; }    
+    public DbSet<UsersToken> UsersToken { get; set; }    
     #endregion
 }
