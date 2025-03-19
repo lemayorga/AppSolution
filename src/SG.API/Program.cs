@@ -32,7 +32,6 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddDependencyInjection(builder.Configuration);
 
 
-
 builder.Services.AddSwaggerConfigurationOpenApi();
 
 await builder.Services.EnsureSeedData(builder.Configuration);
@@ -81,3 +80,5 @@ await app.ExecuteInformationDataBase();
 
 app.Logger.LogInformation("----- Application started...");
 await app.RunAsync();
+
+public partial class Program;

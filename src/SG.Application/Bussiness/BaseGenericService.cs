@@ -59,12 +59,40 @@ public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> :
         }        
     }    
 
+    public virtual async Task<Result<List<TDtoRecord>>> GetByListIds(List<int> listIds)
+    {
+        try 
+        {
+            var result = await Task.FromResult(_unitOfWork.Repository<TEntity>().FindByCondition(f => listIds.Contains(f.Id)));
+            return Result.Ok(_mapper.Map<List<TDtoRecord>>(result));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
+            return Result.Fail(ex.Message);
+        }        
+    }    
+
     public virtual async Task<Result<TDtoRecord>> AddSave(TDtoCreate modelDto)
     {
         try 
         {
             var result =  await _unitOfWork.Repository<TEntity>().AddSave(_mapper.Map<TEntity>(modelDto));
             return Result.Ok(_mapper.Map<TDtoRecord>(result));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
+            return Result.Fail(ex.Message);
+        }         
+    }
+
+    public virtual async Task<Result<List<TDtoRecord>>> AddManySave(List<TDtoCreate> modelDto)
+    {
+        try 
+        {
+            var result =  await _unitOfWork.Repository<TEntity>().AddManySave(_mapper.Map<List<TEntity>>(modelDto));
+            return Result.Ok(_mapper.Map<List<TDtoRecord>>(result));
         }
         catch (Exception ex)
         {

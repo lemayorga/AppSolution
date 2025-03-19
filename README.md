@@ -66,6 +66,12 @@ docker compose up --build --force-recreate
 
 ## Migraciones con el entity framework core
 
+Para ejecutar las migraciones es necesaio tener instalado Entity Framework, caso de contrario ejecutar el commando:
+```
+dotnet tool install --global dotnet-ef
+```
+
+
 1. **Aplicar migraciones:**
 
 Ejecutarlo en el powershell en la carpeta de tu repositorio. Cualquiera de los siguientes dos comandos:

@@ -12,7 +12,9 @@ public interface  IBaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdat
 {
     Task<Result<IEnumerable<TDtoRecord>>> GetAll();
     Task<Result<TDtoRecord>> GetById(int id);
+    Task<Result<List<TDtoRecord>>> GetByListIds(List<int> listIds);
     Task<Result<TDtoRecord>> AddSave(TDtoCreate dto);
+    Task<Result<List<TDtoRecord>>> AddManySave(List<TDtoCreate> modelDto);
     Task<Result<bool>> DeleteById(int id);
     Task<Result<TDtoRecord>> UpdateById(int id, TDtoUpdate dto);
 }
