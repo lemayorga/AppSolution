@@ -9,7 +9,7 @@ public interface IBaseGenericRepository<TEntity> where TEntity : class
      Task Add(TEntity entity);
      Task<TEntity> AddSave(TEntity entity);
      Task AddMany(IEnumerable<TEntity> entities);
-     Task<bool> AddManySave(IEnumerable<TEntity> entities);
+     Task<IEnumerable<TEntity>> AddManySave(IEnumerable<TEntity> entities);
      Task<TEntity?> GetById(params object[] keys);
      Task<TEntity?> GetOne(Expression<Func<TEntity, bool>>? where = null);
      IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>>? where = null, Action<IQueryable<TEntity>>? orderBy = null, Action<IQueryable<TEntity>>? includes = null);
@@ -33,7 +33,7 @@ public interface IBaseGenericRepository<TEntity> where TEntity : class
         Dictionary<string, string>? columnFilters = null, 
         Dictionary<string, string>? orderByColumns = null);
 
-     IQueryable<TEntity> FindAll(bool trackChanges);
+     IQueryable<TEntity> FindAll(bool trackChanges = true);
 
-     IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges);
+     IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges = true);
 }

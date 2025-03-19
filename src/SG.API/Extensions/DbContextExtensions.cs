@@ -15,12 +15,12 @@ internal  static  class DbContextExtensions
         {
             // https://github.com/jeangatto/ASP.NET-Core-API-DDD-SOLID/blob/main/src/SGP.PublicApi/Program.cs
             var connectionString = context.Database.GetConnectionString();
-            app.Logger.LogInformation("----- Database Server: {Connection}", connectionString);
-            app.Logger.LogInformation("----- Database Server: Checking for pending migrations...");
+            app.Logger.LogDebug("----- Database Server: {Connection}", connectionString);
+            app.Logger.LogDebug("----- Database Server: Checking for pending migrations...");
 
             if ((await context.Database.GetPendingMigrationsAsync()).Any())
             {
-                app.Logger.LogInformation("----- Database Server: Creating and migrating the database...");
+                app.Logger.LogDebug("----- Database Server: Creating and migrating the database...");
 
             // await context.Database.MigrateAsync()
 
@@ -28,13 +28,13 @@ internal  static  class DbContextExtensions
             }
             else
             {
-                app.Logger.LogInformation("----- Database Server: Migrations are up to date");
+                app.Logger.LogDebug("----- Database Server: Migrations are up to date");
             }  
 
             //app.Logger.LogInformation("----- Populating data base...")
             //await context.EnsureSeedDataAsync()
 
-            app.Logger.LogInformation("----- Database populated successfully!");          
+            app.Logger.LogDebug("----- Database populated successfully!");          
         }
         catch (Exception exception)
         {

@@ -42,10 +42,11 @@ public class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> wh
         await _entities.AddRangeAsync(entities);
     }
 
-    public virtual async Task<bool> AddManySave(IEnumerable<TEntity> entities)
+    public virtual async Task<IEnumerable<TEntity>> AddManySave(IEnumerable<TEntity> entities)
     {
         await _entities.AddRangeAsync(entities);
-        return await SaveChangesAsync();
+        await SaveChangesAsync();
+        return entities;
     }
 
     public virtual async Task<TEntity?> GetById(params object[] keys)
@@ -197,14 +198,14 @@ public class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> wh
     {
         return await _entities.CountAsync(predicate);
     }
-    public IQueryable<TEntity> FindAll(bool trackChanges)
+    public IQueryable<TEntity> FindAll(bool trackChanges = true)
     {
         return trackChanges ? _entities.AsNoTracking() : _entities;
     }
 
-    public IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges)
-    {
-        return trackChanges ?_entities .Where(expression) .AsNoTracking() : _entities .Where(expression);    
+    public IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges = true)
+    {    
+        return trackChanges ?_entities.Where(expression) .AsNoTracking() : _entities .Where(expression);    
     }
 
     public virtual async Task<(int, IEnumerable<TEntity>)> Paginate(

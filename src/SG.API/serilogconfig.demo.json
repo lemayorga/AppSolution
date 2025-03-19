@@ -1,0 +1,75 @@
+// {
+//   "Serilog": {
+//     "MinimumLevel": {
+//       "Default": "Information",
+//       "Override": {
+//         "Microsoft": "Warning",
+//         "System": "Warning",
+//         "Microsoft.AspNetCore": "Warning"
+//       }
+//     },
+//     "Using": [
+//        "Serilog.Enrichers.CorrelationId" ,
+//        "Serilog.Sinks.Console", 
+//        "Serilog.Sinks.Seq",
+//        "Serilog.Sinks.MSSqlServer",
+//        "Serilog.Sinks.Graylog"
+//     ],
+//     "Enrich": [ 
+//       "FromLogContext",
+//       "WithMachineName",
+//       "WithCorrelationId",
+//       "WithProcessId",
+//       "WithThreadId"
+//     ],
+//     "WriteTo": [
+//       {
+//         "Name": "Debug",
+//         "Args": {
+//           "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {CorrelationId} [{Level:u3}] [{Application}/{Server}] {Message:lj}{NewLine}{Exception}"
+//         }
+//       },
+//       {
+//         "Name": "Console",
+//         "Args": {
+//           "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {CorrelationId} [{Level:u3}] [{Application}/{Server}] {Message:lj}{NewLine}{Exception}"
+//         }
+//       },
+//      {
+//         "Name": "Seq",
+//         "Args": {
+//           "restrictedToMinimumLevel": "Verbose",
+//           "serverUrl": "http://localhost:5341"
+//         }
+//       },
+//       {
+//         "Name": "PostgreSQL",
+//         "Args": {
+//           "connectionString": "Host=localhost;Port=5432;Database=products;Username=postgresql;Password=postgresql",
+//           "tableName": "_Logs",
+//           "needAutoCreateTable": true
+//         }
+//       },
+//       {
+//         "Name": "File",
+//         "Args": {
+//           "path": "D:\\Logs\\log.json",
+//           "rollingInterval": "Day",
+//           "rollOnFileSizeLimit": true,
+//           "formatter": "Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact"
+//         }
+//       },
+//       {
+//         "Name": "Graylog",
+//         "Args": {
+//           "hostnameOrAddress": "127.0.0.1",
+//           "port": "9000",
+//           "transportType": "Udp"
+//         }
+//       }     
+//     ],
+//     "Properties": {
+//       "Application": "Centralized logging application"
+//     }    
+//   }
+// }

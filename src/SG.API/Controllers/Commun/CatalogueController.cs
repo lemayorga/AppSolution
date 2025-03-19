@@ -1,5 +1,6 @@
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SG.Application.Bussiness.Commun.Dtos;
 using SG.Application.Bussiness.Commun.Intefaces;
 using SG.Application.Requests;
@@ -42,15 +43,26 @@ public class CatalogueController : BaseController<CatalogueDto, CatalogueCreateD
         return Ok(response.ToOperationResult());
     }
 
+    /// <summary>
+    /// Obtener registros por lista de Ids
+    /// </summary>
+    /// <param name="listIds">ids de los registros</param>    
+    /// <returns>Retornar el registro.</returns>
+    [HttpGet("getByListIds")]
+    [ProducesResponseType(typeof(OperationResult<List<CatalogueDto>>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Get([FromQuery(Name = "ids"),BindRequired]List<int> listIds)
+    {
+        var response = await _application.GetByListIds(listIds);
+        return Ok(response.ToOperationResult());
+    }
 
     /// <summary>
     /// Eliminar un registro por Id
     /// </summary>
     /// <param name="id" example="1">id del registro</param>   
     /// <returns>Retornar si fue exitoso la eliminación.</returns>
-    [HttpDelete("")]
+    [HttpDelete("{id:int}")]
     [ProducesResponseType(typeof(OperationResult<bool>), StatusCodes.Status200OK)]
-
     public override async Task<IActionResult> Delete(int id)
     {
         var response = await _application.DeleteById(id);
@@ -66,6 +78,18 @@ public class CatalogueController : BaseController<CatalogueDto, CatalogueCreateD
     public override async Task<IActionResult> Post([FromBody] CatalogueCreateDto request)
     {
         var response = await _application.AddSave(request);
+        return Ok(response.ToOperationResult());
+    }
+
+    /// <summary>
+    /// Agrega lista de nuevos registros
+    /// </summary>
+    /// <param name="request">Objeto con los datos a insertar</param>    
+    [HttpPost("addMany")]
+    [ProducesResponseType(typeof(OperationResult<List<CatalogueDto>>), StatusCodes.Status201Created)]
+    public async Task<IActionResult> PostMany([FromBody] List<CatalogueCreateDto> request)
+    {
+        var response = await _application.AddManySave(request);
         return Ok(response.ToOperationResult());
     }
 

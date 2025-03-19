@@ -15,8 +15,6 @@ public class HomeController : ControllerBase
     [HttpGet("")]
     public IActionResult Home() 
     {
-        _logger.LogInformation("Response: {@result}","Hello");
-        
         return Ok("Hello!");
     }
 }
