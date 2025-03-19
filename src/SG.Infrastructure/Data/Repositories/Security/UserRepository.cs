@@ -30,11 +30,29 @@ public class UserRepository : BaseGenericRepository<User>, IUserRepository
 
     public async Task<bool> UpdateRefreshToken(int idUser, string refreshToken, DateTime refreshTokenExpiry)
     {
-       return await _entities.AsNoTracking().Where(x => x.Id == idUser)
-            .ExecuteUpdateAsync(p => 
-                p.SetProperty(b => b.RefreshToken, refreshToken)
-                 .SetProperty(b => b.RefreshTokenExpiry, refreshTokenExpiry)
-            ) > 0;
+       if(await _context.UsersToken.AsNoTracking().AnyAsync(x => x.Id == idUser))
+       {
+            return await _context.UsersToken.AsNoTracking().Where(x => x.Id == idUser)
+                .ExecuteUpdateAsync(p => 
+                    p.SetProperty(b => b.RefreshToken, refreshToken)
+                        .SetProperty(b => b.RefreshTokenExpiry, refreshTokenExpiry)
+                ) > 0;
+       }
+
+       _context.UsersToken.Add(new UsersToken(idUser,refreshToken, refreshTokenExpiry));
+      return await _context.SaveChangesAsync() > 0;
+    }     
+    
+    public async Task<(string?, DateTime?)> GetValuesRefreshTokenByUser(int idUser)
+    {
+      var userToken =  await _context.UsersToken.FirstOrDefaultAsync(x => x.Id == idUser);
+      if(userToken is  not null) 
+      {
+        var (refreshToken, refreshTokenExpiry) = userToken!;
+        return  (refreshToken, refreshTokenExpiry);
+      }
+
+      return  (null, null);
     }  
 
     public async Task<bool> UpdatePasswordHash(int idUser, string newPasswordHash)

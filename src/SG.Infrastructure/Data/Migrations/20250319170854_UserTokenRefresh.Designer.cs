@@ -12,7 +12,7 @@ using SG.Infrastructure.Data.Context;
 namespace SG.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250109183235_UserTokenRefresh")]
+    [Migration("20250319170854_UserTokenRefresh")]
     partial class UserTokenRefresh
     {
         /// <inheritdoc />
@@ -305,15 +305,6 @@ namespace SG.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnOrder(5);
 
-                    b.Property<string>("RefreshToken")
-                        .HasMaxLength(800)
-                        .HasColumnType("character varying(800)")
-                        .HasColumnOrder(8);
-
-                    b.Property<DateTime?>("RefreshTokenExpiry")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnOrder(9);
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(80)
@@ -351,6 +342,37 @@ namespace SG.Infrastructure.Data.Migrations
                     b.HasIndex("IdUser");
 
                     b.ToTable("UsersRoles", (string)null);
+                });
+
+            modelBuilder.Entity("SG.Domain.Security.Entities.UsersToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnOrder(0);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdUser")
+                        .HasColumnType("integer")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasMaxLength(800)
+                        .HasColumnType("character varying(800)")
+                        .HasColumnOrder(2);
+
+                    b.Property<DateTime>("RefreshTokenExpiry")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnOrder(3);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdUser")
+                        .IsUnique();
+
+                    b.ToTable("UsersToken", (string)null);
                 });
 
             modelBuilder.Entity("SG.Domain.Security.Entities.Module", b =>
@@ -406,6 +428,18 @@ namespace SG.Infrastructure.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SG.Domain.Security.Entities.UsersToken", b =>
+                {
+                    b.HasOne("SG.Domain.Security.Entities.User", "User")
+                        .WithOne("UserToken")
+                        .HasForeignKey("SG.Domain.Security.Entities.UsersToken", "IdUser")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_UsersToken_User");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SG.Domain.Security.Entities.Action", b =>
                 {
                     b.Navigation("Permissions");
@@ -425,6 +459,8 @@ namespace SG.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("SG.Domain.Security.Entities.User", b =>
                 {
+                    b.Navigation("UserToken");
+
                     b.Navigation("UsersRoles");
                 });
 #pragma warning restore 612, 618

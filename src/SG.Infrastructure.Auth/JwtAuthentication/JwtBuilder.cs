@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SG.Domain.Security.Entities;
 using SG.Infrastructure.Auth.JwtAuthentication.Models;
-using SG.Shared.Utils;
 
 namespace SG.Infrastructure.Auth.JwtAuthentication;
 
@@ -30,7 +29,7 @@ public class JwtBuilder : IJwtBuilder
             new Claim(ClaimTypes.Name, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Sub, user.Username),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim("id", user.Id.ToString()),
+            new Claim("id", Guid.NewGuid().ToString()),
             new Claim("idUser", user.Id.ToString()),
             new Claim("username", user.Username),
             new Claim("email", user.Email),
@@ -49,8 +48,9 @@ public class JwtBuilder : IJwtBuilder
         var roleClaims = permissions.Select(x => new Claim("role", x));
        // claims.AddRange(roleClaims);
 
-        var (hours , _ ,_ , _) = ConvertUtil.SecondTo(_jwtOptions.ExpirationSeconds);
-        var tokenExpiration = DateTime.UtcNow.AddHours(hours); //DateTime.UtcNow.AddDays(30),;
+      // var (hours , minutes ,_ , _) = ConvertUtil.SecondTo(_jwtOptions.ExpiratioMinutes);
+       // var tokenExpiration = DateTime.UtcNow.AddHours(hours); //DateTime.UtcNow.AddDays(30),;
+        var tokenExpiration = NewTimeTokenExpiration();
 
         var jwtToken = new JwtSecurityToken
         (
@@ -69,6 +69,8 @@ public class JwtBuilder : IJwtBuilder
         var rawToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
         return rawToken;
     }
+
+    public  DateTime NewTimeTokenExpiration() => DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiratioMinutes);
 
     public bool ValidateJwtToken(string token)
     {
@@ -126,8 +128,6 @@ public class JwtBuilder : IJwtBuilder
     }
 
 
-
-
     public string GenerateAccessTokenFromRefreshToken()
     {
         // Implement logic to generate a new access token from the refresh token
@@ -138,7 +138,7 @@ public class JwtBuilder : IJwtBuilder
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Expires = DateTime.UtcNow.AddMinutes(15), // Extend expiration time
+            Expires = NewTimeTokenExpiration(), // Extend expiration time
             SigningCredentials = new SigningCredentials
             (
                 new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtOptions.SigningKey)), 

@@ -11,11 +11,7 @@ public class User  : Entity
     public required string Password { get; set; }            
     public bool IsActive { get; set; }
     public bool IsLocked { get; set; }
-
-    public string? RefreshToken { get; set; }
-
-    public DateTime? RefreshTokenExpiry { get; set; }
-
     public ICollection<UsersRoles>? UsersRoles { get; set; }
+    public UsersToken? UserToken { get; set; }
 }
 
