@@ -27,12 +27,17 @@ public class UserRepository : BaseGenericRepository<User>, IUserRepository
         string likeSearch = $"%{search ?? ""}%";
         return await  Task.FromResult(FindByCondition(x => EF.Functions.Like(x.Username, likeSearch), true));
     }  
-
-    public async Task<bool> UpdateRefreshToken(int idUser, string refreshToken, DateTime refreshTokenExpiry)
+    public async Task<bool> ExistRefreshTokenByIdUser(int idUser)
     {
-       if(await _context.UsersToken.AsNoTracking().AnyAsync(x => x.Id == idUser))
+        return await _context.UsersToken.FirstOrDefaultAsync(x => x.IdUser == idUser) is not null;
+    } 
+
+    public async Task<bool> AddOrUpdateRefreshTokenUser(int idUser, string refreshToken, DateTime refreshTokenExpiry)
+    {
+        var existsUserToken =  await ExistRefreshTokenByIdUser(idUser);
+       if(existsUserToken)
        {
-            return await _context.UsersToken.AsNoTracking().Where(x => x.Id == idUser)
+            return await _context.UsersToken.Where(x => x.IdUser == idUser)
                 .ExecuteUpdateAsync(p => 
                     p.SetProperty(b => b.RefreshToken, refreshToken)
                         .SetProperty(b => b.RefreshTokenExpiry, refreshTokenExpiry)
@@ -40,7 +45,13 @@ public class UserRepository : BaseGenericRepository<User>, IUserRepository
        }
 
        _context.UsersToken.Add(new UsersToken(idUser,refreshToken, refreshTokenExpiry));
-      return await _context.SaveChangesAsync() > 0;
+       return await _context.SaveChangesAsync() > 0;
+    }   
+
+    public async Task<bool> RemoverRefreshTokenUser(int idUser)
+    {
+        return await _context.UsersToken.Where(x => x.IdUser == idUser)
+            .ExecuteDeleteAsync() > 0;
     }     
     
     public async Task<(string?, DateTime?)> GetValuesRefreshTokenByUser(int idUser)

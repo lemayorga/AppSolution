@@ -29,133 +29,69 @@ public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> :
 
     public virtual async Task<Result<IEnumerable<TDtoRecord>>> GetAll()
     {
-        try 
-        {
-            var result = await _unitOfWork.Repository<TEntity>().GetAll().ToListAsync();
-            return Result.Ok(_mapper.Map<IEnumerable<TDtoRecord>>(result));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
-            return Result.Fail(ex.Message);
-        }
+        var result = await _unitOfWork.Repository<TEntity>().GetAll().ToListAsync();             
+        return Result.Ok(_mapper.Map<IEnumerable<TDtoRecord>>(result));
     }
 
     public virtual async Task<Result<TDtoRecord>> GetById(int id)
     {
-        try 
+        var result = await _unitOfWork.Repository<TEntity>().GetById(id);
+        if(result is null)
         {
-            var result = await _unitOfWork.Repository<TEntity>().GetById(id);
-            if(result == null)
-            {
-                 return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
-            }
-            return Result.Ok(_mapper.Map<TDtoRecord>(result));
+            return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
-            return Result.Fail(ex.Message);
-        }        
+        return Result.Ok(_mapper.Map<TDtoRecord>(result));   
     }    
 
     public virtual async Task<Result<List<TDtoRecord>>> GetByListIds(List<int> listIds)
     {
-        try 
-        {
-            var result = await Task.FromResult(_unitOfWork.Repository<TEntity>().FindByCondition(f => listIds.Contains(f.Id)));
-            return Result.Ok(_mapper.Map<List<TDtoRecord>>(result));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
-            return Result.Fail(ex.Message);
-        }        
+        var result = await Task.FromResult(_unitOfWork.Repository<TEntity>().FindByCondition(f => listIds.Contains(f.Id)));
+        return Result.Ok(_mapper.Map<List<TDtoRecord>>(result));       
     }    
 
     public virtual async Task<Result<TDtoRecord>> AddSave(TDtoCreate modelDto)
     {
-        try 
-        {
-            var result =  await _unitOfWork.Repository<TEntity>().AddSave(_mapper.Map<TEntity>(modelDto));
-            return Result.Ok(_mapper.Map<TDtoRecord>(result));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
-            return Result.Fail(ex.Message);
-        }         
+        var result =  await _unitOfWork.Repository<TEntity>().AddSave(_mapper.Map<TEntity>(modelDto));
+        return Result.Ok(_mapper.Map<TDtoRecord>(result));         
     }
 
     public virtual async Task<Result<List<TDtoRecord>>> AddManySave(List<TDtoCreate> modelDto)
     {
-        try 
-        {
-            var result =  await _unitOfWork.Repository<TEntity>().AddManySave(_mapper.Map<List<TEntity>>(modelDto));
-            return Result.Ok(_mapper.Map<List<TDtoRecord>>(result));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
-            return Result.Fail(ex.Message);
-        }         
+        var result =  await _unitOfWork.Repository<TEntity>().AddManySave(_mapper.Map<List<TEntity>>(modelDto));
+        return Result.Ok(_mapper.Map<List<TDtoRecord>>(result));         
     }
 
     public virtual async Task<Result<bool>> DeleteById(int id)
     {
-        try 
+        var result = await _unitOfWork.Repository<TEntity>().DeleteByIdSave(id);
+        if(!result)
         {
-             var result = await _unitOfWork.Repository<TEntity>().DeleteByIdSave(id);
-            if(!result)
-            {
-                return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
-            }
-
-            return Result.Ok(result);
+            return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
-            return Result.Fail(ex.Message);
-        }         
+
+        return Result.Ok(result);         
     }
 
     public virtual async Task<Result<TDtoRecord>> UpdateById(int id, TDtoUpdate modelDto)
     {
-        try 
+        var entity = _mapper.Map<TEntity>(modelDto);
+        entity.Id  = entity.Id == 0 ?  id : entity.Id;
+        var result = await _unitOfWork.Repository<TEntity>().UpdateByIdSave(id, entity);
+        if(result == null)
         {
-            var entity = _mapper.Map<TEntity>(modelDto);
-            entity.Id  = entity.Id == 0 ?  id : entity.Id;
-            var result = await _unitOfWork.Repository<TEntity>().UpdateByIdSave(id, entity);
-            if(result == null)
-            {
-                 return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
-            }            
-            return Result.Ok(_mapper.Map<TDtoRecord>(result));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
-            return Result.Fail(ex.Message);
-        }         
+                return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
+        }            
+        return Result.Ok(_mapper.Map<TDtoRecord>(result));        
     }
 
     public virtual async Task<PagedList<IEnumerable<TDtoRecord>>> Paginate(int pageNumber,int pageSize, string? searchTerm, Dictionary<string, Dictionary<string, string>>? columns)
     {
-        try 
-        {
-            var (filters, orders) = GetDataDictionaryColumnsByPaginate(columns);
-            var(total, data) =  await _unitOfWork.Repository<TEntity>().Paginate(pageNumber, pageSize, searchTerm, filters, orders);
-            var modelMapper = _mapper.Map<IEnumerable<TDtoRecord>>(data);
+        var (filters, orders) = GetDataDictionaryColumnsByPaginate(columns);
+        var(total, data) =  await _unitOfWork.Repository<TEntity>().Paginate(pageNumber, pageSize, searchTerm, filters, orders);
+        var modelMapper = _mapper.Map<IEnumerable<TDtoRecord>>(data);
 
-            var pagedList = new PagedList<IEnumerable<TDtoRecord>>(modelMapper, total, pageNumber, pageSize);                                    
-            return pagedList;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ECXCEPTION_MESSAGE, ex.Message);
-            return new PagedList<IEnumerable<TDtoRecord>>([], 0, pageNumber, pageSize, ex, ex.Message);     
-        }
+        var pagedList = new PagedList<IEnumerable<TDtoRecord>>(modelMapper, total, pageNumber, pageSize);                                    
+        return pagedList;
     }     
 
     protected (Dictionary<string, string>?, Dictionary<string, string>?) GetDataDictionaryColumnsByPaginate(Dictionary<string, Dictionary<string, string>>? columns)

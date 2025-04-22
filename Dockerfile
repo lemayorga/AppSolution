@@ -14,6 +14,7 @@ COPY ["/src/SG.API/SG.API.csproj","SG.API/"]
 COPY ["/src/SG.Application/SG.Application.csproj","SG.Application/"]
 COPY ["/src/SG.Domain/SG.Domain.csproj","SG.Domain/"]
 COPY ["/src/SG.Infrastructure/SG.Infrastructure.csproj","SG.Infrastructure/"]
+COPY ["/src/SG.Infrastructure/SG.Infrastructure.Auth.csproj","SG.Infrastructure.Auth/"]
 COPY ["/src/SG.Shared/SG.Shared.csproj","SG.Shared/"]
 
 # Restaura las dependencias para el proyecto principal
