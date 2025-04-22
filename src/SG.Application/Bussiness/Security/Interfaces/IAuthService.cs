@@ -6,6 +6,7 @@ namespace SG.Application.Bussiness.Security.Interfaces;
 
 public interface IAuthService
 {
-    Task<Result<LoginResponseDto>> Authenticate(LoginDto loginModel);
+    Task<Result<LoginResponseDto>> Login(LoginDto loginModel);
+    Task<Result<LogoutResponse>> Logout(int idUser);
     Task<Result<LoginResponseDto>> RefreshToken(RefreshTokenModel model);
 }

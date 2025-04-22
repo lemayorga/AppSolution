@@ -1,5 +1,3 @@
-using System;
-
 namespace SG.Domain.Security.Entities;
 
 public class UsersToken  : Entity
@@ -15,6 +13,16 @@ public class UsersToken  : Entity
         RefreshToken = refreshToken;
         RefreshTokenExpiry = refreshTokenExpiry;
     }
+
+
+    public UsersToken(int id, int idUser,string refreshToken,DateTime refreshTokenExpiry)
+    {
+        Id = id;
+        IdUser = idUser;
+        RefreshToken = refreshToken;
+        RefreshTokenExpiry = refreshTokenExpiry;
+    }
+
     public void Deconstruct(out string refreshToken, out DateTime refreshTokenExpiry)
     {
         refreshToken = RefreshToken;

@@ -1,12 +1,11 @@
+
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using SG.Domain.Security.Entities;
-using SG.Infrastructure.Auth.JwtAuthentication.Models;
+using SG.Infrastructure.Auth.Extensions;
 
 namespace SG.Infrastructure.Auth.JwtAuthentication;
 
@@ -21,35 +20,24 @@ public class JwtBuilder : IJwtBuilder
         _jwtOptions = jwtOptions;
     }
 
-    public string GenerateAccessToken(User user, IEnumerable<JwtRolData>? roles = null, string[]? permissions = null) 
+
+    public string GenerateAccessToken(List<Claim>? claimsWithValues = null) 
     {
+        var idClaim = Guid.NewGuid().ToString();
         var claims = new List<Claim> 
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim("id", Guid.NewGuid().ToString()),
-            new Claim("idUser", user.Id.ToString()),
-            new Claim("username", user.Username),
-            new Claim("email", user.Email),
-            new Claim("aud", _jwtOptions.Audience)
+            new Claim(ClaimTypes.NameIdentifier, idClaim),
+            new Claim(JwtRegisteredClaimNames.UniqueName, idClaim),
+            new Claim(JwtRegisteredClaimNames.Jti, idClaim),
+            new Claim(JwtClaimsCustomNames.IdClaim, idClaim),
+            new Claim(JwtClaimsCustomNames.AudClaim, _jwtOptions.Audience)
         };
 
-
-        roles ??= (new List<JwtRolData>()).AsEnumerable();
-        if(roles is not null)
+        if(claimsWithValues?.Any() ?? false)
         {
-            var rolesJson = JsonSerializer.Serialize(roles);
-            claims.Add(new Claim("role", rolesJson));
+            claims.AddRange(claimsWithValues);
         }
-       
-        permissions ??= new string[]{ };
-        var roleClaims = permissions.Select(x => new Claim("role", x));
-       // claims.AddRange(roleClaims);
 
-      // var (hours , minutes ,_ , _) = ConvertUtil.SecondTo(_jwtOptions.ExpiratioMinutes);
-       // var tokenExpiration = DateTime.UtcNow.AddHours(hours); //DateTime.UtcNow.AddDays(30),;
         var tokenExpiration = NewTimeTokenExpiration();
 
         var jwtToken = new JwtSecurityToken
@@ -102,9 +90,10 @@ public class JwtBuilder : IJwtBuilder
         }
     }
 
-    public ClaimsPrincipal? GetTokenPrincipal(string token)
+    public ClaimsPrincipal? GetPrincipal(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
+        
         return tokenHandler.ValidateToken(token, new TokenValidationParameters
         {
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtOptions.SigningKey)),
@@ -119,6 +108,13 @@ public class JwtBuilder : IJwtBuilder
         }, out _);
     }
 
+    public JwtSecurityToken ReadJwtToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtSecurityToken = handler.ReadJwtToken(token);
+        return jwtSecurityToken;
+    }
+
     public string GenerateRefreshToken()
     {
         var randomNumber = new byte[64];
@@ -126,7 +122,6 @@ public class JwtBuilder : IJwtBuilder
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);
     }
-
 
     public string GenerateAccessTokenFromRefreshToken()
     {

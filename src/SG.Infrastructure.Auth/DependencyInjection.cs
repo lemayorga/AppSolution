@@ -1,10 +1,12 @@
 using System;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SG.Infrastructure.Auth.JwtAuthentication;
+using SG.Infrastructure.Auth.Services;
 
 namespace SG.Infrastructure.Auth;
 
@@ -21,10 +23,10 @@ public static class DependencyInjection
         {
             opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         })
         .AddJwtBearer(opts =>
         {
-            //convert the string signing key to byte array
             byte[] signingKeyBytes = Encoding.UTF8.GetBytes(jwtOptions.SigningKey);
 
             opts.TokenValidationParameters = new TokenValidationParameters
@@ -41,6 +43,10 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IJwtBuilder, JwtBuilder>();
+
+        services.AddTransient<IPrincipalCurrentUser,PrincipalCurrentUserService>(provider =>
+             new PrincipalCurrentUserService(provider.GetService<IHttpContextAccessor>()!)
+        );
         return services.AddAuthorization();
     }
 }

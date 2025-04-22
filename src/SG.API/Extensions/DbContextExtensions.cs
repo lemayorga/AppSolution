@@ -6,7 +6,7 @@ namespace SG.API.Extensions;
 internal  static  class DbContextExtensions
 {
 
-    internal static async Task ExecuteInformationDataBase(this WebApplication app)
+   /* internal static async Task ExecuteInformationDataBase(this WebApplication app)
     {
         await using var serviceScope = app.Services.CreateAsyncScope();
         await using var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -41,5 +41,5 @@ internal  static  class DbContextExtensions
             app.Logger.LogError(exception, "An exception occurred while starting the application: {Message}", exception.Message);
             throw ;
         }
-    }
+    }*/
 }

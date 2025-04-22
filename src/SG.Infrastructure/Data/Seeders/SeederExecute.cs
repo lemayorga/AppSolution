@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using SG.Domain.Security.Entities;
 using SG.Infrastructure.Data.Context;
 using SG.Shared.Helpers;
+using SG.Shared.Settings;
 
 namespace SG.Infrastructure.Data.Seeders;
 
@@ -10,7 +11,6 @@ public partial class SeederExecute
 {
     private readonly IConfiguration configuration;
     private ApplicationDbContext context;
-    private const string APP_SEEDERS = "DataApplicationSeeders";
     
     private SeederExecute(IConfiguration _configuration, ApplicationDbContext _context)
     {
@@ -21,9 +21,9 @@ public partial class SeederExecute
     public static async Task SeedAsync(ApplicationDbContext context, IConfiguration configuration)
     {
         SeederExecute seederExec = new(configuration, context);
-        DataApplication seedersConfig = new();
+        DataApplicationSeedersSettings seedersConfig = new();
         
-        seederExec.configuration.GetSection(APP_SEEDERS).Bind(seedersConfig);
+        seederExec.configuration.GetSection(NamesApplicationSettings.DataApplicationSeeders).Bind(seedersConfig);
 
         if(seedersConfig.Execute)
         {
@@ -31,7 +31,7 @@ public partial class SeederExecute
         }
     }
 
-    private async Task InsertDataInitial(DataApplication seedersConfig)
+    private async Task InsertDataInitial(DataApplicationSeedersSettings seedersConfig)
     {
         try
         {

@@ -1,11 +1,12 @@
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
-namespace SG.API.Extensions;
+namespace SG.API.Configuration;
 
-internal static class SwaggerExtensions
+internal static class SwaggerConfig
 {
     internal static IServiceCollection AddSwaggerConfigurationOpenApi(this IServiceCollection services)
     {
@@ -13,27 +14,25 @@ internal static class SwaggerExtensions
 
         services.AddSwaggerGen(swaggerOptions =>
         {
-           // swaggerOptions.OperationFilter<SwaggerDefaultValuesFilter>()
+           
 
-          /*  swaggerOptions.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+           swaggerOptions.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Description =
                     "JWT Authorization Header - utilizado com Bearer Authentication.\r\n\r\n" +
-                    "Digite 'Bearer' [espaço] e então seu token no campo abaixo.\r\n\r\n" +
+                    "Escriba 'Bearer' [espacio] y, a continuación, su ficha en el campo siguiente .\r\n\r\n" +
                     "Exemplo (informar sem as aspas): 'Bearer 12345abcdef'",
-                Name = "Authorization",
+                Name = "JWT Authentication",
                 In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer",
+                Type = SecuritySchemeType.Http,
+                Scheme = JwtBearerDefaults.AuthenticationScheme,
                 BearerFormat = "JWT"
-            })*/
+            });
 
-         // swaggerOptions.OperationFilter<FromQueryDictionaryFilter>()
+         // swaggerOptions.OperationFilter<FromQueryDictionaryFilter>();
 
             swaggerOptions.ExampleFilters();
            
-
-
             swaggerOptions.SwaggerDoc("v1", new OpenApiInfo()
             {
                 Title = "SG API Documentation",
@@ -62,6 +61,8 @@ internal static class SwaggerExtensions
                 }
             });
 
+            swaggerOptions.OperationFilter<Filters.SwaggerDefaultValuesFilter>();
+            
             swaggerOptions.ResolveConflictingActions(apiDescription => apiDescription.FirstOrDefault());
 
             // Set the comments path for the Swagger JSON and UI.

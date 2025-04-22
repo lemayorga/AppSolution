@@ -29,7 +29,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddDependencyInjection(builder.Configuration);
+builder.Services.AddDependencyInjection(builder.Configuration)
+                .AddOptionsSettings(builder.Configuration);
 
 
 builder.Services.AddSwaggerConfigurationOpenApi();
@@ -39,8 +40,9 @@ await builder.Services.EnsureSeedData(builder.Configuration);
 builder.ConfigureSerilog(builder.Configuration);
 
 
- builder.Services.AddSerilog(); // <-- add this
+builder.Services.AddSerilog(); // <-- add this
 var app = builder.Build();
+
 
 
 // 👇 This add the Authentication Middleware
@@ -61,6 +63,17 @@ app.MapGet("/private", () => "Private Hello World!")
 // Usar CORS
 app.UseCors(AllowOrigins);
 
+
+// global error handler
+app.UseMiddleware<SG.API.Middlewares.ErrorHandlerMiddleware>();
+
+// custom jwt auth middleware
+app.UseMiddleware<SG.API.Middlewares.AuthorizationHanlderMiddleware>();
+
+// global error handler
+//app.UseMiddleware<SG.API.Middlewares.HttpLoggingMiddleware>();
+
+
 app.AddSwaggerConfigurationUI();
 
 app.UseHttpsRedirection();
@@ -76,7 +89,7 @@ app.MapControllers();
 
 app.UseSerilogRequestLogging();
 
-await app.ExecuteInformationDataBase();
+//await app.ExecuteInformationDataBase();
 
 app.Logger.LogInformation("----- Application started...");
 await app.RunAsync();

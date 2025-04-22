@@ -4,6 +4,7 @@ using SG.Application.Bussiness.Security.Dtos;
 using SG.Application.Bussiness.Security.Interfaces;
 using SG.Application.Responses;
 using SG.Infrastructure.Auth.JwtAuthentication.Models;
+using SG.Infrastructure.Auth.Services;
 
 namespace SG.API.Controllers.Security;
 
@@ -13,11 +14,21 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _application;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IPrincipalCurrentUser _principal2;
+    private readonly Infrastructure.Auth.JwtAuthentication.IJwtBuilder _jwtBuilder;  
 
-    public AuthController(IAuthService application, IHttpContextAccessor httpContextAccessor) 
+    public AuthController
+    (
+        IAuthService application, 
+        IHttpContextAccessor httpContextAccessor,
+        Infrastructure.Auth.JwtAuthentication.IJwtBuilder jwtBuilder,
+        IPrincipalCurrentUser principal
+    ) 
     {
         _application = application;
         _httpContextAccessor = httpContextAccessor;
+        _jwtBuilder = jwtBuilder;
+        _principal2  = principal;
     }
 
     /// <summary>
@@ -26,11 +37,11 @@ public class AuthController : ControllerBase
     /// <param name="request">Datos para iniciar sesión</param>   
     [AllowAnonymous]
     [HttpPost("login")]
-    [ProducesResponseType(typeof(OperationResult<UserCreateDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(OperationResult<UserCreateDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Login([FromBody] LoginDto request)
     {
         if(!ModelState.IsValid) {  return BadRequest();  }
-        var response = await _application.Authenticate(request);
+        var response = await _application.Login(request);
         return Ok(response.ToOperationResult());
     }
 
@@ -39,16 +50,32 @@ public class AuthController : ControllerBase
     /// </summary>
     /// <param name="tokenResponse"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpPost("refreshToken")]
-    [ProducesResponseType(typeof(OperationResult<UserCreateDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(OperationResult<UserCreateDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> RefreshToken(RefreshTokenModel tokenResponse)
     {
         var newAccessToken = await _application.RefreshToken(tokenResponse);
-        if(newAccessToken?.Errors?.Any() ?? false){
+        if(newAccessToken?.Errors?.Any() ?? false)
+        {
             return Unauthorized();
         }
         return Ok(newAccessToken?.ToOperationResult());
     }   
+
+    /// <summary>
+    /// Logout
+    /// </summary>
+    /// <returns></returns>
+    [Authorize]
+    [HttpPost("logout")]
+    [ProducesResponseType(typeof(OperationResult<UserCreateDto>), StatusCodes.Status200OK)]    
+    public async Task<IActionResult> Logout()  // https://code-maze.com/using-refresh-tokens-in-asp-net-core-authentication/ para el angular
+    {
+        var result = await _application.Logout(_principal2.User!.Id);
+        Response.HttpContext.Items.Remove("idUser");
+        return Ok(result.ToOperationResult());
+    }
 }
 
 
@@ -56,3 +83,5 @@ public class AuthController : ControllerBase
 // https://github.com/persteenolsen/dotnet-8-jwt-refresh-auth-api/blob/main/Authorization/JwtMiddleware.cs
 // https://www.c-sharpcorner.com/article/implementing-jwt-refresh-tokens-in-net-8-0/
 // https://www.youtube.com/watch?v=DzBwfoKnmhk
+// https://github.com/abolfazlSadeqi/DotNetCleanArchitectureJwtRedisDistributedCaching/blob/master/Src/UI/PublicApi/Controllers/Admin/RolesController.cs
+// https://dev.to/isaacojeda/part-aspnet-identity-core-y-jwt-1l84

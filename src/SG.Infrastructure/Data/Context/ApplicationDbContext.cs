@@ -1,8 +1,10 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using SG.Domain.Commun.Entities;
 using SG.Domain.Security.Entities;
+using SG.Shared.Settings;
 using Action = SG.Domain.Security.Entities.Action;
 using Module = SG.Domain.Security.Entities.Module;
 
@@ -11,16 +13,22 @@ namespace SG.Infrastructure.Data.Context;
 public sealed class ApplicationDbContext : DbContext
 {
     private readonly IConfiguration _configuration;
-
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options)
+    private readonly AppSettings _settings;
+    
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration, IOptions<AppSettings> settings) : base(options)
     {
         _configuration = configuration;     
+        _settings =  settings.Value;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.LogTo(Console.WriteLine).EnableSensitiveDataLogging();
+
+        if(_settings.EnableLoggingEntityFrameworkCore)
+        {
+            optionsBuilder.LogTo(Console.WriteLine).EnableSensitiveDataLogging();
+        }
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
