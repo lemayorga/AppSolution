@@ -60,10 +60,22 @@ public class UserController : BaseController<UserDto, UserCreateDto, UserUpdateD
     /// </summary>
     /// <param name="request">Objeto con los datos a insertar</param>    
     [HttpPost("")]
-    [ProducesResponseType(typeof(OperationResult<UserCreateDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(OperationResult<UserDto>), StatusCodes.Status201Created)]
     public override async Task<IActionResult> Post([FromBody] UserCreateDto request)
     {
         var response = await _application.AddSave(request);
+        return Ok(response.ToOperationResult());
+    }
+
+    /// <summary>
+    /// Agrega lista de nuevos registros
+    /// </summary>
+    /// <param name="request">Objeto con los datos a insertar</param>    
+    [HttpPost("addMany")]
+    [ProducesResponseType(typeof(OperationResult<List<UserDto>>), StatusCodes.Status201Created)]
+    public async Task<IActionResult> PostMany([FromBody] List<UserCreateDto> request)
+    {
+        var response = await _application.AddManySave(request);
         return Ok(response.ToOperationResult());
     }
 

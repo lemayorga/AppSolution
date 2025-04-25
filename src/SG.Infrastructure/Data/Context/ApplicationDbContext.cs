@@ -27,7 +27,11 @@ public sealed class ApplicationDbContext : DbContext
 
         if(_settings.EnableLoggingEntityFrameworkCore)
         {
-            optionsBuilder.LogTo(Console.WriteLine).EnableSensitiveDataLogging();
+            bool enableSensitiveDataLoggingEF =  _settings.EnableSensitiveDataLoggingEntityFrameworkCore;
+            
+            optionsBuilder
+                .LogTo(Console.WriteLine)
+                .EnableSensitiveDataLogging(enableSensitiveDataLoggingEF);
         }
     }
     

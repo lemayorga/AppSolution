@@ -99,13 +99,25 @@ public class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> wh
         return await query.Skip(skip).Take(take).ToListAsync();
     }
 
+    public virtual void Update(TEntity entity)
+    {
+        _context!.Entry(entity).CurrentValues.SetValues(entity);
+    }
+
+    public virtual async Task<TEntity>  UpdateAndSave(TEntity entity)
+    {
+        _context!.Entry(entity).CurrentValues.SetValues(entity);
+        await SaveChangesAsync();
+        return entity;
+    }
+
     public virtual async Task<bool> UpdateById(int id, TEntity entity)
     {
         TEntity? _entity = await GetById(id);
         if (_entity != null)
         {
              _context.Entry(_entity).CurrentValues.SetValues(entity);
-            return await SaveChangesAsync();
+            return true;
         }
         return false;
     }
@@ -120,6 +132,7 @@ public class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> wh
         }
         return _entity;
     }
+
 
     public virtual async Task<bool> UpdateOne(Expression<Func<TEntity, bool>> where, TEntity entity)
     {

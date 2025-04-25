@@ -14,6 +14,8 @@ public interface IBaseGenericRepository<TEntity> where TEntity : class
      Task<TEntity?> GetOne(Expression<Func<TEntity, bool>>? where = null);
      IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>>? where = null, Action<IQueryable<TEntity>>? orderBy = null, Action<IQueryable<TEntity>>? includes = null);
      Task<IEnumerable<TEntity>> GetPaginate(int skip, int take, Expression<Func<TEntity, bool>>? where = null, Action<IQueryable<TEntity>>? orderBy = null, Action<IQueryable<TEntity>>? includes = null);
+     void Update(TEntity entity);
+     Task<TEntity>  UpdateAndSave(TEntity entity);
      Task<bool> UpdateById(int id, TEntity entity);
      Task<TEntity?> UpdateByIdSave(int id, TEntity entity);
      Task<bool> UpdateOne(Expression<Func<TEntity, bool>> where, TEntity entity);

@@ -15,9 +15,9 @@ public class RoleDto
 public class RoleCreateDto 
 {
     [Required]
-    public string CodeRol { get; set; } = string.Empty;
+    public required string CodeRol { get; set; } = string.Empty;
     [Required]
-    public string Name { get; set; }  = string.Empty;
+    public required string Name { get; set; }  = string.Empty;
 }
 
 public class RoleUpdateDto  : RoleCreateDto
