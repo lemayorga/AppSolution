@@ -65,28 +65,28 @@ public abstract class BaseFunctionalTest : IClassFixture<FunctionalTestWebAppFac
         return (response, responseResult);
     }
 
-    protected async Task<(HttpResponseMessage, OperationResult<T>)> PutRequest<T>(string requestUri, object? data) 
+    protected async Task<(HttpResponseMessage, OperationResult<T>)> PutRequest<T>(string requestUri, object? data = null)  
     {
         var response = await _client.PutAsync(requestUri ,GetJsonStringContent(data));
         var responseResult = await response.GetAndDeserialize<T>();
         return (response, responseResult);
     }
 
-    protected async Task<(HttpResponseMessage, OperationResult<T>)> PutRequest<T>(Uri requestUri, object? data) 
+    protected async Task<(HttpResponseMessage, OperationResult<T>)> PutRequest<T>(Uri requestUri, object? data = null)  
     {
         var response = await _client.PutAsync(requestUri ,GetJsonStringContent(data));
         var responseResult = await response.GetAndDeserialize<T>();
         return (response, responseResult);
     }
 
-    protected async Task<(HttpResponseMessage, OperationResult<T>)> PathRequest<T>(string requestUri, object? data) 
+    protected async Task<(HttpResponseMessage, OperationResult<T>)> PathRequest<T>(string requestUri, object? data = null) 
     {
         var response = await _client.PatchAsync(requestUri , GetJsonStringContent(data));
         var responseResult = await response.GetAndDeserialize<T>();
         return (response, responseResult);
     }
 
-    protected async Task<(HttpResponseMessage, OperationResult<T>)> PathRequest<T>(Uri requestUri, object? data) 
+    protected async Task<(HttpResponseMessage, OperationResult<T>)> PathRequest<T>(Uri requestUri, object? data = null) 
     {
         var response = await _client.PatchAsync(requestUri , GetJsonStringContent(data));
         var responseResult = await response.GetAndDeserialize<T>();

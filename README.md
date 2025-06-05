@@ -61,6 +61,10 @@ dotnet test -v:detailed --consoleLoggerParameters:ErrorsOnly --no-build
 - Ejecutar los test, especicificado:
 ```
 dotnet test --filter=SG.API.Tests.Controllers.Commun.CatalogueController.Post
+            -v:detailed 
+            --consoleLoggerParameters:ErrorsOnly 
+            --no-build
+
 ```
 
 3. **Acceder desde el navegador:**

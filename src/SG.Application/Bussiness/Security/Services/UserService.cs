@@ -87,10 +87,14 @@ public class UserService : BaseGenericService<User, UserDto, UserCreateDto, User
         if(user is null)
         {
             return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
-        }   
+        }  
+
         user.Username = modelDto.Username.Trim();
+        user.Email = modelDto.Email.Trim();
         user.Firstname = modelDto.Firstname.Trim();
         user.Lastname = modelDto.Lastname.Trim();
+        user.IsLocked = modelDto.IsLocked;
+        user.IsActive = modelDto.IsActive;
         var result = await _unitOfWork.UserRepository.UpdateAndSave(user);
 
         return Result.Ok(_mapper.Map<UserDto>(result));   
@@ -98,34 +102,26 @@ public class UserService : BaseGenericService<User, UserDto, UserCreateDto, User
 
     public async Task<Result<bool>> ChangePassword(UserChangePassword model)
     {
-        try
-        {
-            var (userName, currentPassword, newPassword) = model;
-            var userResult =  (model.EvaluateEmail.HasValue && model?.EvaluateEmail == true)
+        var (userName, currentPassword, newPassword) = model;
+        var userResult =  (model.EvaluateEmail.HasValue && model?.EvaluateEmail == true)
                             ?  (await _unitOfWork.UserRepository.FilterByUserNameOrEmail(userName))
                             :  (await _unitOfWork.UserRepository.FilterByUserName(userName));
 
-            if (!userResult.Any() )
-            {
-                return Result.Fail<bool>(MESSAGE_CONSTANTES.VALIDATION_USER_DOESNT_EXIST);
-            }
-            
-            var user = userResult.ElementAt(0);
-            bool resultComparePassword = EncryptionUtils.Verify(user.Password, currentPassword);
-            if(!resultComparePassword)
-            {
-                return Result.Fail<bool>(MESSAGE_CONSTANTES.VALIDATION_CURRENT_PASSWORD_NOT_MATCH);
-            }
-
-            string newPasswordHash = EncryptionUtils.HashText(newPassword);      
-            var result = await _unitOfWork.UserRepository.UpdatePasswordHash(user.Id, newPasswordHash);
-            return Result.Ok(result);
-        }
-        catch (Exception ex)
+        if (!userResult.Any() )
         {
-            _logger.LogError(ex, ex.Message);
-            return Result.Fail(ex.Message);
-        }    
+          return Result.Fail<bool>(MESSAGE_CONSTANTES.VALIDATION_USER_DOESNT_EXIST);
+        }
+            
+       var user = userResult.ElementAt(0);
+       bool resultComparePassword = EncryptionUtils.Verify(user.Password, currentPassword);
+       if(!resultComparePassword)
+       {
+          return Result.Fail<bool>(MESSAGE_CONSTANTES.VALIDATION_CURRENT_PASSWORD_NOT_MATCH);
+       }
+
+        string newPasswordHash = EncryptionUtils.HashText(newPassword);      
+        var result = await _unitOfWork.UserRepository.UpdatePasswordHash(user.Id, newPasswordHash);
+        return Result.Ok(result);  
    }
 
     public async Task<Result<bool>> UpdateStatusIsLocked(int idUser, bool newStatusLocked)

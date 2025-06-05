@@ -49,7 +49,6 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 
-
 // 👇 This add the Authentication Middleware
 app.UseAuthentication();
 // 👇 This add the Authorization Middleware
