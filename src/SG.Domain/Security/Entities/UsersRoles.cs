@@ -1,8 +1,8 @@
-using SG.Domain;
+using SG.Domain.Base;
 
 namespace SG.Domain.Security.Entities;
 
-public class UsersRoles : Entity
+public class UsersRoles : BaseEntity<int>
 {
     public int IdUser { get; set; }    
     public int IdRol { get; set; }   

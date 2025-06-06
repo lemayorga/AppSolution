@@ -14,7 +14,7 @@ namespace SG.Infrastructure.Data.Mappings;
             builder.Property(c => c.Name).HasMaxLength(DataSchemaConstants.DEFAULT_LENGTH_NAMES).IsRequired();
             builder.Property(c => c.Description).HasMaxLength(DataSchemaConstants.DEFAULT_MAX_LENGTH_TEXT).IsRequired();
             builder.Property(c => c.IdParentModule).IsRequired(false);
-            builder.Property(c => c.State).IsRequired().HasDefaultValue(true);
+            builder.Property(c => c.IsActive).IsRequired().HasDefaultValue(true);
 
 
             builder.HasMany(e => e.ChildrenModules)

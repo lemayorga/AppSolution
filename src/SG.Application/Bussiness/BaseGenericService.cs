@@ -5,12 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SG.Application.Responses;
 using SG.Domain;
+using SG.Domain.Base;
 using SG.Shared.Constants;
 
 namespace SG.Application.Bussiness;
 
 public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> : IBaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate>
-    where TEntity : class , IEntity
+    where TEntity : BaseEntity<int>  //class , IEntity
     where TDtoRecord : class
     where TDtoCreate : class
     where TDtoUpdate : class
@@ -75,7 +76,8 @@ public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> :
     public virtual async Task<Result<TDtoRecord>> UpdateById(int id, TDtoUpdate modelDto)
     {
         var entity = _mapper.Map<TEntity>(modelDto);
-        entity.Id  = entity.Id == 0 ?  id : entity.Id;
+        entity.SetIdIfIsDefaultValue(id);
+
         var result = await _unitOfWork.Repository<TEntity>().UpdateByIdSave(id, entity);
         if(result == null)
         {

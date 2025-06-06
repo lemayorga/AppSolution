@@ -12,6 +12,6 @@ public class ActionMap : IEntityTypeConfiguration<Action>
         builder.ToTable("Action");
         builder.Property(c => c.Id);
         builder.Property(c => c.Name).HasMaxLength(DataSchemaConstants.DEFAULT_LENGTH_EXTRA_SMALL_TEXT).IsRequired();
-        builder.Property(c => c.State).IsRequired().HasDefaultValue(true);
+        builder.Property(c => c.IsActive).IsRequired().HasDefaultValue(true);
     }
 }

@@ -1,13 +1,13 @@
-using SG.Domain;
+using SG.Domain.Base;
 
 namespace SG.Domain.Security.Entities;
 
 
-public class Role  : Entity
+public class Role : BaseEntity<int>
 {
-    public required string CodeRol { get; set; }
-    public required string Name { get; set; }
+    public  string CodeRol { get; set; }  = default!;
+    public  string Name { get; set; } = default!;
     
-    public required bool IsActive { get; set; }
+    public  bool IsActive { get; set; }
     public ICollection<UsersRoles>? UsersRoles { get; set; }
 }

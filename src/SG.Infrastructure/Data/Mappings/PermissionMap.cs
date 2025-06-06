@@ -13,7 +13,7 @@ public class PermissionMap : IEntityTypeConfiguration<Permission>
         builder.Property(c => c.IdRol).IsRequired();
         builder.Property(c => c.IdAction).IsRequired();
         builder.Property(c => c.IdModule).IsRequired();
-        builder.Property(c => c.State).IsRequired().HasDefaultValue(true);
+        builder.Property(c => c.IsActive).IsRequired().HasDefaultValue(true);
 
         builder.HasOne(u => u.Action)
             .WithMany(u => u.Permissions)

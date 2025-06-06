@@ -1,14 +1,14 @@
-using SG.Domain;
+using SG.Domain.Base;
 
 namespace SG.Domain.Security.Entities;
 
-public class User  : Entity
+public class User  : BaseEntity<int>
 {
-    public required string Username { get; set; }
-    public required string Email { get; set; }
-    public required string Firstname { get; set; }
-    public required string Lastname { get; set; } 
-    public required string Password { get; set; }            
+    public string Username { get; set; }  = default!;
+    public string Email { get; set; }  = default!;
+    public string Firstname { get; set; }  = default!;
+    public string Lastname { get; set; }   = default!;
+    public string Password { get; set; }       = default!;       
     public bool IsActive { get; set; }
     public bool IsLocked { get; set; }
     public ICollection<UsersRoles>? UsersRoles { get; set; }

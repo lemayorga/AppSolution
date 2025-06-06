@@ -1,8 +1,8 @@
-using SG.Domain;
+using SG.Domain.Base;
 
 namespace SG.Domain.Security.Entities;
 
-public class PasswordPolicy  : Entity
+public class PasswordPolicy  : BaseEntity<int>
 { 
     public int MinimumDigits { get; set; }   // MinimoDigitos
     public bool RequiredLowercase { get; set; }   // MinusculaRequerida

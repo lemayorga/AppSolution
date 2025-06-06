@@ -1,11 +1,10 @@
 using FluentResults;
-using SG.Application.Responses;
-using SG.Domain;
+using SG.Domain.Base;
 
 namespace SG.Application.Bussiness;
 
 public interface  IBaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate>
-    where TEntity : class , IEntity
+    where TEntity : BaseEntity<int>  //class , IEntity
     where TDtoRecord : class
     where TDtoCreate : class
     where TDtoUpdate : class

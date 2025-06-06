@@ -1,12 +1,27 @@
-using System;
+using SG.Domain.Base;
 
 namespace SG.Domain.Security.Entities;
 
-public class Action : Entity
+public class Action : BaseEntity<int>
 {
     public string Name { get; set; } = string.Empty;
 
-    public bool State { get; set; }
+    public bool IsActive { get; set; }
 
-    public ICollection<Permission> Permissions { get; set; } = new List<Permission>();
+    public ICollection<Permission> Permissions { get; set; } = [];
+
+    public Action() { }
+
+    public Action(string name, bool isActive)
+    {
+        Name = name;
+        IsActive = isActive;
+    }
+
+    public Action(string name, bool isActive, IList<Permission> permissions)
+    {
+        Name = name;
+        IsActive = isActive;
+        Permissions = permissions;
+    }
 }

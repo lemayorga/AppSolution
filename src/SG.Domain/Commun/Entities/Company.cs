@@ -1,11 +1,34 @@
-using SG.Domain;
+using SG.Domain.Base;
 
 namespace SG.Domain.Commun.Entities;
 
-public class Company : Entity
+public class Company : BaseEntity<int>
 {
-    public required string Name { get; set; }
-    public required bool IsActive { get; set; }
-    public int? IdMayorCompany { get; set; }   
-    public Company? MayorCompany { get; set; }   
+    public string Name { get; set; } = default!;
+    public bool IsActive { get; set; } = default!;
+    public int? IdMayorCompany { get; set; }
+    public Company? MayorCompany { get; set; }
+
+    public Company() { }
+
+    public Company(string name, bool isActive)
+    {
+        Name = name;
+        IsActive = isActive;
+    }
+
+    public Company(string name, bool isActive, int idMayorCompany)
+    {
+        Name = name;
+        IsActive = isActive;
+        IdMayorCompany = idMayorCompany;
+    }
+
+    public Company(string name, bool isActive, int idMayorCompany, Company mayorCompany)
+    {
+        Name = name;
+        IsActive = isActive;
+        IdMayorCompany = idMayorCompany;
+        MayorCompany = mayorCompany;
+    }
 }

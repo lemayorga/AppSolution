@@ -1,6 +1,8 @@
+using SG.Domain.Base;
+
 namespace SG.Domain.Security.Entities;
 
-public class UsersToken  : Entity
+public class UsersToken  : BaseEntity<int>
 {
     public int IdUser { get; set; }    
     public string RefreshToken { get; set; }
@@ -13,7 +15,6 @@ public class UsersToken  : Entity
         RefreshToken = refreshToken;
         RefreshTokenExpiry = refreshTokenExpiry;
     }
-
 
     public UsersToken(int id, int idUser,string refreshToken,DateTime refreshTokenExpiry)
     {

@@ -12,6 +12,7 @@ public class UnitOfWork : IUnitOfWork
     
     #region Commun
     public ICatalogueRepository CatalogueRepository { get; }
+    
     #endregion
 
     #region Security
@@ -20,6 +21,7 @@ public class UnitOfWork : IUnitOfWork
     public IRoleRepository RoleRepository { get; }
     public IUserRepository UserRepository { get; }
     public IUsersRolesRepository UsersRolesRepository { get; }
+    
     #endregion
 
     public UnitOfWork
@@ -31,10 +33,11 @@ public class UnitOfWork : IUnitOfWork
         IRoleRepository _roleRepository,
         IUserRepository _userRepository,
         IUsersRolesRepository _usersRolesRepository
-    ) {
+    )
+    {
         _context = context;
         CatalogueRepository = _catalogueRepository;
-        PasswordHistoryRepository =_passwordHistoryRepository;
+        PasswordHistoryRepository = _passwordHistoryRepository;
         PasswordPolicyRepository = _passwordPolicyRepository;
         RoleRepository = _roleRepository;
         UserRepository = _userRepository;
