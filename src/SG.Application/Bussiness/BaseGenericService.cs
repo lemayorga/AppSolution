@@ -9,11 +9,12 @@ using SG.Shared.Constants;
 
 namespace SG.Application.Bussiness;
 
-public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> : IBaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate>
-    where TEntity : class , IEntity
-    where TDtoRecord : class
-    where TDtoCreate : class
-    where TDtoUpdate : class
+public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> 
+             : IBaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate>
+                where TEntity : class , IEntity
+                where TDtoRecord : class
+                where TDtoCreate : class
+                where TDtoUpdate : class
 {
     protected readonly IUnitOfWork _unitOfWork;
     protected readonly IMapper _mapper;
@@ -72,6 +73,13 @@ public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> :
         return Result.Ok(result);         
     }
 
+    public virtual async Task<Result<TDtoRecord>> UpdateAndSave(TDtoUpdate modelDto)
+    {
+        var entity = _mapper.Map<TEntity>(modelDto);
+        var result = await _unitOfWork.Repository<TEntity>().UpdateAndSave(entity);            
+        return Result.Ok(_mapper.Map<TDtoRecord>(result));        
+    }
+
     public virtual async Task<Result<TDtoRecord>> UpdateById(int id, TDtoUpdate modelDto)
     {
         var entity = _mapper.Map<TEntity>(modelDto);
@@ -79,7 +87,7 @@ public   class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> :
         var result = await _unitOfWork.Repository<TEntity>().UpdateByIdSave(id, entity);
         if(result == null)
         {
-                return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
+            return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
         }            
         return Result.Ok(_mapper.Map<TDtoRecord>(result));        
     }

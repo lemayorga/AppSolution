@@ -51,7 +51,20 @@ dotnet watch  --project  "src/SG.API"
 
 - Con docker:
 ```
-docker compose up --build --force-recreate
+docker compose up --build --force-recreate 
+```
+
+- Ejecutar los test:
+```
+dotnet test -v:detailed --consoleLoggerParameters:ErrorsOnly --no-build
+```
+- Ejecutar los test, especicificado:
+```
+dotnet test --filter=SG.API.Tests.Controllers.Commun.CatalogueController.Post
+            -v:detailed 
+            --consoleLoggerParameters:ErrorsOnly 
+            --no-build
+
 ```
 
 3. **Acceder desde el navegador:**

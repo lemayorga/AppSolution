@@ -1,4 +1,3 @@
-using SG.API.Extensions;
 using SG.API.Configuration;
 using Serilog;
 
@@ -40,10 +39,15 @@ await builder.Services.EnsureSeedData(builder.Configuration);
 builder.ConfigureSerilog(builder.Configuration);
 
 
-builder.Services.AddSerilog(); // <-- add this
+builder.Services.AddSerilog(); 
+
+
+builder.Services.AddExceptionHandler<SG.API.Middlewares.GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
-
+app.UseExceptionHandler();
 
 // 👇 This add the Authentication Middleware
 app.UseAuthentication();
@@ -51,21 +55,18 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 
-// 👇 The routes / and /public allow anonymous requests
-app.MapGet("/", () => "Hello World!");
-app.MapGet("/public", () => "Public Hello World!")
-	.AllowAnonymous();
+// // 👇 The routes / and /public allow anonymous requests
+// app.MapGet("/", () => "Hello World!");
+// app.MapGet("/public", () => "Public Hello World!")
+// 	.AllowAnonymous();
 
-// 👇 The routes /private require authorized request
-app.MapGet("/private", () => "Private Hello World!")
-	.RequireAuthorization();   
+// // 👇 The routes /private require authorized request
+// app.MapGet("/private", () => "Private Hello World!")
+// 	.RequireAuthorization();   
 
 // Usar CORS
 app.UseCors(AllowOrigins);
 
-
-// global error handler
-app.UseMiddleware<SG.API.Middlewares.ErrorHandlerMiddleware>();
 
 // custom jwt auth middleware
 app.UseMiddleware<SG.API.Middlewares.AuthorizationHanlderMiddleware>();
@@ -88,6 +89,12 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseSerilogRequestLogging();
+
+
+app.Use(next => context => {
+    context.Request.EnableBuffering();
+    return next(context);
+});
 
 //await app.ExecuteInformationDataBase();
 

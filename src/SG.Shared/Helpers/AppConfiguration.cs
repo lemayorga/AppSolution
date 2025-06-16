@@ -1,36 +1,63 @@
 using Microsoft.Extensions.Configuration;
-
+using SG.Shared.Settings;
 namespace SG.Shared.Helpers;
 
 public class AppConfiguration
 {
-    public IConfigurationRoot ConfigurationRoot { get; }
-
-    public AppConfiguration(string? fileName = null)
+    private IConfiguration _configurationRoot;
+    public IConfiguration ConfigurationRoot
     {
-        // Construye el ConfigurationRoot desde el archivo appsettings.json
-        fileName ??= "appsettings.json";
-        var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory()) // Establece el directorio base para el archivo JSON
-            .AddJsonFile(fileName, optional: false, reloadOnChange: true); // Carga el archivo JSON
-
-        ConfigurationRoot = builder.Build();
+        get { return _configurationRoot; }
     }
 
-    public AppConfiguration(string directorio,string fileName)
-    {
-        // Construye el ConfigurationRoot desde el archivo appsettings.json
-        fileName ??= "appsettings.json";
-        var builder = new ConfigurationBuilder()
-            .SetBasePath(directorio) // Establece el directorio base para el archivo JSON
-            .AddJsonFile(fileName, optional: false, reloadOnChange: true); // Carga el archivo JSON
+    public AppConfiguration() =>
+        _configurationRoot = ReadFileSetting(string.Empty);
 
-        ConfigurationRoot = builder.Build();
+    public AppConfiguration(string fileName, string? path = null)  =>
+        _configurationRoot = ReadFileSetting(fileName, path);
+
+    public AppConfiguration(IConfigurationRoot configuration) =>
+        _configurationRoot = configuration;
+
+    public AppConfiguration(IConfiguration configuration) =>
+        _configurationRoot = configuration;
+
+    public static void AddFileConfiguration(IConfigurationManager configuration,string path, string fileName)
+    {
+        configuration.SetBasePath(path)
+                    .AddJsonFile(fileName, optional: false, reloadOnChange: true);
+    }
+    public AppSettings GetAppSettings()
+    {
+        return this.GetSectionAsObject<AppSettings>(NamesApplicationSettings.ApplicationSettings);
     }
 
-    public static void AddFileConfiguration(IConfigurationManager configuration,string directorio, string fileName)
+    public T GetSectionAsObject<T>(string? sectionName = null) where T : new() 
     {
-        configuration.SetBasePath(directorio)
-                         .AddJsonFile(fileName, optional: false, reloadOnChange: true);
+        T resultModel = new();
+        if(string.IsNullOrWhiteSpace(sectionName))
+        {
+            ConfigurationRoot.Bind(resultModel);
+        }
+        else 
+        {
+            ConfigurationRoot.GetSection(sectionName).Bind(resultModel);
+        }
+        
+        return resultModel;
+    }
+
+    private IConfigurationRoot ReadFileSetting(string fileName, string? path = null)
+    {
+        path ??= Directory.GetCurrentDirectory();
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(path); // Establece el directorio base para el archivo JSON
+        
+        if(!string.IsNullOrWhiteSpace(fileName))
+        {
+            builder.AddJsonFile(fileName, optional: false, reloadOnChange: true); // Carga el archivo JSON
+        }
+
+        return builder.Build();
     }
 }
