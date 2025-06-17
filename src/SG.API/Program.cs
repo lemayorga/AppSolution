@@ -1,6 +1,7 @@
 using SG.API.Extensions;
 using SG.API.Configuration;
 using Serilog;
+using FluentValidation;
 
 const string AllowOrigins = "AllowAllOrigins";
 
@@ -31,6 +32,11 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDependencyInjection(builder.Configuration)
                 .AddOptionsSettings(builder.Configuration);
+
+
+// // Register all validators from assembly
+// // builder.Services.AddValidatorsApplication();
+// builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
 
 builder.Services.AddSwaggerConfigurationOpenApi();

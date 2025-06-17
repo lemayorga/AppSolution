@@ -6,6 +6,7 @@ using SG.Domain.Security.Repositories;
 using SG.Infrastructure.Data;
 using SG.Infrastructure.Data.Config;
 using SG.Infrastructure.Data.Context;
+using SG.Infrastructure.Data.Repositories;
 using SG.Infrastructure.Data.Repositories.Commun;
 using SG.Infrastructure.Data.Repositories.Security;
 using SG.Infrastructure.DatabaseFlavor;
@@ -40,10 +41,10 @@ public static class DatabaseDependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services) 
     {
         services.AddScoped<ApplicationDbContext>()
-                .AddScoped<IUnitOfWork, UnitOfWork>();      
-        
+                .AddScoped<IUnitOfWork, UnitOfWork>();        
+  
         #region Commun
-        
+
         services.AddScoped<ICatalogueRepository, CatalogueRepository>();       
 
         #endregion
@@ -59,8 +60,8 @@ public static class DatabaseDependencyInjection
                 .AddScoped<IPermissionRepository, PermissionRepository>()
                 .AddScoped<IUsersRolesRepository, UsersRolesRepository>();     
         #endregion
- 
-        
+
+    
         return services;
     }
 }

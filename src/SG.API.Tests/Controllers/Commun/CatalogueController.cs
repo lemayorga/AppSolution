@@ -1,7 +1,9 @@
 using System.Net;
 using SG.API.Tests.Abstractions;
-using SG.Application.Bussiness.Commun.Dtos;
+using SG.Application.Behaviours.Commun.Catalogue;
+using SG.Application.Bussiness.Commun.Catalogues.Requests;
 using SG.Shared.Extensions;
+using SG.Shared.Responses;
 using Xunit.Extensions.Ordering;
 
 namespace SG.API.Tests.Controllers.Commun;
@@ -13,15 +15,15 @@ public class CatalogueController : BaseFunctionalTest
 
     public CatalogueController(FunctionalTestWebAppFactory factory) : base(factory) {  } 
 
-    CatalogueCreateDto [] register = 
+    CatalogueCreateRequest [] register = 
     {
-        new CatalogueCreateDto { Group = "group1", Value = "valor 1", Description = "Demo" },
-        new CatalogueCreateDto { Group = "group1", Value = "valor 2", Description = "Demo" },
-        new CatalogueCreateDto { Group = "group1", Value = "valor 3", Description = "Demo" },
-        new CatalogueCreateDto { Group = "group2", Value = "valor 1", Description = "Demo" },
-        new CatalogueCreateDto { Group = "group2", Value = "valor grupo 2", Description = "Demo" },
-        new CatalogueCreateDto { Group = "group2", Value = "valor grupo 2" },
-        new CatalogueCreateDto { Group = "group3", Value = "valor grupo 3" },
+        new CatalogueCreateRequest { Group = "group1", Value = "valor 1", Description = "Demo" },
+        new CatalogueCreateRequest { Group = "group1", Value = "valor 2", Description = "Demo" },
+        new CatalogueCreateRequest { Group = "group1", Value = "valor 3", Description = "Demo" },
+        new CatalogueCreateRequest { Group = "group2", Value = "valor 1", Description = "Demo" },
+        new CatalogueCreateRequest { Group = "group2", Value = "valor grupo 2", Description = "Demo" },
+        new CatalogueCreateRequest { Group = "group2", Value = "valor grupo 2" },
+        new CatalogueCreateRequest { Group = "group3", Value = "valor grupo 3" },
     };
     IEnumerable<int> listIdsRegister { get => Enumerable.Range(1, register.Length + 1); }
 
@@ -29,7 +31,7 @@ public class CatalogueController : BaseFunctionalTest
     public async Task Post()
     {
         var body = register.First();
-        var (response, responseResult)  = await PostRequest<CatalogueDto>(_url, body);    
+        var (response, responseResult)  = await PostRequest<SuccessWithIdResponse>(_url, body);    
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult);
     }
 
@@ -37,21 +39,21 @@ public class CatalogueController : BaseFunctionalTest
     public async Task PostMany()
     {
         var body = register.Skip(1).ToArray();
-        var (response, responseResult)  = await PostRequest<List<CatalogueDto>>($"{_url}/addMany", body);
+        var (response, responseResult)  = await PostRequest<List<SuccessWithIdResponse>>($"{_url}/addMany", body);
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult); 
     }    
 
     [Fact, Order(2)]
     public async Task Get()
     {
-        var (response, responseResult)  = await GetRequest<CatalogueDto[]>(_url);
+        var (response, responseResult)  = await GetRequest<CatalogueResponse[]>(_url);
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult);
     }
 
     [Theory(), Order(3), CombinatorialData]
     public async Task GetBydId([CombinatorialRange(from: 1, count: 5)]int id)
     {
-        var (response, responseResult)  = await GetRequest<CatalogueDto>($"{_url}/{id}");
+        var (response, responseResult)  = await GetRequest<CatalogueResponse>($"{_url}/{id}");
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult);
         Assert.Equal(id, responseResult!.Value!.Id);    
     }
@@ -61,7 +63,7 @@ public class CatalogueController : BaseFunctionalTest
     {
         var parameters = listIdsRegister.Select(x => $"ids={x}");
         var uri = new Uri(_client.BaseAddress!, $"{_url}/getByListIds?").AddQueryParams(parameters);
-        var (response, responseResult)  = await GetRequest<CatalogueDto[]>(uri);
+        var (response, responseResult)  = await GetRequest<CatalogueResponse[]>(uri);
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult);        
     }
 
@@ -69,17 +71,16 @@ public class CatalogueController : BaseFunctionalTest
     public async Task Put([CombinatorialRange(from: 1, count: 5)]int id)
     {
         var data = register.First();
-        var body  = new CatalogueUpdateDto
+        var body  = new CatalogueUpdateRequest
         {
             Group = data.Group,            
             Value = "Cambio de dato",
             Description = "cambio de dato",
             IsActive = false,
         };
-        var (response, responseResult)  = await PutRequest<CatalogueDto>($"{_url}/{id}", body);
+        var (response, responseResult)  = await PutRequest<SuccessWithIdResponse>($"{_url}/{id}", body);
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult); 
         Assert.Equal(id, responseResult!.Value!.Id);    
-        Assert.Equal(body.Value, responseResult!.Value!.Value);    
     }
 
     [Theory(), Order(6), CombinatorialData]

@@ -5,7 +5,7 @@ using SG.Infrastructure.Data.Context;
 
 namespace SG.Infrastructure.Data.Repositories;
 
-public class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> where TEntity : class
+public  class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> where TEntity : class
 {
     protected readonly ApplicationDbContext _context;
     protected readonly DbSet<TEntity> _entities;
@@ -62,6 +62,21 @@ public class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> wh
         }
         return await _entities.AsNoTracking().FirstOrDefaultAsync();
     }
+    public async Task<TResult?> GetOneWithSelector<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? where = null, Action<IQueryable<TEntity>>? includes = null) 
+    {
+        IQueryable<TEntity> query = _entities.AsNoTracking();
+        if (includes != null)
+        {
+            includes.Invoke(query);
+        }
+        if (where != null)
+        {
+            query = query.Where(where);
+        }
+
+        return await query.Select(selector).FirstOrDefaultAsync();
+    }
+
 
     public virtual IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>>? where = null, Action<IQueryable<TEntity>>? orderBy = null, Action<IQueryable<TEntity>>? includes = null)
     {
@@ -79,6 +94,21 @@ public class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> wh
             orderBy.Invoke(query);
         }
         return query.AsNoTracking();
+    }
+
+    public IQueryable<TResult> GetAllWithSelector<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? where = null, Action<IQueryable<TEntity>>? includes = null) 
+    {
+        IQueryable<TEntity> query = _entities.AsNoTracking();
+        if (includes != null)
+        {
+            includes.Invoke(query);
+        }
+        if (where != null)
+        {
+            query = query.Where(where);
+        }
+
+        return query.AsNoTracking().Select(selector);
     }
 
     public virtual async Task<IEnumerable<TEntity>> GetPaginate(int skip, int take, Expression<Func<TEntity, bool>>? where = null, Action<IQueryable<TEntity>>? orderBy = null, Action<IQueryable<TEntity>>? includes = null)

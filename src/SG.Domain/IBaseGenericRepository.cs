@@ -12,7 +12,9 @@ public interface IBaseGenericRepository<TEntity> where TEntity : class
      Task<IEnumerable<TEntity>> AddManySave(IEnumerable<TEntity> entities);
      Task<TEntity?> GetById(params object[] keys);
      Task<TEntity?> GetOne(Expression<Func<TEntity, bool>>? where = null);
+     Task<TResult?> GetOneWithSelector<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? where = null, Action<IQueryable<TEntity>>? includes = null);
      IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>>? where = null, Action<IQueryable<TEntity>>? orderBy = null, Action<IQueryable<TEntity>>? includes = null);
+     IQueryable<TResult> GetAllWithSelector<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>>? where = null, Action<IQueryable<TEntity>>? includes = null);
      Task<IEnumerable<TEntity>> GetPaginate(int skip, int take, Expression<Func<TEntity, bool>>? where = null, Action<IQueryable<TEntity>>? orderBy = null, Action<IQueryable<TEntity>>? includes = null);
      Task<bool> UpdateById(int id, TEntity entity);
      Task<TEntity?> UpdateByIdSave(int id, TEntity entity);

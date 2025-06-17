@@ -1,6 +1,10 @@
 using AutoMapper;
-using SG.Application.Bussiness.Commun.Dtos;
-using SG.Application.Bussiness.Security.Dtos;
+using SG.Application.Bussiness.Commun.Catalogues.Requests;
+using SG.Application.Bussiness.Commun.Catalogues.Responses;
+using SG.Application.Bussiness.Security.Roles.Requests;
+using SG.Application.Bussiness.Security.Roles.Responses;
+using SG.Application.Bussiness.Security.Users.Requests;
+using SG.Application.Bussiness.Security.Users.Responses;
 using SG.Domain.Commun.Entities;
 using SG.Domain.Security.Entities;
 
@@ -12,22 +16,22 @@ public class MappingProfile : Profile
     {
         #region Commun
         
-        CreateMap<CatalogueDto, Catalogue>().ReverseMap();
-        CreateMap<CatalogueCreateDto, Catalogue>().ReverseMap();
-        CreateMap<CatalogueUpdateDto, Catalogue>().ReverseMap();  
+        CreateMap<CatalogueResponse, Catalogue>().ReverseMap();
+        CreateMap<CatalogueCreateRequest, Catalogue>().ReverseMap();
+        CreateMap<CatalogueUpdateRequest, Catalogue>().ReverseMap();  
 
         #endregion
 
         #region Security
 
-        CreateMap<RoleDto, Role>().ReverseMap();
-        CreateMap<RoleCreateDto, Role>().ReverseMap();
-        CreateMap<RoleUpdateDto, Role>().ReverseMap(); 
+        CreateMap<RoleResponse, Role>().ReverseMap();
+        CreateMap<RoleCreateRequest, Role>().ReverseMap();
+        CreateMap<RoleUpdateRequest, Role>().ReverseMap(); 
 
 
-        CreateMap<UserDto, User>().ReverseMap();
-        CreateMap<UserCreateDto, User>().ReverseMap();
-        CreateMap<UserUpdateDto, User>().ReverseMap(); 
+        CreateMap<UserResponse, User>().ReverseMap();
+        CreateMap<UserCreateRequest, User>().ReverseMap();
+        CreateMap<UserUpdateRequest, User>().ReverseMap(); 
 
         #endregion
 

@@ -1,6 +1,5 @@
-using System;
 using Microsoft.EntityFrameworkCore;
-using SG.Infrastructure.Data.Config;
+using SG.Shared.Constants;
 using Action = SG.Domain.Security.Entities.Action;
 
 namespace SG.Infrastructure.Data.Mappings;
