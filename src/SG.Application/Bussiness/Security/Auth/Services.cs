@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using FluentResults;
-using SG.Domain;
 using SG.Infrastructure.Auth.JwtAuthentication;
 using SG.Infrastructure.Auth.JwtAuthentication.Models;
 using SG.Shared.Constants;
@@ -10,6 +9,8 @@ using SG.Application.Bussiness.Security.Auth.Requests;
 using Microsoft.Extensions.Logging;
 using SG.Application.Bussiness.Security.Auth.Interface;
 using SG.Application.Bussiness.Security.Roles.Interfaces;
+using SG.Domain.Base;
+using SG.Domain.Entities.Security;
 
 namespace SG.Application.Bussiness.Security.Auth.Service;
 
@@ -102,7 +103,7 @@ public class AuthService : IAuthService
         return userRoleData!;
     }
 
-    private async Task<(string, string)> GenerateTokenValues(Domain.Security.Entities.User user)
+    private async Task<(string, string)> GenerateTokenValues(User user)
     {
         var userRoles = await  GetRolesFromUserId(user!.Id);
 

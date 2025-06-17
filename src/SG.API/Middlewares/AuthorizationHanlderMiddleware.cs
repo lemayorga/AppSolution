@@ -1,5 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
-using SG.Domain;
+using SG.Domain.Base;
 using SG.Infrastructure.Auth.Extensions;
 using SG.Infrastructure.Auth.JwtAuthentication;
 

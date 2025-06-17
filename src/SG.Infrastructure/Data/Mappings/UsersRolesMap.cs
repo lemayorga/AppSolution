@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using SG.Domain.Security.Entities;
+using SG.Domain.Entities.Security;
+
 
 namespace SG.Infrastructure.Data.Mappings;
 

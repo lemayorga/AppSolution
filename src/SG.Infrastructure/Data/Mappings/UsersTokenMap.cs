@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SG.Domain.Security.Entities;
+using SG.Domain.Entities.Security;
 using SG.Shared.Constants;
 
 namespace SG.Infrastructure.Data.Mappings;

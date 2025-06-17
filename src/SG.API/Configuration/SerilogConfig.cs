@@ -1,4 +1,5 @@
 using Serilog;
+using SG.Shared.Helpers;
 using SG.Shared.Settings;
 namespace SG.API.Configuration;
 
@@ -7,16 +8,23 @@ public static class SerilogConfig
     internal static void ConfigureSerilog(this WebApplicationBuilder builder, ConfigurationManager configuration)
     {
 
-        AppSettings settings = new();
-        configuration.GetSection(NamesApplicationSettings.ApplicationSettings).Bind(settings);
+        var settings = new AppConfiguration(configuration).GetAppSettings();
 
-        if(!settings.EnableLoggingSerilog) {return; }
+        if(!settings.EnableLoggingSerilog) 
+        { 
+            return; 
+        }
 
-        var logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(new ConfigurationBuilder().AddJsonFile("serilogconfig.json").Build())
-                .Enrich.FromLogContext()
-                .CreateLogger();
+        var loggerConfig = new LoggerConfiguration()
+                .ReadFrom.Configuration(new ConfigurationBuilder().AddJsonFile(NamesFileApplicationSettings.SerilogConfig).Build())
+                .Enrich.FromLogContext();
 
+        if(settings.EnableLoggingEntityFrameworkCore)
+        {
+           loggerConfig.MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", Serilog.Events.LogEventLevel.Information);
+        }
+
+        var logger =  loggerConfig.CreateLogger();
         Log.Logger = logger;
 
         builder.Logging.AddSerilog(logger);

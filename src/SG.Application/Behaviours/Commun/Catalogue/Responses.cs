@@ -22,7 +22,7 @@ public  class CatalogueResponse : BaseWithIdResponse
         Description = description;
     }
 
-    public CatalogueResponse(Domain.Commun.Entities.Catalogue model):this
+    public CatalogueResponse(Domain.Entities.Commun.Catalogue model):this
     (
         id: model.Id,
         group: model.Group,

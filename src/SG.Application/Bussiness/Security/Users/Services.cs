@@ -5,15 +5,16 @@ using SG.Application.Base.ServiceLogic;
 using SG.Application.Bussiness.Security.Users.Interfaces;
 using SG.Application.Bussiness.Security.Users.Requests;
 using SG.Application.Bussiness.Security.Users.Responses;
-using SG.Domain;
+using SG.Domain.Base;
+using SG.Domain.Entities.Security;
 using SG.Shared.Constants;
+using SG.Shared.Extensions;
 using SG.Shared.Helpers;
 using SG.Shared.Responses;
 
 namespace SG.Application.Bussiness.Security.Users.Services;
 
-
-public class UserService : BaseGenericService<Domain.Security.Entities.User, UserResponse, UserCreateRequest, UserUpdateRequest>, IUserService
+public class UserService : BaseGenericService<User, UserResponse, UserCreateRequest, UserUpdateRequest>, IUserService
 {
 
     private const int PASSWORD_RANDOM_MIN_LENGH = 8;
@@ -24,21 +25,7 @@ public class UserService : BaseGenericService<Domain.Security.Entities.User, Use
 
     public override async Task<Result<SuccessWithIdResponse>> AddSave(UserCreateRequest modelDto)
     {
-        var resultFilterEmail = await _unitOfWork.UserRepository.FilterByOrEmail(modelDto.Email);
-        var resultFilterUsername = await _unitOfWork.UserRepository.FilterByUserName(modelDto.Username);
-
-        var errorMessages = Enumerable.Empty<string>();
-
-        if(resultFilterUsername.Any())
-        {
-            errorMessages.Append(MESSAGE_CONSTANTES.VALIDATION_USER_NAME_REGISTERED);
-        }
-
-        if(resultFilterEmail.Any())
-        {
-           errorMessages.Append(MESSAGE_CONSTANTES.VALIDATION_USER_EMAIL_REGISTERED);
-        }
-
+       var errorMessages =  await ValidationCreateUser(modelDto);
         if(errorMessages.Any())
         {
             return Result.Fail<SuccessWithIdResponse>(errorMessages);
@@ -52,65 +39,105 @@ public class UserService : BaseGenericService<Domain.Security.Entities.User, Use
         
         return await base.AddSave(modelDto);
     }
+    
 
-    public async Task<Result<bool>> ChangePassword(UserChangePasswordRequest model)
+    public override async Task<Result<List<SuccessWithIdResponse>>> AddManySave(List<UserCreateRequest> modelDto)
     {
-        try
+        var errorMessages = new List<string>();
+        for(var i = 0; i  < modelDto.Count() ; i ++)
         {
-            var (userName, currentPassword, newPassword) = model;
-            var userResult =  (model.EvaluateEmail.HasValue && model?.EvaluateEmail == true)
-                            ?  (await _unitOfWork.UserRepository.FilterByUserNameOrEmail(userName))
-                            :  (await _unitOfWork.UserRepository.FilterByUserName(userName));
-
-            if (!userResult.Any() )
+            var _errorMessages = await ValidationCreateUser(modelDto[i]);
+            if(!_errorMessages.Any()) 
             {
-                return Result.Fail<bool>(MESSAGE_CONSTANTES.VALIDATION_USER_DOESNT_EXIST);
+                modelDto[i].Password = EncryptionUtils.HashText(modelDto[i].Password);   
             }
-            
-            var user = userResult.ElementAt(0);
-            bool resultComparePassword = EncryptionUtils.Verify(user.Password, currentPassword);
-            if(!resultComparePassword)
+            else 
             {
-                return Result.Fail<bool>(MESSAGE_CONSTANTES.VALIDATION_CURRENT_PASSWORD_NOT_MATCH);
+                errorMessages.AddRange(_errorMessages);
+                modelDto.RemoveAt(i);
             }
-
-            string newPasswordHash = EncryptionUtils.HashText(newPassword);      
-            var result = await _unitOfWork.UserRepository.UpdatePasswordHash(user.Id, newPasswordHash);
-            return Result.Ok(result);
         }
-        catch (Exception ex)
+
+        if(errorMessages.Any())
         {
-            _logger.LogError(ex, ex.Message);
-            return Result.Fail(ex.Message);
-        }    
-   }
+            return Result.Fail<List<SuccessWithIdResponse>>(errorMessages);
+        }
+
+        return await base.AddManySave(modelDto);
+    }
+
+    private  async Task<HashSet<string>> ValidationCreateUser(UserCreateRequest userToCreate) 
+    {
+        var resultFilterEmail = await _unitOfWork.UserRepository.FilterByOrEmail(userToCreate.Email);
+        var resultFilterUsername = await _unitOfWork.UserRepository.FilterByUserName(userToCreate.Username);
+
+        var errorMessages = new HashSet<string>();
+        if(resultFilterUsername.Any())
+        {
+            errorMessages.Add($"{MESSAGE_CONSTANTES.VALIDATION_USER_NAME_REGISTERED.RemoveLastChar('.')}: {userToCreate.Username} .");
+        }
+
+        if(resultFilterEmail.Any())
+        {
+            errorMessages.Add($"{MESSAGE_CONSTANTES.VALIDATION_USER_EMAIL_REGISTERED.RemoveLastChar('.')}: {userToCreate.Email} .");
+        }
+
+        return errorMessages;
+    }
+
+    public override async Task<Result<SuccessWithIdResponse>> UpdateById(int id, UserUpdateRequest modelDto)
+    {
+        var user = await _unitOfWork.UserRepository.GetById(id);
+        if(user is null)
+        {
+            return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
+        }  
+
+        user.Username = modelDto.Username.Trim();
+        user.Email = modelDto.Email.Trim();
+        user.Firstname = modelDto.Firstname.Trim();
+        user.Lastname = modelDto.Lastname.Trim();
+        user.IsLocked = modelDto.IsLocked;
+        user.IsActive = modelDto.IsActive;
+        var result = await _unitOfWork.UserRepository.UpdateAndSave(user);
+
+        return Result.Ok(new SuccessWithIdResponse(id));   
+    }
+
+    public async Task<Result<bool>> ChangePassword(UserChangePasswordRequest  model)
+    {
+        var (userName, currentPassword, newPassword) = model;
+        var userResult = (model.EvaluateEmail.HasValue && model?.EvaluateEmail == true)
+                            ? (await _unitOfWork.UserRepository.FilterByUserNameOrEmail(userName))
+                            : (await _unitOfWork.UserRepository.FilterByUserName(userName));
+
+        if (!userResult.Any())
+        {
+            return Result.Fail<bool>(MESSAGE_CONSTANTES.VALIDATION_USER_DOESNT_EXIST);
+        }
+
+        var user = userResult.ElementAt(0);
+        bool resultComparePassword = EncryptionUtils.Verify(user.Password, currentPassword);
+        if (!resultComparePassword)
+        {
+            return Result.Fail<bool>(MESSAGE_CONSTANTES.VALIDATION_CURRENT_PASSWORD_NOT_MATCH);
+        }
+
+        string newPasswordHash = EncryptionUtils.HashText(newPassword);
+        var result = await _unitOfWork.UserRepository.UpdatePasswordHash(user.Id, newPasswordHash);
+        return Result.Ok(result);
+    }
 
     public async Task<Result<bool>> UpdateStatusIsLocked(int idUser, bool newStatusLocked)
     {
-        try
-        {
-           var result = await _unitOfWork.UserRepository.UpdateStatusIsLocked(idUser, newStatusLocked);
-           return Result.Ok(result);
-        }
-        catch (Exception ex)
-        {
-           _logger.LogError(ex, ex.Message);
-           return Result.Fail(ex.Message);
-        }    
+        var result = await _unitOfWork.UserRepository.UpdateStatusIsLocked(idUser, newStatusLocked);
+        return Result.Ok(result);  
     }
 
     public async Task<Result<bool>> UpdateStatusIsActived(int idUser, bool newStatusActive)
     {
-        try
-        {
-           var result = await _unitOfWork.UserRepository.UpdateStatusIsActived(idUser, newStatusActive);
-           return Result.Ok(result);
-        }
-        catch (Exception ex)
-        {
-           _logger.LogError(ex, ex.Message);
-           return Result.Fail(ex.Message);
-        }    
+        var result = await _unitOfWork.UserRepository.UpdateStatusIsActived(idUser, newStatusActive);
+        return Result.Ok(result);    
     }   
 
     public async Task<Result<bool>> ResetPassword(UserResetPasswordRequest model)
@@ -144,20 +171,12 @@ public class UserService : BaseGenericService<Domain.Security.Entities.User, Use
             return Result.Fail(ex.Message);
         }    
     }    
-
     public async Task<Result<bool>> ResetPasswordBydIdUser(int idUser)
     {
-        try
-        {   
-            string newPassword = RandomPassword.Generate(PASSWORD_RANDOM_MIN_LENGH, PASSWORD_RANDOM_MAX_LENGH);
-            string newPasswordHash = EncryptionUtils.HashText(newPassword);      
-            var result = await _unitOfWork.UserRepository.UpdatePasswordHash(idUser, newPasswordHash);
-            return Result.Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ex.Message);
-            return Result.Fail(ex.Message);
-        }    
+ 
+        string newPassword = RandomPassword.Generate(PASSWORD_RANDOM_MIN_LENGH, PASSWORD_RANDOM_MAX_LENGH);
+        string newPasswordHash = EncryptionUtils.HashText(newPassword);      
+        var result = await _unitOfWork.UserRepository.UpdatePasswordHash(idUser, newPasswordHash);
+        return Result.Ok(result);   
     }    
 }

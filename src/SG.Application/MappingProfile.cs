@@ -5,9 +5,8 @@ using SG.Application.Bussiness.Security.Roles.Requests;
 using SG.Application.Bussiness.Security.Roles.Responses;
 using SG.Application.Bussiness.Security.Users.Requests;
 using SG.Application.Bussiness.Security.Users.Responses;
-using SG.Domain.Commun.Entities;
-using SG.Domain.Security.Entities;
-
+using SG.Domain.Entities.Commun;
+using SG.Domain.Entities.Security;
 namespace SG.Application;
 
 public class MappingProfile : Profile

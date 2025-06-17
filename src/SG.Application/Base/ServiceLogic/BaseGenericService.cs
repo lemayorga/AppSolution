@@ -84,7 +84,7 @@ public  class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> : 
         var result = await _unitOfWork.Repository<TEntity>().UpdateByIdSave(id, entity);
         if(result == null)
         {
-                return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
+            return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
         }            
         return Result.Ok(new SuccessWithIdResponse(id));        
     }

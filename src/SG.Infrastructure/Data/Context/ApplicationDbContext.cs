@@ -2,11 +2,11 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using SG.Domain.Commun.Entities;
-using SG.Domain.Security.Entities;
+using SG.Domain.Entities.Commun;
+using SG.Domain.Entities.Security;
 using SG.Shared.Settings;
-using Action = SG.Domain.Security.Entities.Action;
-using Module = SG.Domain.Security.Entities.Module;
+using Action = SG.Domain.Entities.Security.Action;
+using Module = SG.Domain.Entities.Security.Module;
 
 namespace SG.Infrastructure.Data.Context;
 
@@ -27,7 +27,11 @@ public sealed class ApplicationDbContext : DbContext
 
         if(_settings.EnableLoggingEntityFrameworkCore)
         {
-            optionsBuilder.LogTo(Console.WriteLine).EnableSensitiveDataLogging();
+            bool enableSensitiveDataLoggingEF =  _settings.EnableSensitiveDataLoggingEntityFrameworkCore;
+            
+            optionsBuilder
+                .LogTo(Console.WriteLine)
+                .EnableSensitiveDataLogging(enableSensitiveDataLoggingEF);
         }
     }
     

@@ -82,6 +82,18 @@ public class RoleController(IRoleService application)  : BaseController<RoleResp
     }
 
     /// <summary>
+    /// Agrega lista de nuevos registros
+    /// </summary>
+    /// <param name="request">Objeto con los datos a insertar</param>    
+    [HttpPost("addMany")]
+    [ProducesResponseType(typeof(OperationResult<List<SuccessWithIdResponse>>), StatusCodes.Status201Created)]
+    public async Task<IActionResult> PostMany([FromBody] List<RoleCreateRequest> request)
+    {
+        var response = await _application.AddManySave(request);
+        return Ok(response.ToOperationResult());
+    }
+
+    /// <summary>
     /// Actualizar campos de un nuevo registro por su Id
     /// </summary>
     /// <param name="id" example="1">id del registro</param>  

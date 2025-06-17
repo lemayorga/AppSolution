@@ -1,9 +1,9 @@
-using System.ComponentModel.DataAnnotations;
-using SG.Application.CustomValidations;
-using SG.Domain.Security.Entities;
-using SG.Infrastructure.Auth.JwtAuthentication.Models;
+// using System.ComponentModel.DataAnnotations;
+// using SG.Application.CustomValidations;
+// using SG.Domain.Security.Entities;
+// using SG.Infrastructure.Auth.JwtAuthentication.Models;
 
-namespace SG.Application.Bussiness.Security.Dtos;
+// namespace SG.Application.Bussiness.Security.Dtos;
 
 // public class LoginDto
 // {

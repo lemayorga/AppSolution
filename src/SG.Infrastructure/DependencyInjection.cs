@@ -1,12 +1,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SG.Domain;
-using SG.Domain.Commun.Repositories;
-using SG.Domain.Security.Repositories;
-using SG.Infrastructure.Data;
+using SG.Domain.Base;
+using SG.Domain.Repositories.Commun;
+using SG.Domain.Repositories.Security;
+using SG.Infrastructure.Base;
 using SG.Infrastructure.Data.Config;
 using SG.Infrastructure.Data.Context;
-using SG.Infrastructure.Data.Repositories;
 using SG.Infrastructure.Data.Repositories.Commun;
 using SG.Infrastructure.Data.Repositories.Security;
 using SG.Infrastructure.DatabaseFlavor;

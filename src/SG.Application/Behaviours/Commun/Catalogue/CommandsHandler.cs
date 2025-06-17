@@ -1,9 +1,8 @@
 using FluentResults;
 using FluentValidation;
 using SG.Application.Base.CQRS;
-using SG.Application.Base.Validations;
 using SG.Application.Extensions;
-using SG.Domain.Commun.Repositories;
+using SG.Domain.Repositories.Commun;
 using SG.Shared.Constants;
 using SG.Shared.Responses;
 
@@ -24,7 +23,7 @@ public sealed class CreateCatalogueCommandHandler
             return validationResult.GetResultErrors<SuccessWithIdResponse>();
         }
 
-        var model = new Domain.Commun.Entities.Catalogue
+        var model = new Domain.Entities.Commun.Catalogue
         (
            group: command.Group,
            value: command.Value,
@@ -53,7 +52,7 @@ public sealed class UpdateCatalogueCommandHandler
             return validationResult.GetResultErrors<SuccessWithIdResponse>();
         }
 
-        var model = new Domain.Commun.Entities.Catalogue
+        var model = new Domain.Entities.Commun.Catalogue
         (
            id: command.Id,
            group: command.Group,

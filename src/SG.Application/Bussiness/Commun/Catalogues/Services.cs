@@ -4,12 +4,13 @@ using SG.Application.Base.ServiceLogic;
 using SG.Application.Bussiness.Commun.Catalogues.Interfaces;
 using SG.Application.Bussiness.Commun.Catalogues.Requests;
 using SG.Application.Bussiness.Commun.Catalogues.Responses;
-using SG.Domain;
+using SG.Domain.Base;
+using SG.Domain.Entities.Commun;
 
 namespace SG.Application.Bussiness.Commun.Catalogues.Services;
 
 
-public class CatalogueService : BaseGenericService<Domain.Commun.Entities.Catalogue, CatalogueResponse, CatalogueCreateRequest, CatalogueUpdateRequest>,  ICatalogueService
+public class CatalogueService : BaseGenericService<Catalogue, CatalogueResponse, CatalogueCreateRequest, CatalogueUpdateRequest>,  ICatalogueService
 {
     public CatalogueService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<CatalogueService> logger) : base(unitOfWork, mapper, logger){ }
 

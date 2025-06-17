@@ -1,3 +1,4 @@
+using SG.Domain.Entities.Security;
 using SG.Shared.Responses;
 
 namespace SG.Application.Bussiness.Security.Roles.Responses;
@@ -18,7 +19,7 @@ public class RoleResponse : BaseWithIdResponse
         IsActive = isActive;
     }
 
-    public RoleResponse(Domain.Security.Entities.Role model) : this
+    public RoleResponse(Role model) : this
     (
         id: model.Id,
         codeRol: model.CodeRol,

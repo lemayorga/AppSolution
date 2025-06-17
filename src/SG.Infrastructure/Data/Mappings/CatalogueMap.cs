@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SG.Domain.Commun.Entities;
+using SG.Domain.Entities.Commun;
 using SG.Shared.Constants;
 
 namespace SG.Infrastructure.Data.Mappings;

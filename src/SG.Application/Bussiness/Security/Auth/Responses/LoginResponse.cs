@@ -1,4 +1,5 @@
 using System;
+using SG.Domain.Entities.Security;
 using SG.Infrastructure.Auth.JwtAuthentication.Models;
 
 namespace SG.Application.Bussiness.Security.Auth.Responses;
@@ -11,7 +12,7 @@ public class LoginResponse
     public string Email { get; set; } = default!;
     public TokenResponse Tokens { get; set; } = default!;
 
-    public LoginResponse(Domain.Security.Entities.User user,string accessToken,string refreshToken)
+    public LoginResponse(User user,string accessToken,string refreshToken)
     {
         IdUser = user.Id;
         DisplayName = user.Username;

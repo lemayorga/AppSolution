@@ -1,7 +1,8 @@
-using System;
-using SG.Domain.Security.Repositories;
+
+using SG.Domain.Repositories.Security;
+using SG.Infrastructure.Base;
 using SG.Infrastructure.Data.Context;
-using Action = SG.Domain.Security.Entities.Action;
+using Action = SG.Domain.Entities.Security.Action;
 
 namespace SG.Infrastructure.Data.Repositories.Security;
 

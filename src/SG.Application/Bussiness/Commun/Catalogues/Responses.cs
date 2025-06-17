@@ -1,3 +1,4 @@
+using SG.Domain.Entities.Commun;
 using SG.Shared.Responses;
 
 namespace SG.Application.Bussiness.Commun.Catalogues.Responses;
@@ -20,7 +21,7 @@ public  class CatalogueResponse : BaseWithIdResponse
         Description = description;
     }
 
-    public CatalogueResponse(Domain.Commun.Entities.Catalogue model):this
+    public CatalogueResponse(Catalogue model):this
     (
         id: model.Id,
         group: model.Group,

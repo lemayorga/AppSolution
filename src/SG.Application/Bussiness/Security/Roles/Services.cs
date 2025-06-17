@@ -7,8 +7,8 @@ using SG.Application.Base.ServiceLogic;
 using SG.Application.Bussiness.Security.Roles.Interfaces;
 using SG.Application.Bussiness.Security.Roles.Requests;
 using SG.Application.Bussiness.Security.Roles.Responses;
-using SG.Domain;
-using SG.Domain.Security.Entities;
+using SG.Domain.Base;
+using SG.Domain.Entities.Security;
 using SG.Infrastructure.Data.Extensions;
 
 namespace SG.Application.Bussiness.Security.Roles.Service;
@@ -35,7 +35,7 @@ public class RoleService : BaseGenericService<Role, RoleResponse, RoleCreateRequ
     public async Task<Result<IEnumerable<UserRolesResponse>>> GetFilterUsersAndRoles(FilterUsersRolesRequest filters)
     {
         Expression<Func<Role, bool>> _whereRoles = f => true;
-        Expression<Func<Domain.Security.Entities.User, bool>> _whereUsers = f => true;
+        Expression<Func<User, bool>> _whereUsers = f => true;
 
         if (filters.IdRol.HasValue)
             _whereRoles = _whereRoles.And(x => x.Id == filters.IdRol.Value);

@@ -1,0 +1,12 @@
+using SG.Domain;
+using SG.Domain.Base;
+
+namespace SG.Domain.Entities.Security;
+
+public class PasswordHistory : BaseEntity<int>
+{
+    public string Username { get; set; }  = default!;
+    public string OldPassword { get; set; }  = default!;
+    public DateOnly DateChange { get; set; } 
+    public string UserSave{ get; set; } = default!;  
+} 

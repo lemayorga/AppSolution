@@ -1,3 +1,4 @@
+using SG.Domain.Entities.Security;
 using SG.Shared.Responses;
 
 namespace SG.Application.Bussiness.Security.Users.Responses;
@@ -23,7 +24,7 @@ public class UserResponse : BaseWithIdResponse
         IsLocked = isLocked;
     }
 
-    public UserResponse(Domain.Security.Entities.User model)
+    public UserResponse(User model)
     {
         Id = model.Id;
         Username = model.Username;

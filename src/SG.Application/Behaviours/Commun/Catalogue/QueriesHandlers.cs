@@ -1,6 +1,6 @@
 using FluentResults;
 using SG.Application.Base.CQRS;
-using SG.Domain.Commun.Repositories;
+using SG.Domain.Repositories.Commun;
 namespace SG.Application.Behaviours.Commun.Catalogue;
 
 public sealed class GetCatalogueAllQueryHandler(ICatalogueRepository repository) : IRequestHandler<GetCatalogueAllQuery, Result<List<CatalogueResponse>>>
