@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SG.Application.Bussiness.Security.Dtos;
-using SG.Application.Bussiness.Security.Interfaces;
+using SG.Application.Bussiness.Security.Auth.Interface;
+using SG.Application.Bussiness.Security.Auth.Requests;
+using SG.Application.Bussiness.Security.Auth.Responses;
 using SG.Application.Responses;
 using SG.Infrastructure.Auth.JwtAuthentication.Models;
 using SG.Infrastructure.Auth.Services;
+using SG.Application.Extensions;
 
 namespace SG.API.Controllers.Security;
 
@@ -37,8 +39,8 @@ public class AuthController : ControllerBase
     /// <param name="request">Datos para iniciar sesión</param>   
     [AllowAnonymous]
     [HttpPost("login")]
-    [ProducesResponseType(typeof(OperationResult<UserCreateDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Login([FromBody] LoginDto request)
+    [ProducesResponseType(typeof(OperationResult<LoginResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         if(!ModelState.IsValid) {  return BadRequest();  }
         var response = await _application.Login(request);
@@ -52,7 +54,7 @@ public class AuthController : ControllerBase
     /// <returns></returns>
     [Authorize]
     [HttpPost("refreshToken")]
-    [ProducesResponseType(typeof(OperationResult<UserCreateDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(OperationResult<LoginResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> RefreshToken(RefreshTokenModel tokenResponse)
     {
         var newAccessToken = await _application.RefreshToken(tokenResponse);
@@ -69,7 +71,7 @@ public class AuthController : ControllerBase
     /// <returns></returns>
     [Authorize]
     [HttpPost("logout")]
-    [ProducesResponseType(typeof(OperationResult<UserCreateDto>), StatusCodes.Status200OK)]    
+    [ProducesResponseType(typeof(OperationResult<LogoutResponse>), StatusCodes.Status200OK)]    
     public async Task<IActionResult> Logout()  // https://code-maze.com/using-refresh-tokens-in-asp-net-core-authentication/ para el angular
     {
         var result = await _application.Logout(_principal2.User!.Id);

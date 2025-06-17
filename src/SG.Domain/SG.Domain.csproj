@@ -2,6 +2,10 @@
   <ItemGroup>
     <ProjectReference Include="..\SG.Shared\SG.Shared.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Commun\Entities\" />
+    <Folder Include="Commun\Repositories\" />
+  </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

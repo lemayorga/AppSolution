@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
-using SG.Domain.Security.Entities;
+using SG.Domain.Entities.Security;
 using SG.Infrastructure.Auth.JwtAuthentication.Models;
 
 namespace SG.Infrastructure.Auth.Extensions;

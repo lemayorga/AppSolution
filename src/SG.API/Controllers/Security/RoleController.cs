@@ -1,26 +1,40 @@
 using Microsoft.AspNetCore.Mvc;
-using SG.Application.Bussiness.Security.Dtos;
-using SG.Application.Bussiness.Security.Interfaces;
+using SG.Application.Bussiness.Security.Roles.Interfaces;
+using SG.Application.Bussiness.Security.Roles.Requests;
+using SG.Application.Bussiness.Security.Roles.Responses;
 using SG.Application.Responses;
+using SG.Application.Extensions;
+using SG.Shared.Responses;
 
 namespace SG.API.Controllers.Security;
 
+
+/*
+Referencia para validaciones 
+
+
+https://ravindradevrani.medium.com/fluent-validation-in-net-core-8-0-c748da274204
+
+OJO
+
+
+
+*/
+
+
+
 [ApiController]
 [Route("api/[controller]")]
-public class RoleController : BaseController<RoleDto, RoleCreateDto, RoleUpdateDto>
+public class RoleController(IRoleService application)  : BaseController<RoleResponse, RoleCreateRequest, RoleUpdateRequest>
 {
-    private readonly IRoleService _application;
-    public RoleController(IRoleService application) 
-    {
-        _application = application;
-    }
-      
+    private readonly IRoleService _application = application;
+   
     /// <summary>
     /// Obtener todos los registros.
     /// </summary> 
     /// <returns>Retornar todos los regisrtos.</returns>
     [HttpGet("")]
-    [ProducesResponseType(typeof(OperationResult<IEnumerable<RoleDto>>), StatusCodes.Status200OK)]   
+    [ProducesResponseType(typeof(OperationResult<IEnumerable<RoleResponse>>), StatusCodes.Status200OK)]   
     public override async Task<IActionResult> Get()
     {
         var response = await _application.GetAll();
@@ -33,7 +47,7 @@ public class RoleController : BaseController<RoleDto, RoleCreateDto, RoleUpdateD
     /// <param name="id" example="1">id del registro</param>    
     /// <returns>Retornar el registro.</returns>
     [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(OperationResult<RoleDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(OperationResult<RoleResponse>), StatusCodes.Status200OK)]
     public override async Task<IActionResult> Get(int id)
     {
         var response = await _application.GetById(id);
@@ -60,8 +74,8 @@ public class RoleController : BaseController<RoleDto, RoleCreateDto, RoleUpdateD
     /// </summary>
     /// <param name="request">Objeto con los datos a insertar</param>    
     [HttpPost("")]
-    [ProducesResponseType(typeof(OperationResult<RoleDto>), StatusCodes.Status201Created)]
-    public override async Task<IActionResult> Post([FromBody] RoleCreateDto request)
+    [ProducesResponseType(typeof(OperationResult<SuccessWithIdResponse>), StatusCodes.Status201Created)]
+    public override async Task<IActionResult> Post([FromBody] RoleCreateRequest request)
     {
         var response = await _application.AddSave(request);
         return Ok(response.ToOperationResult());
@@ -72,8 +86,8 @@ public class RoleController : BaseController<RoleDto, RoleCreateDto, RoleUpdateD
     /// </summary>
     /// <param name="request">Objeto con los datos a insertar</param>    
     [HttpPost("addMany")]
-    [ProducesResponseType(typeof(OperationResult<List<RoleDto>>), StatusCodes.Status201Created)]
-    public async Task<IActionResult> PostMany([FromBody] List<RoleCreateDto> request)
+    [ProducesResponseType(typeof(OperationResult<List<SuccessWithIdResponse>>), StatusCodes.Status201Created)]
+    public async Task<IActionResult> PostMany([FromBody] List<RoleCreateRequest> request)
     {
         var response = await _application.AddManySave(request);
         return Ok(response.ToOperationResult());
@@ -85,8 +99,8 @@ public class RoleController : BaseController<RoleDto, RoleCreateDto, RoleUpdateD
     /// <param name="id" example="1">id del registro</param>  
     /// <param name="request">Objeto con los datos a insertar</param>    
     [HttpPut("{id:int}")]
-    [ProducesResponseType(typeof(OperationResult<RoleDto>), StatusCodes.Status200OK)]    
-    public override async Task<IActionResult> Put(int id,[FromBody] RoleUpdateDto request)
+    [ProducesResponseType(typeof(OperationResult<SuccessWithIdResponse>), StatusCodes.Status200OK)]    
+    public override async Task<IActionResult> Put(int id,[FromBody] RoleUpdateRequest request)
     {
         var response = await _application.UpdateById(id, request);
         return Ok(response.ToOperationResult());
@@ -124,8 +138,8 @@ public class RoleController : BaseController<RoleDto, RoleCreateDto, RoleUpdateD
     /// <param name="filters"></param>
     /// <returns></returns>
     [HttpPost("usersWithRoles")]
-    [ProducesResponseType(typeof(OperationResult<IEnumerable<UserRolesDto>>), StatusCodes.Status201Created)]
-    public async Task<IActionResult> GetUsersWithRoles([FromBody] FilterUsersRoles filters)
+    [ProducesResponseType(typeof(OperationResult<IEnumerable<UserRolesResponse>>), StatusCodes.Status201Created)]
+    public async Task<IActionResult> GetUsersWithRoles([FromBody] FilterUsersRolesRequest filters)
     {
         var response = await _application.GetFilterUsersAndRoles(filters);
         return Ok(response.ToOperationResult());

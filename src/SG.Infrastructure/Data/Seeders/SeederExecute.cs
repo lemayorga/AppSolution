@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using SG.Domain.Security.Entities;
+using SG.Domain.Entities.Security;
 using SG.Infrastructure.Data.Context;
 using SG.Shared.Helpers;
 using SG.Shared.Settings;

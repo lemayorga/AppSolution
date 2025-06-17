@@ -1,7 +1,8 @@
-using System;
-using SG.Domain.Security.Repositories;
+
+using SG.Domain.Repositories.Security;
+using SG.Infrastructure.Base;
 using SG.Infrastructure.Data.Context;
-using Module = SG.Domain.Security.Entities.Module;
+using Module = SG.Domain.Entities.Security.Module;
 
 namespace SG.Infrastructure.Data.Repositories.Security;
 

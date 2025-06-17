@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SG.Domain;
-using SG.Domain.Commun.Repositories;
-using SG.Domain.Security.Repositories;
-using SG.Infrastructure.Data;
+using SG.Domain.Base;
+using SG.Domain.Repositories.Commun;
+using SG.Domain.Repositories.Security;
+using SG.Infrastructure.Base;
 using SG.Infrastructure.Data.Config;
 using SG.Infrastructure.Data.Context;
 using SG.Infrastructure.Data.Repositories.Commun;
@@ -40,10 +40,10 @@ public static class DatabaseDependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services) 
     {
         services.AddScoped<ApplicationDbContext>()
-                .AddScoped<IUnitOfWork, UnitOfWork>();      
-        
+                .AddScoped<IUnitOfWork, UnitOfWork>();        
+  
         #region Commun
-        
+
         services.AddScoped<ICatalogueRepository, CatalogueRepository>();       
 
         #endregion
@@ -59,8 +59,8 @@ public static class DatabaseDependencyInjection
                 .AddScoped<IPermissionRepository, PermissionRepository>()
                 .AddScoped<IUsersRolesRepository, UsersRolesRepository>();     
         #endregion
- 
-        
+
+    
         return services;
     }
 }

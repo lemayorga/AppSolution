@@ -1,7 +1,8 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using SG.Domain.Commun.Entities;
-using SG.Domain.Commun.Repositories;
+using SG.Domain.Entities.Commun;
+using SG.Domain.Repositories.Commun;
+using SG.Infrastructure.Base;
 using SG.Infrastructure.Data.Context;
 using SG.Infrastructure.Data.Extensions.PaginationCustom;
 using SG.Infrastructure.Data.Extensions.PaginationCustom.PaginationModels;

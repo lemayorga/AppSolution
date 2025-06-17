@@ -1,6 +1,8 @@
 using System.Net;
 using SG.API.Tests.Abstractions;
-using SG.Application.Bussiness.Security.Dtos;
+using SG.Application.Bussiness.Security.Users.Requests;
+using SG.Application.Bussiness.Security.Users.Responses;
+using SG.Shared.Responses;
 using Xunit.Extensions.Ordering;
 
 namespace SG.API.Tests.Controllers.Security;
@@ -18,7 +20,7 @@ public class UserController  : BaseFunctionalTest
     [Fact, Order(0)]
     public async Task Post()
     {
-        var body = new  UserCreateDto
+        var body = new  UserCreateRequest
         {
             Username = USER_NAME,
             Email = USER_EMAIL,
@@ -26,14 +28,14 @@ public class UserController  : BaseFunctionalTest
             Lastname = "MyLastName",
             Password = USER_PASSWORD
         };
-        var (response, responseResult)  = await PostRequest<RoleDto>(_url, body);    
+        var (response, responseResult)  = await PostRequest<SuccessWithIdResponse>(_url, body);    
         AssertResponseWithContent(response, HttpStatusCode.OK, responseResult);
     }
 
     [Fact, Order(1)]
     public async Task PostMany()
     {
-        var  body  = Enumerable.Range(1, 4).Select(i => new UserCreateDto 
+        var  body  = Enumerable.Range(1, 4).Select(i => new UserCreateRequest 
         {  
             Username = $"{USER_NAME}_{i}",
             Email = $"demo-test_{i}@gmail.com",
@@ -42,21 +44,21 @@ public class UserController  : BaseFunctionalTest
             Password = USER_PASSWORD
         });
 
-        var (response, responseResult)  = await PostRequest<List<RoleDto>>($"{_url}/addMany", body);
+        var (response, responseResult)  = await PostRequest<List<SuccessWithIdResponse>>($"{_url}/addMany", body);
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult); 
     }
 
     [Fact, Order(2)]
     public async Task Get()
     {
-        var (response, responseResult)  = await GetRequest<UserDto[]>(_url);
+        var (response, responseResult)  = await GetRequest<UserResponse[]>(_url);
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult);
     }
 
     [Theory(), Order(3), CombinatorialData]
     public async Task GetBydId([CombinatorialRange(from: 1, count: 2)]int id)
     {
-        var (response, responseResult)  = await GetRequest<UserDto>($"{_url}/{id}");
+        var (response, responseResult)  = await GetRequest<UserResponse>($"{_url}/{id}");
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult);
         Assert.Equal(id, responseResult!.Value!.Id);    
     }
@@ -64,7 +66,7 @@ public class UserController  : BaseFunctionalTest
     [Theory(), Order(4), CombinatorialData]
     public async Task Put([CombinatorialRange(from: 2, count: 1)]int id)
     {
-        var body  = new UserUpdateDto
+        var body  = new UserUpdateRequest
         {
             Username =$"{USER_NAME}_{id}",
             Email = $"demo-test_{id}@gmail.com",
@@ -73,7 +75,7 @@ public class UserController  : BaseFunctionalTest
             IsLocked = false,
             IsActive = true
         };
-        var (response, responseResult)  = await PutRequest<UserDto>($"{_url}/{id}", body);
+        var (response, responseResult)  = await PutRequest<SuccessWithIdResponse>($"{_url}/{id}", body);
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult); 
         Assert.Equal(id, responseResult!.Value!.Id);    ;    
     }
@@ -81,7 +83,7 @@ public class UserController  : BaseFunctionalTest
     [Theory(), Order(5), CombinatorialData]
     public async Task ChangePassword([CombinatorialRange(from: 2, count: 1)]int id)
     {
-        var body  = new UserChangePassword
+        var body  = new UserChangePasswordRequest
         {
               UserName = $"{USER_NAME}_{id}",
               CurrentPassword = USER_PASSWORD,

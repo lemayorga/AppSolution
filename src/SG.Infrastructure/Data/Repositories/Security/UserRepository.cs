@@ -1,7 +1,8 @@
-using SG.Domain.Security.Entities;
-using SG.Domain.Security.Repositories;
 using SG.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
+using SG.Infrastructure.Base;
+using SG.Domain.Entities.Security;
+using SG.Domain.Repositories.Security;
 
 namespace SG.Infrastructure.Data.Repositories.Security;
 
