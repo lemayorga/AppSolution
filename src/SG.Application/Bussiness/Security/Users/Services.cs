@@ -16,16 +16,18 @@ namespace SG.Application.Bussiness.Security.Users.Services;
 
 public class UserService : BaseGenericService<User, UserResponse, UserCreateRequest, UserUpdateRequest>, IUserService
 {
-
     private const int PASSWORD_RANDOM_MIN_LENGH = 8;
     private const int PASSWORD_RANDOM_MAX_LENGH = 10;
 
     public UserService(IUnitOfWork unitOfWork, IMapper mapper,  ILogger<UserService> logger) 
     : base(unitOfWork, mapper, logger) {  }
 
+
+    #region Override operations CRUD
+
     public override async Task<Result<SuccessWithIdResponse>> AddSave(UserCreateRequest modelDto)
     {
-       var errorMessages =  await ValidationCreateUser(modelDto);
+        var errorMessages =  await ValidationCreateUser(modelDto);
         if(errorMessages.Any())
         {
             return Result.Fail<SuccessWithIdResponse>(errorMessages);
@@ -74,12 +76,12 @@ public class UserService : BaseGenericService<User, UserResponse, UserCreateRequ
         var errorMessages = new HashSet<string>();
         if(resultFilterUsername.Any())
         {
-            errorMessages.Add($"{MESSAGE_CONSTANTES.VALIDATION_USER_NAME_REGISTERED.RemoveLastChar('.')}: {userToCreate.Username} .");
+            errorMessages.Add($"{MESSAGE_CONSTANTS.VALIDATION_USER_NAME_REGISTERED.RemoveLastChar('.')}: {userToCreate.Username} .");
         }
 
         if(resultFilterEmail.Any())
         {
-            errorMessages.Add($"{MESSAGE_CONSTANTES.VALIDATION_USER_EMAIL_REGISTERED.RemoveLastChar('.')}: {userToCreate.Email} .");
+            errorMessages.Add($"{MESSAGE_CONSTANTS.VALIDATION_USER_EMAIL_REGISTERED.RemoveLastChar('.')}: {userToCreate.Email} .");
         }
 
         return errorMessages;
@@ -90,7 +92,7 @@ public class UserService : BaseGenericService<User, UserResponse, UserCreateRequ
         var user = await _unitOfWork.UserRepository.GetById(id);
         if(user is null)
         {
-            return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
+            return Result.Fail(MESSAGE_CONSTANTS.NOT_ITEM_FOUND_DATABASE);
         }  
 
         user.Username = modelDto.Username.Trim();
@@ -99,10 +101,15 @@ public class UserService : BaseGenericService<User, UserResponse, UserCreateRequ
         user.Lastname = modelDto.Lastname.Trim();
         user.IsLocked = modelDto.IsLocked;
         user.IsActive = modelDto.IsActive;
-        var result = await _unitOfWork.UserRepository.UpdateAndSave(user);
+        _unitOfWork.UserRepository.Update(user);
+        await _unitOfWork.UserRepository.SaveChangesAsync();
 
         return Result.Ok(new SuccessWithIdResponse(id));   
     }
+
+    #endregion
+
+    #region Operations about Password
 
     public async Task<Result<bool>> ChangePassword(UserChangePasswordRequest  model)
     {
@@ -113,14 +120,14 @@ public class UserService : BaseGenericService<User, UserResponse, UserCreateRequ
 
         if (!userResult.Any())
         {
-            return Result.Fail<bool>(MESSAGE_CONSTANTES.VALIDATION_USER_DOESNT_EXIST);
+            return Result.Fail<bool>(MESSAGE_CONSTANTS.VALIDATION_USER_DOESNT_EXIST);
         }
 
         var user = userResult.ElementAt(0);
         bool resultComparePassword = EncryptionUtils.Verify(user.Password, currentPassword);
         if (!resultComparePassword)
         {
-            return Result.Fail<bool>(MESSAGE_CONSTANTES.VALIDATION_CURRENT_PASSWORD_NOT_MATCH);
+            return Result.Fail<bool>(MESSAGE_CONSTANTS.VALIDATION_CURRENT_PASSWORD_NOT_MATCH);
         }
 
         string newPasswordHash = EncryptionUtils.HashText(newPassword);
@@ -142,41 +149,35 @@ public class UserService : BaseGenericService<User, UserResponse, UserCreateRequ
 
     public async Task<Result<bool>> ResetPassword(UserResetPasswordRequest model)
     {
-        try
-        {   
-            var userName  = model.UserName.Trim();
-            var userResult =  (model.EvaluateEmail.HasValue && model?.EvaluateEmail == true)
-                            ?  (await _unitOfWork.UserRepository.FilterByUserNameOrEmail(userName))
-                            :  (await _unitOfWork.UserRepository.FilterByUserName(userName));
+        var userName  = model.UserName.Trim();
+        var userResult =  (model.EvaluateEmail.HasValue && model?.EvaluateEmail == true)
+                        ?  (await _unitOfWork.UserRepository.FilterByUserNameOrEmail(userName))
+                        :  (await _unitOfWork.UserRepository.FilterByUserName(userName));
 
-            string messageError = !userResult.Any() ? MESSAGE_CONSTANTES.VALIDATION_USER_DOESNT_EXIST
-                                : !userResult.ElementAt(0).IsActive ? MESSAGE_CONSTANTES.VALIDATION_USER_IS_BLOCKED
-                                : userResult.ElementAt(0).IsLocked ? MESSAGE_CONSTANTES.VALIDATION_USER_IS_BLOCKED
-                                : string.Empty;   
+        string messageError = !userResult.Any() ? MESSAGE_CONSTANTS.VALIDATION_USER_DOESNT_EXIST
+                            : !userResult.ElementAt(0).IsActive ? MESSAGE_CONSTANTS.VALIDATION_USER_IS_BLOCKED
+                            : userResult.ElementAt(0).IsLocked ? MESSAGE_CONSTANTS.VALIDATION_USER_IS_BLOCKED
+                            : string.Empty;   
 
-            if (!string.IsNullOrWhiteSpace(messageError))
-            {
-                return Result.Fail<bool>(messageError);
-            }
-
-            var user = userResult.ElementAt(0);
-            string newPassword = RandomPassword.Generate(PASSWORD_RANDOM_MIN_LENGH, PASSWORD_RANDOM_MAX_LENGH);
-            string newPasswordHash = EncryptionUtils.HashText(newPassword);      
-            var result = await _unitOfWork.UserRepository.UpdatePasswordHash(user.Id, newPasswordHash);
-            return Result.Ok(result);
-        }
-        catch (Exception ex)
+        if (!string.IsNullOrWhiteSpace(messageError))
         {
-            _logger.LogError(ex, ex.Message);
-            return Result.Fail(ex.Message);
-        }    
-    }    
+            return Result.Fail<bool>(messageError);
+        }
+
+        var user = userResult.ElementAt(0);
+        string newPassword = RandomPassword.Generate(PASSWORD_RANDOM_MIN_LENGH, PASSWORD_RANDOM_MAX_LENGH);
+        string newPasswordHash = EncryptionUtils.HashText(newPassword);      
+        var result = await _unitOfWork.UserRepository.UpdatePasswordHash(user.Id, newPasswordHash);
+        return Result.Ok(result); 
+    }  
+
     public async Task<Result<bool>> ResetPasswordBydIdUser(int idUser)
     {
- 
         string newPassword = RandomPassword.Generate(PASSWORD_RANDOM_MIN_LENGH, PASSWORD_RANDOM_MAX_LENGH);
         string newPasswordHash = EncryptionUtils.HashText(newPassword);      
         var result = await _unitOfWork.UserRepository.UpdatePasswordHash(idUser, newPasswordHash);
         return Result.Ok(result);   
-    }    
+    }  
+
+    #endregion  
 }

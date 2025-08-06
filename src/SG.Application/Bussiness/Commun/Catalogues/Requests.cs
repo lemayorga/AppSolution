@@ -1,5 +1,3 @@
-using SG.Shared.Request;
-
 namespace SG.Application.Bussiness.Commun.Catalogues.Requests;
 
 public abstract class CatalogueBaseRequest
@@ -15,8 +13,7 @@ public class CatalogueCreateRequest  : CatalogueBaseRequest
     public bool IsActive { get => true; }
 }
 
-public class CatalogueUpdateRequest  : CatalogueBaseRequest, IBaseWithIdRequest<int>
+public class CatalogueUpdateRequest  : CatalogueBaseRequest
 {
-    public int Id { get; set; }
     public bool IsActive { get; set; }
 }

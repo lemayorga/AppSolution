@@ -3,24 +3,28 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SG.Application.Bussiness.Commun.Catalogues.Interfaces;
 using SG.Application.Bussiness.Commun.Catalogues.Requests;
 using SG.Application.Bussiness.Commun.Catalogues.Responses;
-using SG.Application.Responses;
+using SG.Application.Base.Responses;
 using SG.Shared.Responses;
 using SG.Application.Extensions;
+using SG.Application.Base.Validations;
+using SG.Infrastructure.Base.Pagination;
+using SG.Application.Base.Pagination;
 
 namespace  SG.API.Controllers.Commun;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CatalogueController(ICatalogueService application)  : BaseController<CatalogueResponse, CatalogueCreateRequest, CatalogueUpdateRequest>
+public class CatalogueController(ICatalogueService application, IDynamicValidator validator) : BaseController<CatalogueResponse, CatalogueCreateRequest, CatalogueUpdateRequest>
 {
     private readonly ICatalogueService _application = application;
-   
+    private readonly IDynamicValidator _validator = validator;
+
     /// <summary>
     /// Obtener todos los registros.
     /// </summary> 
     /// <returns>Retornar todos los regisrtos.</returns>
     [HttpGet("")]
-    [ProducesResponseType(typeof(OperationResult<IEnumerable<CatalogueResponse>>), StatusCodes.Status200OK)]   
+    [ProducesResponseType(typeof(OperationResult<IEnumerable<CatalogueResponse>>), StatusCodes.Status200OK)]
     public override async Task<IActionResult> Get()
     {
         var response = await _application.GetAll();
@@ -47,7 +51,7 @@ public class CatalogueController(ICatalogueService application)  : BaseControlle
     /// <returns>Retornar el registro.</returns>
     [HttpGet("getByListIds")]
     [ProducesResponseType(typeof(OperationResult<List<CatalogueResponse>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Get([FromQuery(Name = "ids"),BindRequired]List<int> listIds)
+    public async Task<IActionResult> Get([FromQuery(Name = "ids"), BindRequired] List<int> listIds)
     {
         var response = await _application.GetByListIds(listIds);
         return Ok(response.ToOperationResult());
@@ -74,6 +78,12 @@ public class CatalogueController(ICatalogueService application)  : BaseControlle
     [ProducesResponseType(typeof(OperationResult<SuccessWithIdResponse>), StatusCodes.Status201Created)]
     public override async Task<IActionResult> Post([FromBody] CatalogueCreateRequest request)
     {
+        var validationResult = await _validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return Ok(validationResult.ToOperationResultErrors<SuccessWithIdResponse>());
+        }
+
         var response = await _application.AddSave(request);
         return Ok(response.ToOperationResult());
     }
@@ -86,6 +96,11 @@ public class CatalogueController(ICatalogueService application)  : BaseControlle
     [ProducesResponseType(typeof(OperationResult<List<SuccessWithIdResponse>>), StatusCodes.Status201Created)]
     public async Task<IActionResult> PostMany([FromBody] List<CatalogueCreateRequest> request)
     {
+        var validationResult = await _validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return Ok(validationResult.ToOperationResultErrors<SuccessWithIdResponse>());
+        }
         var response = await _application.AddManySave(request);
         return Ok(response.ToOperationResult());
     }
@@ -96,13 +111,18 @@ public class CatalogueController(ICatalogueService application)  : BaseControlle
     /// <param name="id" example="1">id del registro</param>  
     /// <param name="request">Objeto con los datos a insertar</param>    
     [HttpPut("{id:int}")]
-    [ProducesResponseType(typeof(OperationResult<SuccessWithIdResponse>), StatusCodes.Status200OK)]    
-    public override async Task<IActionResult> Put(int id,[FromBody] CatalogueUpdateRequest request)
+    [ProducesResponseType(typeof(OperationResult<SuccessWithIdResponse>), StatusCodes.Status200OK)]
+    public override async Task<IActionResult> Put(int id, [FromBody] CatalogueUpdateRequest request)
     {
+        var validationResult = await _validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return Ok(validationResult.ToOperationResultErrors<SuccessWithIdResponse>());
+        }
         var response = await _application.UpdateById(id, request);
         return Ok(response.ToOperationResult());
     }
-    
+
     // /// <summary>
     // /// List paginate data
     // /// </summary>
@@ -126,4 +146,15 @@ public class CatalogueController(ICatalogueService application)  : BaseControlle
 
     //     return BadRequest(response.Message);
     // }
+    
+    [HttpGet("paginate")]   
+    // [ProducesResponseType(typeof(PagedList<List<CatalogueDto>>), StatusCodes.Status200OK)]
+    // [ProducesResponseType(typeof(PagedList<object>), StatusCodes.Status404NotFound)]    
+    public async Task<IActionResult> Paginate([FromQuery, BindRequired] PaginationRequest request,  [FromQuery] FilterParam[] filters)
+    {   
+        var response =await _application.GetPagination<CatalogueResponse>(request.GetParameters(), filters);
+        if (response.IsSuccess)  return Ok(response);
+
+        return BadRequest(response.Message);
+    }
 }

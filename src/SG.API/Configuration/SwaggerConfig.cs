@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -10,12 +11,8 @@ internal static class SwaggerConfig
 {
     internal static IServiceCollection AddSwaggerConfigurationOpenApi(this IServiceCollection services)
     {
-      // services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>()
-
         services.AddSwaggerGen(swaggerOptions =>
         {
-           
-
            swaggerOptions.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Description =
@@ -29,7 +26,7 @@ internal static class SwaggerConfig
                 BearerFormat = "JWT"
             });
 
-         // swaggerOptions.OperationFilter<FromQueryDictionaryFilter>();
+         // // swaggerOptions.OperationFilter<FromQueryDictionaryFilter>();
 
             swaggerOptions.ExampleFilters();
            
@@ -62,7 +59,14 @@ internal static class SwaggerConfig
             });
 
             swaggerOptions.OperationFilter<Filters.SwaggerDefaultValuesFilter>();
-            
+
+            // Configuración especial para parámetros [FromQuery] con objetos
+           swaggerOptions.OperationFilter<Filters.ArrayObjectQueryParameterFilter>();
+
+           swaggerOptions.SchemaFilter<Filters.EnumSchemaFilter>();
+
+            swaggerOptions.UseAllOfToExtendReferenceSchemas();
+
             swaggerOptions.ResolveConflictingActions(apiDescription => apiDescription.FirstOrDefault());
 
             // Set the comments path for the Swagger JSON and UI.
@@ -75,10 +79,13 @@ internal static class SwaggerConfig
 
     internal static void AddSwaggerConfigurationUI(this IApplicationBuilder app)
     {
-        app.UseSwagger();
+        app.UseSwagger(c =>
+        {
+           c.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi2_0;
+        });
+        
         app.UseSwaggerUI(swaggerOptions =>
         {
-
             // swaggerOptions.SwaggerEndpoint($"swagger/v1/swagger.json", "v1")
              swaggerOptions.DefaultModelExpandDepth(2);
              swaggerOptions.DocExpansion(DocExpansion.None);

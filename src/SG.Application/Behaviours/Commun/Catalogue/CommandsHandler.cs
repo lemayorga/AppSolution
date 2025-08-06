@@ -31,7 +31,8 @@ public sealed class CreateCatalogueCommandHandler
            description: command.Description
         );
 
-        await repository.AddSave(model);
+        await repository.Add(model);
+        await repository.SaveChangesAsync();
 
         return Result.Ok(new SuccessWithIdResponse(model.Id));
     }
@@ -61,12 +62,13 @@ public sealed class UpdateCatalogueCommandHandler
            description: command.Description
         );
 
-        var result = await repository.UpdateByIdSave(command.Id, model);
-        if (result is null)
+        var result = await repository.UpdateById(command.Id, model);
+        if (!result)
         {
-            return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
+            return Result.Fail(MESSAGE_CONSTANTS.NOT_ITEM_FOUND_DATABASE);
         }
 
+        await repository.SaveChangesAsync();
         return Result.Ok(new SuccessWithIdResponse(model.Id));
     }
 }
@@ -77,12 +79,13 @@ public sealed class CatalogueRemoveByIdCommandHandler(ICatalogueRepository repos
 {
     public async Task<Result<bool>> Handle(CatalogueRemoveByIdCommand command)
     {
-        var result = await repository.DeleteByIdSave(command.Id);
+        var result = await repository.DeleteById(command.Id);
         if (!result)
         {
-            return Result.Fail(MESSAGE_CONSTANTES.NOT_ITEM_FOUND_DATABASE);
+            return Result.Fail(MESSAGE_CONSTANTS.NOT_ITEM_FOUND_DATABASE);
         }
-
+        
+        await repository.SaveChangesAsync();
         return Result.Ok(true);
     }
 }

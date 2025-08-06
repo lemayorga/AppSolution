@@ -1,6 +1,9 @@
 using SG.API.Configuration;
 using Serilog;
 using FluentValidation;
+using SG.API.Extensions;
+using SG.Application;
+using System.Text.Json.Serialization;
 
 const string AllowOrigins = "AllowAllOrigins";
 
@@ -17,14 +20,18 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+
 // Configuración de los servicios (equivalente a ConfigureServices)
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+     .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+     
 
 // Agregar soporte para Swagger/OpenAPI
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddHttpContextAccessor();
@@ -33,16 +40,13 @@ builder.Services.AddDependencyInjection(builder.Configuration)
                 .AddOptionsSettings(builder.Configuration);
 
 
-// // Register all validators from assembly
-// // builder.Services.AddValidatorsApplication();
-// builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
-
-
 builder.Services.AddSwaggerConfigurationOpenApi();
 
 await builder.Services.EnsureSeedData(builder.Configuration);
 
-builder.ConfigureSerilog(builder.Configuration);
+
+
+builder.ConfigureSerilogFromFile(builder.Configuration, builder.Environment);
 
 
 builder.Services.AddSerilog(); 
@@ -52,6 +56,7 @@ builder.Services.AddExceptionHandler<SG.API.Middlewares.GlobalExceptionHandler>(
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
+
 
 app.UseExceptionHandler();
 
@@ -72,6 +77,7 @@ app.UseAuthorization();
 
 // Usar CORS
 app.UseCors(AllowOrigins);
+
 
 
 // custom jwt auth middleware

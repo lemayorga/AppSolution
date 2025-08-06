@@ -1,0 +1,57 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Verbose",
+      "Override": {
+        "Microsoft": "Warning",
+        "Microsoft.Hosting.Lifetime": "Information",
+        "System": "Warning"
+      }
+    },
+    "Using": [
+      "Serilog.Sinks.Console",
+      "Serilog.Sinks.File",
+      "Serilog.Sinks.SQLite"
+    ],
+    "Enrich": [
+      "WithMachineName",
+      "WithEnvironmentUserName",
+      "WithExceptionDetails",
+      "WithDemystifiedStackTraces",
+      "FromLogContext"
+    ],
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{SourceContext}] {Message}{NewLine}{Exception}"
+        }
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "C:\\temp\\logs\\App.logs",
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{SourceContext}] {Username} {Message:lj}{NewLine}{Exception}",
+          "rollingInternval": "Day",
+          "shared": true,
+          "retainedFileCountLimit": 5
+        }
+      },
+      {
+        "Name": "SQLite",
+        "Args": {
+          "sqliteDbPath": "logs.db",
+          "tableName": "Logs",
+          "storeTimestampInUtc": true,
+          "batchSize": 1
+        }
+      }
+    ]
+  }
+}

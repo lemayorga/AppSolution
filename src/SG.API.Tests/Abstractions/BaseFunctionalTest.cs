@@ -1,7 +1,7 @@
 using System.Text;
 using Newtonsoft.Json;
 using SG.API.Tests.Extensions;
-using SG.Application.Responses;
+using SG.Application.Base.Responses;
 namespace SG.API.Tests.Abstractions;
 
 public abstract class BaseFunctionalTest : IClassFixture<FunctionalTestWebAppFactory>

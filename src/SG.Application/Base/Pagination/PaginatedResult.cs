@@ -1,8 +1,11 @@
-namespace SG.Application.Responses;
+using System;
+using SG.Application.Base.Responses;
 
-public class PagedList<T> : ResultGeneric<T>
+namespace SG.Application.Base.Pagination;
+
+public class PaginatedResult<T> : ResultGeneric<T>
 {
-    public PagedList(T items, int count, int pageNumber, int pageSize, object? error = null, string errorMessage = "")
+    public PaginatedResult(T items, int count, int pageNumber, int pageSize, object? error = null, string errorMessage = "")
     {
         Data = items;
         IsSuccess  = error == null;
@@ -26,3 +29,6 @@ public class MetaData
     public int PageSize { get; set; }
     public int TotalCount { get; set; }
 }
+
+
+// https://medium.com/@rashad_m/mastering-filtering-and-pagination-in-asp-net-core-and-react-js-part-1-591b10a65993

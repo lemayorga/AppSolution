@@ -1,5 +1,5 @@
 using Newtonsoft.Json;
-using SG.Application.Responses;
+using SG.Application.Base.Responses;
 
 namespace SG.API.Tests.Extensions;
 

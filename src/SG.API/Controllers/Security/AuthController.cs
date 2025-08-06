@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SG.Application.Bussiness.Security.Auth.Interface;
 using SG.Application.Bussiness.Security.Auth.Requests;
 using SG.Application.Bussiness.Security.Auth.Responses;
-using SG.Application.Responses;
+using SG.Application.Base.Responses;
 using SG.Infrastructure.Auth.JwtAuthentication.Models;
 using SG.Infrastructure.Auth.Services;
 using SG.Application.Extensions;

@@ -1,5 +1,5 @@
 using FluentResults;
-using SG.Application.Responses;
+using SG.Application.Base.Responses;
 
 namespace SG.Application.Extensions;
 

@@ -1,10 +1,12 @@
 using FluentResults;
+using SG.Application.Base.Responses;
 using SG.Domain.Base;
+using SG.Infrastructure.Base.Pagination;
 using SG.Shared.Responses;
 
 namespace SG.Application.Base.ServiceLogic;
 
-public interface  IBaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate>
+public interface IBaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate>
     where TEntity : BaseEntity<int>  //class , IEntity
     where TDtoRecord : class
     where TDtoCreate : class
@@ -17,4 +19,5 @@ public interface  IBaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdat
     Task<Result<List<SuccessWithIdResponse>>> AddManySave(List<TDtoCreate> modelDto);
     Task<Result<bool>> DeleteById(int id);
     Task<Result<SuccessWithIdResponse>> UpdateById(int id, TDtoUpdate dto);
+    Task<PagedList<IEnumerable<TRecordPagination>>> GetPagination<TRecordPagination>(PaginationParams pagination, FilterParam[]? filters = null);
 }

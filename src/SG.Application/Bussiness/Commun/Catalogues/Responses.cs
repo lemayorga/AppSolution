@@ -5,6 +5,7 @@ namespace SG.Application.Bussiness.Commun.Catalogues.Responses;
 public  class CatalogueResponse : BaseWithIdResponse
 {
     public CatalogueResponse(){}
+    
     public CatalogueResponse
     (
         int id,

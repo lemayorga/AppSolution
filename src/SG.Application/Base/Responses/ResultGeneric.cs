@@ -1,4 +1,4 @@
-namespace SG.Application.Responses;
+namespace SG.Application.Base.Responses;
 
 public class ResultGeneric<T>
 {

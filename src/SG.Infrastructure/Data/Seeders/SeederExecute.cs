@@ -9,13 +9,13 @@ namespace SG.Infrastructure.Data.Seeders;
 
 public partial class SeederExecute
 {
-    private readonly IConfiguration configuration;
-    private ApplicationDbContext context;
+    private readonly IConfiguration _configuration;
+    private readonly ApplicationDbContext _context;
     
-    private SeederExecute(IConfiguration _configuration, ApplicationDbContext _context)
+    private SeederExecute(IConfiguration configuration, ApplicationDbContext context)
     {
-        configuration = _configuration;
-        context = _context;
+        _configuration = configuration;
+        _context = context;
     }
  
     public static async Task SeedAsync(ApplicationDbContext context, IConfiguration configuration)
@@ -23,7 +23,7 @@ public partial class SeederExecute
         SeederExecute seederExec = new(configuration, context);
         DataApplicationSeedersSettings seedersConfig = new();
         
-        seederExec.configuration.GetSection(NamesApplicationSettings.DataApplicationSeeders).Bind(seedersConfig);
+        seederExec._configuration.GetSection(NamesApplicationSettings.DataApplicationSeeders).Bind(seedersConfig);
 
         if(seedersConfig.Execute)
         {
@@ -53,7 +53,7 @@ public partial class SeederExecute
         int countSave = 0;
         for (int i = 0; i < appSettingRoles.Count(); i++)
         {
-            if(!context.Role.Any(y => y.CodeRol == appSettingRoles[i].Code))
+            if(!_context.Role.Any(y => y.CodeRol == appSettingRoles[i].Code))
             {
                 var roleAdd =  new Role 
                 {
@@ -62,17 +62,17 @@ public partial class SeederExecute
                     IsActive = true 
                 };
 
-                await context.Role.AddAsync(roleAdd);
+                await _context.Role.AddAsync(roleAdd);
                 countSave ++;
             }
         }
 
         if(countSave > 0) 
         {
-            await  context.SaveChangesAsync();
+            await  _context.SaveChangesAsync();
         }
 
-        return context.Role.AsQueryable();
+        return _context.Role.AsQueryable();
     }
 
     private async Task CreateUsers(IQueryable<Role> roles, List<AppSettingUsers> appSettingUsers)
@@ -81,7 +81,7 @@ public partial class SeederExecute
         for (int i = 0; i < appSettingUsers.Count(); i++)
         {
             var userConfig = appSettingUsers[i];
-            User? user = await context.User.FirstOrDefaultAsync(y => y.Email == userConfig.Email);
+            User? user = await _context.User.FirstOrDefaultAsync(y => y.Email == userConfig.Email);
 
             if(user is null && userConfig is not null)
             {
@@ -96,13 +96,13 @@ public partial class SeederExecute
                     IsLocked = false 
                 };
 
-                await context.User.AddAsync(user);
+                await _context.User.AddAsync(user);
             }
 
              await AddUserToRole(roles.ToList(), userConfig!, user!);
         }
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
     }
 
     private async Task AddUserToRole(List<Role> listRoles, AppSettingUsers appSettingUser, User user)
@@ -118,7 +118,7 @@ public partial class SeederExecute
             return;
         }
     
-        if(await context.UsersRoles.AnyAsync(f => f.IdRol == rol.Id && f.IdUser == user.Id && user.Id != 0))
+        if(await _context.UsersRoles.AnyAsync(f => f.IdRol == rol.Id && f.IdUser == user.Id && user.Id != 0))
         {
              return;
         }
