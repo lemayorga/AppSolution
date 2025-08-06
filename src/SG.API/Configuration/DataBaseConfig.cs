@@ -30,7 +30,7 @@ internal static class DataBaseConfig
 
         if (!env.IsDevelopment())
         {
-             if ((await context.Database.GetPendingMigrationsAsync()).Any())//Sólo cuando haya migraciones pendientes
+            if ((await context.Database.GetPendingMigrationsAsync()).Any())
             {
                 await context.Database.MigrateAsync();
             }

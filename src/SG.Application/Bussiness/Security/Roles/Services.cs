@@ -13,12 +13,9 @@ using SG.Infrastructure.Data.Extensions;
 
 namespace SG.Application.Bussiness.Security.Roles.Service;
 
-
 public class RoleService : BaseGenericService<Role, RoleResponse, RoleCreateRequest, RoleUpdateRequest>, IRoleService
 {
-    public RoleService(IUnitOfWork unitOfWork, IMapper mapper,  ILogger<RoleService> logger) : base(unitOfWork, mapper, logger)
-    {
-    }
+    public RoleService(IUnitOfWork unitOfWork, IMapper mapper,  ILogger<RoleService> logger) : base(unitOfWork, mapper, logger) {  }
 
     public async Task<Result<bool>> AddUsersToRole(int idRole, List<int> listIdUsers)
     {

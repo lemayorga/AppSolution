@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SG.Application.Bussiness.Security.Users.Interfaces;
 using SG.Application.Bussiness.Security.Users.Requests;
 using SG.Application.Bussiness.Security.Users.Responses;
-using SG.Application.Responses;
+using SG.Application.Base.Responses;
 using SG.Application.Extensions;
 using SG.Shared.Responses;
 

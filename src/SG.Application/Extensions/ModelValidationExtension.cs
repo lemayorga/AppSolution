@@ -1,7 +1,7 @@
-using System;
 using FluentResults;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using SG.Application.Base.Responses;
 
 namespace SG.Application.Extensions;
 
@@ -15,16 +15,26 @@ public static class ModelValidationExtension
             modelState.AddModelError(error.PropertyName, error.ErrorMessage);
         }
     }
-    
-    public static Result<T> GetResultErrors<T>(this ValidationResult validator) where T: class 
+
+    public static Result<T> GetResultErrors<T>(this ValidationResult validator) where T : class
     {
         var errors = new List<string>();
         foreach (var failure in validator.Errors)
         {
-            errors.Add($"Validation failed for {failure.PropertyName} " +
-                       $"with the error: {failure.ErrorMessage}");
+            errors.Add(failure.ErrorMessage);
         }
 
-        return Result.Fail<T>(errors); 
+        return Result.Fail<T>(errors);
+    }
+    
+    public static OperationResult<T>  ToOperationResultErrors<T>(this ValidationResult validator) where T: class 
+    {
+        var errors = new List<string>();
+        foreach (var failure in validator.Errors)
+        {
+            errors.Add(failure.ErrorMessage);
+        }
+
+        return Result.Fail<T>(errors).ToOperationResult<T>(); 
     }
 }

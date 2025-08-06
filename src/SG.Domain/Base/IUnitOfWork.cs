@@ -5,6 +5,7 @@ using SG.Domain.Repositories.Security;
 namespace SG.Domain.Base;
 public interface IUnitOfWork : IDisposable
 {
+    bool SaveChanges();
     Task<bool> SaveChangesAsync();
     IBaseGenericRepository<T> Repository<T>() where T : class;
 

@@ -30,24 +30,11 @@ public  class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> w
         await _entities.AddAsync(entity);
     }
 
-    public virtual async Task<TEntity> AddSave(TEntity entity)
-    {
-        await _entities.AddAsync(entity);
-        await SaveChangesAsync();
-        return entity;
-    }    
-
     public virtual async Task AddMany(IEnumerable<TEntity> entities)
     {
         await _entities.AddRangeAsync(entities);
     }
 
-    public virtual async Task<IEnumerable<TEntity>> AddManySave(IEnumerable<TEntity> entities)
-    {
-        await _entities.AddRangeAsync(entities);
-        await SaveChangesAsync();
-        return entities;
-    }
 
     public virtual async Task<TEntity?> GetById(params object[] keys)
     {
@@ -134,13 +121,6 @@ public  class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> w
         _context!.Entry(entity).CurrentValues.SetValues(entity);
     }
 
-    public virtual async Task<TEntity>  UpdateAndSave(TEntity entity)
-    {
-        _context!.Entry(entity).CurrentValues.SetValues(entity);
-        await SaveChangesAsync();
-        return entity;
-    }
-
     public virtual async Task<bool> UpdateById(int id, TEntity entity)
     {
         TEntity? _entity = await GetById(id);
@@ -151,18 +131,6 @@ public  class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> w
         }
         return false;
     }
-
-    public virtual async Task<TEntity?> UpdateByIdSave(int id, TEntity entity)
-    {
-        TEntity? _entity = await GetById(id);
-        if (_entity != null)
-        {
-            _context.Entry(_entity).CurrentValues.SetValues(entity);
-            await SaveChangesAsync();
-        }
-        return _entity;
-    }
-
 
     public virtual async Task<bool> UpdateOne(Expression<Func<TEntity, bool>> where, TEntity entity)
     {
@@ -187,7 +155,7 @@ public  class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> w
         return _entity;
     }    
 
-    public virtual async Task<bool> DeleteById(int id)
+   public virtual async Task<bool> DeleteById(int id)
     {
         TEntity? entity = await GetById(id);
         if (entity != null)
@@ -198,39 +166,15 @@ public  class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> w
         return false;
     }
 
-    public virtual async Task<bool> DeleteByIdSave(int id)
-    {
-        TEntity? entity = await GetById(id);
-        if (entity != null)
-        {
-            _entities.Remove(entity);
-            return await SaveChangesAsync();
-        }
-        return false;
-    }
-
     public virtual void Delete(TEntity entity)
     {
         _entities.Remove(entity);
-    }
-
-    public virtual async Task<bool> DeleteSave(TEntity entity)
-    {
-        _entities.Remove(entity);
-        return await SaveChangesAsync();
     }
 
     public virtual void DeleteMany(Expression<Func<TEntity, bool>> where)
     {
         var entities = GetAll(where);
         _entities.RemoveRange(entities);
-    }
-
-    public virtual async Task<bool> DeleteManySave(Expression<Func<TEntity, bool>> where)
-    {
-        var entities = GetAll(where);
-        _entities.RemoveRange(entities);
-        return await SaveChangesAsync();
     }
 
     public virtual async Task<bool> Any(Expression<Func<TEntity, bool>> predicate)

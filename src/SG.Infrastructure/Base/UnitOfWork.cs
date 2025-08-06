@@ -1,4 +1,3 @@
-using SG.Domain;
 using SG.Domain.Base;
 using SG.Domain.Repositories.Commun;
 using SG.Domain.Repositories.Security;
@@ -43,6 +42,9 @@ public class UnitOfWork : IUnitOfWork
         UserRepository = _userRepository;
         UsersRolesRepository = _usersRolesRepository;
     }
+
+    public bool SaveChanges()
+     =>  _context.SaveChanges() > 0;
 
     public async Task<bool> SaveChangesAsync()
      => await _context.SaveChangesAsync() > 0;

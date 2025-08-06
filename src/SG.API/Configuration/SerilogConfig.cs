@@ -5,18 +5,19 @@ namespace SG.API.Configuration;
 
 public static class SerilogConfig
 {
-    internal static void ConfigureSerilog(this WebApplicationBuilder builder, ConfigurationManager configuration)
+    internal static void ConfigureSerilogFromFile(this WebApplicationBuilder builder, ConfigurationManager configuration,IWebHostEnvironment env)
     {
-
         var settings = new AppConfiguration(configuration).GetAppSettings();
 
-        if(!settings.EnableLoggingSerilog) 
-        { 
-            return; 
-        }
+        if(!settings.EnableLoggingSerilog){  return; }
+    
+        bool isDevelopment = env.IsDevelopment();
+        string fileNameSerilogConfig = $"serilogconfig{(isDevelopment ? ".Development" : "")}.json";
 
         var loggerConfig = new LoggerConfiguration()
-                .ReadFrom.Configuration(new ConfigurationBuilder().AddJsonFile(NamesFileApplicationSettings.SerilogConfig).Build())
+                .ReadFrom.Configuration(new ConfigurationBuilder()
+                         .AddJsonFile(fileNameSerilogConfig)
+                         .Build())
                 .Enrich.FromLogContext();
 
         if(settings.EnableLoggingEntityFrameworkCore)
