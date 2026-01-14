@@ -12,26 +12,18 @@ namespace SG.API.Controllers.Security;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthController : ControllerBase
+public class AuthController
+(
+    IAuthService application, 
+    IHttpContextAccessor httpContextAccessor,
+    Infrastructure.Auth.JwtAuthentication.IJwtBuilder jwtBuilder,
+    IPrincipalCurrentUser principal
+)  : ControllerBase
 {
-    private readonly IAuthService _application;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IPrincipalCurrentUser _principal2;
-    private readonly Infrastructure.Auth.JwtAuthentication.IJwtBuilder _jwtBuilder;  
-
-    public AuthController
-    (
-        IAuthService application, 
-        IHttpContextAccessor httpContextAccessor,
-        Infrastructure.Auth.JwtAuthentication.IJwtBuilder jwtBuilder,
-        IPrincipalCurrentUser principal
-    ) 
-    {
-        _application = application;
-        _httpContextAccessor = httpContextAccessor;
-        _jwtBuilder = jwtBuilder;
-        _principal2  = principal;
-    }
+    private readonly IAuthService _application = application;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly IPrincipalCurrentUser _principal2 = principal;
+    private readonly Infrastructure.Auth.JwtAuthentication.IJwtBuilder _jwtBuilder = jwtBuilder;
 
     /// <summary>
     /// Inicio de sesión
@@ -42,7 +34,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(OperationResult<LoginResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        if(!ModelState.IsValid) {  return BadRequest();  }
+        if (!ModelState.IsValid) { return BadRequest(); }
         var response = await _application.Login(request);
         return Ok(response.ToOperationResult());
     }
@@ -58,12 +50,12 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> RefreshToken(RefreshTokenModel tokenResponse)
     {
         var newAccessToken = await _application.RefreshToken(tokenResponse);
-        if(newAccessToken?.Errors?.Any() ?? false)
+        if (newAccessToken?.Errors?.Any() ?? false)
         {
             return Unauthorized();
         }
         return Ok(newAccessToken?.ToOperationResult());
-    }   
+    }
 
     /// <summary>
     /// Logout
@@ -71,12 +63,25 @@ public class AuthController : ControllerBase
     /// <returns></returns>
     [Authorize]
     [HttpPost("logout")]
-    [ProducesResponseType(typeof(OperationResult<LogoutResponse>), StatusCodes.Status200OK)]    
+    [ProducesResponseType(typeof(OperationResult<LogoutResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Logout()  // https://code-maze.com/using-refresh-tokens-in-asp-net-core-authentication/ para el angular
     {
         var result = await _application.Logout(_principal2.User!.Id);
         Response.HttpContext.Items.Remove("idUser");
         return Ok(result.ToOperationResult());
+    }
+    
+    /// <summary>
+    /// MySelfUser
+    /// </summary>
+    /// <returns></returns>
+    [Authorize]
+    [HttpGet("myself")]
+    public async Task<IActionResult> MySelfUser()  
+    {
+        var result = _httpContextAccessor.HttpContext?.User;
+        var rr  = _principal2;
+        return Ok(rr.User);
     }
 }
 

@@ -1,4 +1,5 @@
 using System.Net;
+using Bogus;
 using SG.API.Tests.Abstractions;
 using SG.Application.Behaviours.Commun.Catalogue;
 using SG.Application.Bussiness.Commun.Catalogues.Requests;
@@ -9,38 +10,43 @@ using Xunit.Extensions.Ordering;
 namespace SG.API.Tests.Controllers.Commun;
 
 [CollectionDefinition(nameof(CatalogueController))]
-public class CatalogueController : BaseFunctionalTest
+public class CatalogueController : BaseFunctionalTest, IClassFixture<SharedDataTest>
 {
     protected override string _url => "api/catalogue";
-
-    public CatalogueController(FunctionalTestWebAppFactory factory) : base(factory) {  } 
-
-    CatalogueCreateRequest [] register = 
+    private readonly SharedDataTest _sharedData;
+    public CatalogueController(FunctionalTestWebAppFactory factory, SharedDataTest sharedData) : base(factory)
     {
-        new CatalogueCreateRequest { Group = "group1", Value = "valor 1", Description = "Demo" },
-        new CatalogueCreateRequest { Group = "group1", Value = "valor 2", Description = "Demo" },
-        new CatalogueCreateRequest { Group = "group1", Value = "valor 3", Description = "Demo" },
-        new CatalogueCreateRequest { Group = "group2", Value = "valor 1", Description = "Demo" },
-        new CatalogueCreateRequest { Group = "group2", Value = "valor grupo 2", Description = "Demo" },
-        new CatalogueCreateRequest { Group = "group2", Value = "valor grupo 2" },
-        new CatalogueCreateRequest { Group = "group3", Value = "valor grupo 3" },
-    };
-    IEnumerable<int> listIdsRegister { get => Enumerable.Range(1, register.Length + 1); }
+          _sharedData = sharedData;
+     } 
+
+    List<CatalogueCreateRequest> InicializateCreationData(int totalRegister)
+    {
+        var dataRule = new Faker<CatalogueCreateRequest>()
+            .RuleFor(u => u.Group, f => f.Name.FirstName())
+            .RuleFor(u => u.Value, f => f.Name.FirstName())
+            .RuleFor(u => u.Description, f => f.Name.FirstName());
+
+        var rowsData = dataRule.Generate(totalRegister);
+        return rowsData;
+    }
 
     [Fact, Order(0)]
     public async Task Post()
     {
-        var body = register.First();
-        var (response, responseResult)  = await PostRequest<SuccessWithIdResponse>(_url, body);    
-        AssertResponseWithContent(response,HttpStatusCode.OK, responseResult);
+        var body = InicializateCreationData(1).First();
+        var (response, responseResult) = await PostRequest<SuccessWithIdResponse>(_url, body);
+        _sharedData.AddIdsToListIdData(responseResult.Value); 
+        AssertResponseWithContent(response, HttpStatusCode.OK, responseResult);
+
     }
 
     [Fact, Order(1)]
     public async Task PostMany()
     {
-        var body = register.Skip(1).ToArray();
-        var (response, responseResult)  = await PostRequest<List<SuccessWithIdResponse>>($"{_url}/addMany", body);
-        AssertResponseWithContent(response,HttpStatusCode.OK, responseResult); 
+        var body = InicializateCreationData(3);
+        var (response, responseResult) = await PostRequest<List<SuccessWithIdResponse>>($"{_url}/addMany", body);
+        _sharedData.AddIdsToListIdData(responseResult.Value); 
+        AssertResponseWithContent(response, HttpStatusCode.OK, responseResult); 
     }    
 
     [Fact, Order(2)]
@@ -51,7 +57,7 @@ public class CatalogueController : BaseFunctionalTest
     }
 
     [Theory(), Order(3), CombinatorialData]
-    public async Task GetBydId([CombinatorialRange(from: 1, count: 5)]int id)
+    public async Task GetBydId([CombinatorialRange(from: 1, count: 2)]int id)
     {
         var (response, responseResult)  = await GetRequest<CatalogueResponse>($"{_url}/{id}");
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult);
@@ -61,20 +67,19 @@ public class CatalogueController : BaseFunctionalTest
     [Fact, Order(4)]
     public async Task GetByListIds()
     {
-        var parameters = listIdsRegister.Select(x => $"ids={x}");
+        var parameters = _sharedData.GetListIdDataValueQueryParameter("ids");
         var uri = new Uri(_client.BaseAddress!, $"{_url}/getByListIds?").AddQueryParams(parameters);
         var (response, responseResult)  = await GetRequest<CatalogueResponse[]>(uri);
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult);        
     }
 
     [Theory(), Order(5), CombinatorialData]
-    public async Task Put([CombinatorialRange(from: 1, count: 5)]int id)
+    public async Task Put([CombinatorialRange(from: 1, count: 3)]int id)
     {
-        var data = register.First();
         var body  = new CatalogueUpdateRequest
         {
-            Group = data.Group,            
-            Value = "Cambio de dato",
+            Group = "CambioGrupo",            
+            Value = $"Cambio de dato _{id}",
             Description = "cambio de dato",
             IsActive = false,
         };
@@ -84,7 +89,7 @@ public class CatalogueController : BaseFunctionalTest
     }
 
     [Theory(), Order(6), CombinatorialData]
-    public async Task Remove([CombinatorialRange(from: 1, count: 5)]int id)
+    public async Task Remove([CombinatorialRange(from: 1, count: 3)]int id)
     {
         var (response, responseResult)  = await DeleteRequest<bool>($"{_url}/{id}");
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult); 

@@ -13,7 +13,7 @@ internal static class SwaggerConfig
     {
         services.AddSwaggerGen(swaggerOptions =>
         {
-           swaggerOptions.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+           swaggerOptions.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
             {
                 Description =
                     "JWT Authorization Header - utilizado com Bearer Authentication.\r\n\r\n" +
@@ -21,6 +21,8 @@ internal static class SwaggerConfig
                     "Exemplo (informar sem as aspas): 'Bearer 12345abcdef'",
                 Name = "JWT Authentication",
                 In = ParameterLocation.Header,
+
+
                 Type = SecuritySchemeType.Http,
                 Scheme = JwtBearerDefaults.AuthenticationScheme,
                 BearerFormat = "JWT"
@@ -51,7 +53,7 @@ internal static class SwaggerConfig
                         Reference = new OpenApiReference
                         {
                             Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
+                            Id = "bearerAuth"
                         }
                     },
                     Array.Empty<string>()
@@ -81,7 +83,7 @@ internal static class SwaggerConfig
     {
         app.UseSwagger(c =>
         {
-           c.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi2_0;
+         //  c.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi2_0;
         });
         
         app.UseSwaggerUI(swaggerOptions =>

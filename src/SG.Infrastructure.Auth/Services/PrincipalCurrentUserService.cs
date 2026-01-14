@@ -10,7 +10,7 @@ public interface IPrincipalCurrentUser
     ClaimsPrincipal? ClaimPrincipal { get; }
 }
 
-public record CurrentUser(int Id, string UserName);
+public record CurrentUser(int Id, string UserName, string userEmail);
 
 public sealed class PrincipalCurrentUserService : IPrincipalCurrentUser
 {
@@ -24,10 +24,11 @@ public sealed class PrincipalCurrentUserService : IPrincipalCurrentUser
 
         var userId = _httpContextAccessor.HttpContext?.User?.GetUserIdFromClaims<int>();
         var userName = _httpContextAccessor.HttpContext?.User?.GetValueClaim<string>(JwtClaimsCustomNames.UserName);
+        var userEmail = _httpContextAccessor.HttpContext?.User?.GetValueClaim<string>(JwtClaimsCustomNames.UserEmail);
 
         if(userId.HasValue)
         {
-            User = new CurrentUser(Convert.ToInt32(userId), userName!);
+            User = new CurrentUser(Convert.ToInt32(userId), userName!, userEmail!);
         }
 
        ClaimPrincipal =  _httpContextAccessor.HttpContext?.User;

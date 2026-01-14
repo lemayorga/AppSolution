@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SG.Infrastructure.Data.Config;
 using SG.Infrastructure.Data.Context;
+using SG.Infrastructure.Data.Seeders;
 using SG.Shared.Enumerators;
 using Testcontainers.MsSql;
 using Testcontainers.PostgreSql;
@@ -56,14 +57,15 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
             });         
         });
     }
-    
+
     public async Task InitializeAsync()
     {
-       //return _dbContainer.StartAsync(); 
         await _dbContainer.StartAsync();
         using var scope = Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
         await dbContext.Database.MigrateAsync();
+        await SeederExecute.SeedAsync(dbContext, configuration, isTest: true);
     }
 
     Task IAsyncLifetime.DisposeAsync()

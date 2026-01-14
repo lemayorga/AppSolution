@@ -110,7 +110,7 @@ public static partial class QueryableExtensions
         var parameter = Expression.Parameter(typeof(T), "x");
         
         // Build OR conditions for each search field
-        Expression combinedExpression = null;
+        Expression? combinedExpression = null;
         foreach (var field in parameters.SearchFields)
         {
             var property = Expression.Property(parameter, field);

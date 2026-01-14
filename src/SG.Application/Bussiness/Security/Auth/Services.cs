@@ -11,6 +11,7 @@ using SG.Application.Bussiness.Security.Auth.Interface;
 using SG.Application.Bussiness.Security.Roles.Interfaces;
 using SG.Domain.Base;
 using SG.Domain.Entities.Security;
+using Microsoft.EntityFrameworkCore;
 
 namespace SG.Application.Bussiness.Security.Auth.Service;
 
@@ -31,7 +32,7 @@ public class AuthService
     {
         var (userName, password) = loginModel;
 
-        var userResult = (loginModel.EvaluateEmail.HasValue && loginModel?.EvaluateEmail == true)
+        var userResult = (loginModel?.EvaluateEmail ?? false)
                         ? (await _unitOfWork.UserRepository.FilterByUserNameOrEmail(userName))
                         : (await _unitOfWork.UserRepository.FilterByUserName(userName));
 

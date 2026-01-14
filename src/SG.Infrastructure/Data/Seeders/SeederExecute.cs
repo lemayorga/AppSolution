@@ -18,14 +18,14 @@ public partial class SeederExecute
         _context = context;
     }
  
-    public static async Task SeedAsync(ApplicationDbContext context, IConfiguration configuration)
+    public static async Task SeedAsync(ApplicationDbContext context, IConfiguration configuration, bool isTest = false)
     {
         SeederExecute seederExec = new(configuration, context);
         DataApplicationSeedersSettings seedersConfig = new();
         
         seederExec._configuration.GetSection(NamesApplicationSettings.DataApplicationSeeders).Bind(seedersConfig);
 
-        if(seedersConfig.Execute)
+        if(seedersConfig.Execute || isTest)
         {
             await seederExec.InsertDataInitial(seedersConfig);
         }
