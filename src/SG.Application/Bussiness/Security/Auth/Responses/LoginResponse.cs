@@ -12,13 +12,15 @@ public class LoginResponse
     public string Email { get; set; } = default!;
     public TokenResponse Tokens { get; set; } = default!;
 
-    public LoginResponse(User user,string accessToken,string refreshToken)
+    public LoginResponse(){}
+
+    public LoginResponse(User user, string accessToken, string refreshToken)
     {
         IdUser = user.Id;
         DisplayName = user.Username;
         UserName = user.Username;
         Email = user.Email;
-        Tokens = new TokenResponse 
+        Tokens = new TokenResponse
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken

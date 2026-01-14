@@ -35,7 +35,7 @@ public class UserRepository : BaseGenericRepository<User>, IUserRepository
 
     public async Task<bool> AddOrUpdateRefreshTokenUser(int idUser, string refreshToken, DateTime refreshTokenExpiry)
     {
-        var existsUserToken =  await ExistRefreshTokenByIdUser(idUser);
+       var existsUserToken =  await ExistRefreshTokenByIdUser(idUser);
        if(existsUserToken)
        {
             return await _context.UsersToken.Where(x => x.IdUser == idUser)
@@ -57,7 +57,7 @@ public class UserRepository : BaseGenericRepository<User>, IUserRepository
     
     public async Task<(string?, DateTime?)> GetValuesRefreshTokenByUser(int idUser)
     {
-      var userToken =  await _context.UsersToken.FirstOrDefaultAsync(x => x.Id == idUser);
+      var userToken =  await _context.UsersToken.FirstOrDefaultAsync(x => x.IdUser == idUser);
       if(userToken is  not null) 
       {
         var (refreshToken, refreshTokenExpiry) = userToken!;

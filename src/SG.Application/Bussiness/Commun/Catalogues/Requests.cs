@@ -10,6 +10,7 @@ public abstract class CatalogueBaseRequest
 
 public class CatalogueCreateRequest  : CatalogueBaseRequest
 {
+    public CatalogueCreateRequest() { }
     public bool IsActive { get => true; }
 }
 
