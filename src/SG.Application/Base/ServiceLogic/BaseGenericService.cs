@@ -31,7 +31,7 @@ public class BaseGenericService<TEntity, TDtoRecord, TDtoCreate, TDtoUpdate> : I
 
     protected internal IBaseGenericRepository<TEntity> GetInstanceRepository()
         => _unitOfWork.Repository<TEntity>();
-
+    
     public virtual async Task<Result<IEnumerable<TDtoRecord>>> GetAll()
     {
         var result = await _unitOfWork.Repository<TEntity>().GetAll().ToListAsync();

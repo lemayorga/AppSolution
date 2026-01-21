@@ -1,4 +1,6 @@
+using System.Data;
 using System.Reflection;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -21,6 +23,12 @@ public sealed class ApplicationDbContext : DbContext
         _settings =  settings.Value;
     }
 
+    public IDbConnection CreateConnection(string connectionString = "DefaultConnection")
+    {
+        string? connection = _configuration.GetConnectionString(connectionString);
+        return  new SqlConnection(connectionString);
+    }
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);

@@ -1,4 +1,6 @@
+using System.Data;
 using System.Linq.Expressions;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
 using SG.Domain.Base;
 using SG.Infrastructure.Data.Context;
@@ -9,11 +11,12 @@ public  class BaseGenericRepository<TEntity> : IBaseGenericRepository<TEntity> w
 {
     protected readonly ApplicationDbContext _context;
     protected readonly DbSet<TEntity> _entities;
-
+    protected readonly IDbConnection _connection;
     public BaseGenericRepository(ApplicationDbContext context)
     {
         _context = context;
         _entities = context.Set<TEntity>();
+        _connection = context.CreateConnection();    
     }
 
     public virtual bool SaveChanges()
