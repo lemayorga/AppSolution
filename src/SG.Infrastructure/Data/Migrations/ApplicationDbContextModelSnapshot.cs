@@ -161,39 +161,27 @@ namespace SG.Infrastructure.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<char>("ChangeTimeType")
-                        .HasMaxLength(1)
-                        .HasColumnType("character(1)");
-
-                    b.Property<int>("MinimumDigits")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PasswordChangeTime")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("RequiredCharacters")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("RequiredLowercase")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("RequiredUppercase")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("SpecialCharacters")
+                    b.Property<string>("Code")
                         .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("character varying(25)");
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnOrder(1);
 
-                    b.Property<int>("TemporaryPasswordChangeTime")
-                        .HasColumnType("integer");
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnOrder(3);
 
-                    b.Property<int>("TimeNoRepeat")
-                        .HasColumnType("integer");
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("Id");
 

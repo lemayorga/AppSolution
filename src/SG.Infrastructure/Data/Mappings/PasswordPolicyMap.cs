@@ -9,17 +9,9 @@ public class PasswordPolicyMap : IEntityTypeConfiguration<PasswordPolicy>
     public void Configure(EntityTypeBuilder<PasswordPolicy> builder)
     {
         builder.ToTable("PasswordPolicy");
-        builder.Property(c => c.Id).IsRequired();
-        builder.Property(c => c.MinimumDigits).IsRequired();
-        builder.Property(c => c.RequiredLowercase).IsRequired();
-        builder.Property(c => c.RequiredUppercase).IsRequired();
-        builder.Property(c => c.RequiredCharacters).IsRequired();
-
-        builder.Property(c => c.SpecialCharacters).HasMaxLength(DataSchemaConstants.DEFAULT_LENGTH_EXTRA_SHORT_TEXT).IsRequired();
-        builder.Property(c => c.TimeNoRepeat).IsRequired();
-        builder.Property(c => c.ChangeTimeType).HasMaxLength(1).IsRequired();
-        builder.Property(c => c.PasswordChangeTime).IsRequired();
-        builder.Property(c => c.TemporaryPasswordChangeTime).IsRequired();
+        builder.Property(c => c.Id).HasColumnOrder(0).IsRequired();
+        builder.Property(c => c.Code).HasColumnOrder(1).HasMaxLength(DataSchemaConstants.DEFAULT_LENGTH_SMALL_TEXT).IsRequired();
+        builder.Property(c => c.Value).HasColumnOrder(2).HasMaxLength(DataSchemaConstants.DEFAULT_LENGTH_TINY_TEXT).IsRequired();
+        builder.Property(c => c.Description).HasColumnOrder(3).HasMaxLength(DataSchemaConstants.DEFAULT_LENGTH_LARGE_TEXT).IsRequired(false);
     }
 }
- 

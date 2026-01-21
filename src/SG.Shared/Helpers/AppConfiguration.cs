@@ -5,10 +5,7 @@ namespace SG.Shared.Helpers;
 public class AppConfiguration
 {
     private IConfiguration _configurationRoot;
-    public IConfiguration ConfigurationRoot
-    {
-        get { return _configurationRoot; }
-    }
+    public IConfiguration ConfigurationRoot  {   get { return _configurationRoot; }  }
 
     public AppConfiguration() =>
         _configurationRoot = ReadFileSetting(string.Empty);
@@ -22,16 +19,35 @@ public class AppConfiguration
     public AppConfiguration(IConfiguration configuration) =>
         _configurationRoot = configuration;
 
-    public static void AddFileConfiguration(IConfigurationManager configuration,string path, string fileName)
+    /// <summary>
+    /// Add file configuration en execute time
+    /// </summary>
+    /// <param name="configuration">Configuration from inyection dependes</param>
+    /// <param name="path">Path from  file</param>
+    /// <param name="fileName">File name</param>
+   /// <param name="_reloadOnChange">Option of reload on change</param>
+    public static void AddFileConfiguration(IConfigurationManager configuration,string path, string fileName, bool _reloadOnChange = true)
     {
         configuration.SetBasePath(path)
-                    .AddJsonFile(fileName, optional: false, reloadOnChange: true);
+                    .AddJsonFile(fileName, optional: false, reloadOnChange: _reloadOnChange);
     }
+    
+    /// <summary>
+    /// Get AppSettings
+    /// </summary>
+    /// <returns></returns>
     public AppSettings GetAppSettings()
     {
         return this.GetSectionAsObject<AppSettings>(NamesApplicationSettings.ApplicationSettings);
     }
 
+
+    /// <summary>
+    /// Read section from configuration
+    /// </summary>
+    /// <typeparam name="T">Convert values</typeparam>
+    /// <param name="sectionName">Section name</param>
+    /// <returns></returns>
     public T GetSectionAsObject<T>(string? sectionName = null) where T : new() 
     {
         T resultModel = new();
@@ -46,7 +62,13 @@ public class AppConfiguration
         
         return resultModel;
     }
-
+    
+    /// <summary>
+    /// Read settings from file name configuration
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
     private IConfigurationRoot ReadFileSetting(string fileName, string? path = null)
     {
         path ??= Directory.GetCurrentDirectory();

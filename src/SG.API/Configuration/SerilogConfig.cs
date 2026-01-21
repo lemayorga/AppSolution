@@ -1,6 +1,5 @@
 using Serilog;
 using SG.Shared.Helpers;
-using SG.Shared.Settings;
 namespace SG.API.Configuration;
 
 public static class SerilogConfig
