@@ -1,3 +1,5 @@
+using SG.Shared.Responses;
+
 namespace SG.Shared.Settings;
 
 public sealed class DataApplicationSeedersSettings
@@ -5,9 +7,9 @@ public sealed class DataApplicationSeedersSettings
     public bool Execute { get; set; }
     public List<AppSettingRoles> Roles { get; set; } = new();
     public List<AppSettingUsers> Users { get; set; } = new();
-    public Dictionary<string, bool>? FilesExecute { get; set; }
 
- 
+    public List<GeneralCodesValues> PasswordPolicies { get; set; } = new();
+
 }
 public sealed class AppSettingRoles
 {

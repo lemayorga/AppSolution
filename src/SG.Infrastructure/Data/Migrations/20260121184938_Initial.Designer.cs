@@ -12,8 +12,8 @@ using SG.Infrastructure.Data.Context;
 namespace SG.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250319170854_UserTokenRefresh")]
-    partial class UserTokenRefresh
+    [Migration("20260121184938_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,44 +25,7 @@ namespace SG.Infrastructure.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SG.Domain.Commun.Entities.Catalogue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnOrder(0);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(800)
-                        .HasColumnType("character varying(800)")
-                        .HasColumnOrder(4);
-
-                    b.Property<string>("Group")
-                        .IsRequired()
-                        .HasMaxLength(80)
-                        .HasColumnType("character varying(80)")
-                        .HasColumnOrder(1);
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnOrder(3);
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnOrder(2);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Catalogue", (string)null);
-                });
-
-            modelBuilder.Entity("SG.Domain.Security.Entities.Action", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Commun.Catalogue", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,22 +33,65 @@ namespace SG.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)");
 
-                    b.Property<bool>("State")
+                    b.Property<string>("Description")
+                        .HasMaxLength(800)
+                        .HasColumnType("character varying(800)");
+
+                    b.Property<int?>("IdCatalogueHigher")
+                        .HasColumnType("integer")
+                        .HasColumnName("IdCatalogueHigher");
+
+                    b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
+
+                    b.Property<int>("Orden")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCatalogueHigher");
+
+                    b.ToTable("Catalogue", (string)null);
+                });
+
+            modelBuilder.Entity("SG.Domain.Entities.Security.Action", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Action", (string)null);
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.Module", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.Module", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -101,15 +107,15 @@ namespace SG.Infrastructure.Data.Migrations
                     b.Property<int?>("IdParentModule")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("State")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
 
                     b.HasKey("Id");
 
@@ -118,7 +124,7 @@ namespace SG.Infrastructure.Data.Migrations
                     b.ToTable("Module", (string)null);
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.PasswordHistory", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.PasswordHistory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -154,50 +160,38 @@ namespace SG.Infrastructure.Data.Migrations
                     b.ToTable("PasswordHistory", (string)null);
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.PasswordPolicy", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.PasswordPolicy", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<char>("ChangeTimeType")
-                        .HasMaxLength(1)
-                        .HasColumnType("character(1)");
-
-                    b.Property<int>("MinimumDigits")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PasswordChangeTime")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("RequiredCharacters")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("RequiredLowercase")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("RequiredUppercase")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("SpecialCharacters")
+                    b.Property<string>("Code")
                         .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("character varying(25)");
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnOrder(1);
 
-                    b.Property<int>("TemporaryPasswordChangeTime")
-                        .HasColumnType("integer");
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnOrder(3);
 
-                    b.Property<int>("TimeNoRepeat")
-                        .HasColumnType("integer");
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("Id");
 
                     b.ToTable("PasswordPolicy", (string)null);
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.Permission", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.Permission", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -214,7 +208,7 @@ namespace SG.Infrastructure.Data.Migrations
                     b.Property<int>("IdRol")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("State")
+                    b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
@@ -228,7 +222,7 @@ namespace SG.Infrastructure.Data.Migrations
                     b.ToTable("Permissions", (string)null);
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.Role", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -260,7 +254,7 @@ namespace SG.Infrastructure.Data.Migrations
                     b.ToTable("Role", (string)null);
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.User", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -316,7 +310,7 @@ namespace SG.Infrastructure.Data.Migrations
                     b.ToTable("User", (string)null);
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.UsersRoles", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.UsersRoles", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -344,7 +338,7 @@ namespace SG.Infrastructure.Data.Migrations
                     b.ToTable("UsersRoles", (string)null);
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.UsersToken", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.UsersToken", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -375,9 +369,19 @@ namespace SG.Infrastructure.Data.Migrations
                     b.ToTable("UsersToken", (string)null);
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.Module", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Commun.Catalogue", b =>
                 {
-                    b.HasOne("SG.Domain.Security.Entities.Module", "ParentModule")
+                    b.HasOne("SG.Domain.Entities.Commun.Catalogue", "CatalogueHigher")
+                        .WithMany("CatalogueChildren")
+                        .HasForeignKey("IdCatalogueHigher")
+                        .HasConstraintName("FK_Catalogue_Catalogue_IdCatalogueHigher");
+
+                    b.Navigation("CatalogueHigher");
+                });
+
+            modelBuilder.Entity("SG.Domain.Entities.Security.Module", b =>
+                {
+                    b.HasOne("SG.Domain.Entities.Security.Module", "ParentModule")
                         .WithMany("ChildrenModules")
                         .HasForeignKey("IdParentModule")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -386,16 +390,16 @@ namespace SG.Infrastructure.Data.Migrations
                     b.Navigation("ParentModule");
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.Permission", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.Permission", b =>
                 {
-                    b.HasOne("SG.Domain.Security.Entities.Action", "Action")
+                    b.HasOne("SG.Domain.Entities.Security.Action", "Action")
                         .WithMany("Permissions")
                         .HasForeignKey("IdAction")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired()
                         .HasConstraintName("FK_Permission_Actions");
 
-                    b.HasOne("SG.Domain.Security.Entities.Module", "Module")
+                    b.HasOne("SG.Domain.Entities.Security.Module", "Module")
                         .WithMany("Permissions")
                         .HasForeignKey("IdModule")
                         .OnDelete(DeleteBehavior.ClientNoAction)
@@ -407,16 +411,16 @@ namespace SG.Infrastructure.Data.Migrations
                     b.Navigation("Module");
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.UsersRoles", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.UsersRoles", b =>
                 {
-                    b.HasOne("SG.Domain.Security.Entities.Role", "Role")
+                    b.HasOne("SG.Domain.Entities.Security.Role", "Role")
                         .WithMany("UsersRoles")
                         .HasForeignKey("IdRol")
                         .OnDelete(DeleteBehavior.ClientNoAction)
                         .IsRequired()
                         .HasConstraintName("FK_UsersRoles_Role");
 
-                    b.HasOne("SG.Domain.Security.Entities.User", "User")
+                    b.HasOne("SG.Domain.Entities.Security.User", "User")
                         .WithMany("UsersRoles")
                         .HasForeignKey("IdUser")
                         .OnDelete(DeleteBehavior.ClientNoAction)
@@ -428,11 +432,11 @@ namespace SG.Infrastructure.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.UsersToken", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.UsersToken", b =>
                 {
-                    b.HasOne("SG.Domain.Security.Entities.User", "User")
+                    b.HasOne("SG.Domain.Entities.Security.User", "User")
                         .WithOne("UserToken")
-                        .HasForeignKey("SG.Domain.Security.Entities.UsersToken", "IdUser")
+                        .HasForeignKey("SG.Domain.Entities.Security.UsersToken", "IdUser")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_UsersToken_User");
@@ -440,24 +444,29 @@ namespace SG.Infrastructure.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.Action", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Commun.Catalogue", b =>
+                {
+                    b.Navigation("CatalogueChildren");
+                });
+
+            modelBuilder.Entity("SG.Domain.Entities.Security.Action", b =>
                 {
                     b.Navigation("Permissions");
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.Module", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.Module", b =>
                 {
                     b.Navigation("ChildrenModules");
 
                     b.Navigation("Permissions");
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.Role", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.Role", b =>
                 {
                     b.Navigation("UsersRoles");
                 });
 
-            modelBuilder.Entity("SG.Domain.Security.Entities.User", b =>
+            modelBuilder.Entity("SG.Domain.Entities.Security.User", b =>
                 {
                     b.Navigation("UserToken");
 

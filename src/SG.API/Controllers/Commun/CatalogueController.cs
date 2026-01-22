@@ -31,6 +31,19 @@ public class CatalogueController(ICatalogueService application, IDynamicValidato
         return Ok(response.ToOperationResult());
     }
 
+
+    /// <summary>
+    /// Obtener todos los registros en jerarquia
+    /// </summary> 
+    /// <returns>Retornar todos los regisrtos.</returns>
+    [HttpGet("CatalogueResultChildren")]
+    [ProducesResponseType(typeof(OperationResult<IEnumerable<CatalogueWithChildrenResponse>>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCatalogueResultChildren()
+    {
+        var response = await _application.GetCatalogueResultChildren();
+        return Ok(response.ToOperationResult());
+    }
+
     /// <summary>
     /// Obtener un registro  por Id
     /// </summary>

@@ -11,7 +11,7 @@ public static class DependencyInjection
         services.AddDatabaseConfiguration(configuration)
                  .AddInfrastructure()
                  .AddServicesApplication()
-                 .AddCommandHandlersAndQueryHandlers()
+               //  .AddCommandHandlersAndQueryHandlers()
                  .AddValidatorsApplication()
                  .AddDynamicValidation(typeof(Program).Assembly)
                  .AddAutoMapperConfiguration()

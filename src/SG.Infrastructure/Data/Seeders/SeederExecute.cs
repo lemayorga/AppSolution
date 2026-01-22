@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using SG.Domain.Entities.Security;
 using SG.Infrastructure.Data.Context;
 using SG.Shared.Helpers;
+using SG.Shared.Responses;
 using SG.Shared.Settings;
 
 namespace SG.Infrastructure.Data.Seeders;
@@ -21,13 +22,12 @@ public partial class SeederExecute
     public static async Task SeedAsync(ApplicationDbContext context, IConfiguration configuration, bool isTest = false)
     {
         SeederExecute seederExec = new(configuration, context);
-        DataApplicationSeedersSettings seedersConfig = new();
-        
-        seederExec._configuration.GetSection(NamesApplicationSettings.DataApplicationSeeders).Bind(seedersConfig);
+        var settings = new AppConfiguration("appsettingsSeeders.json", Directory.GetCurrentDirectory());
+        var seederApplication  = settings.GetSectionAsObject<DataApplicationSeedersSettings>(NamesApplicationSettings.DataApplicationSeeders);
 
-        if(seedersConfig.Execute || isTest)
+        if(seederApplication.Execute || isTest)
         {
-            await seederExec.InsertDataInitial(seedersConfig);
+            await seederExec.InsertDataInitial(seederApplication);
         }
     }
 
@@ -40,6 +40,7 @@ public partial class SeederExecute
             {
                 await CreateUsers(roles, seedersConfig.Users);
             }
+             await InsertPasswordPolicies(seedersConfig.PasswordPolicies);
         }
         catch (Exception ex)
         {
@@ -132,5 +133,16 @@ public partial class SeederExecute
                 State = true
             }
         }; 
+    }
+
+    private async Task InsertPasswordPolicies(List<GeneralCodesValues> passwordPolicies)
+    {
+
+       var politiesExists =  _context.PasswordPolicy.Select(x => x.Code).ToArray();     
+       var _passwordPolicies = passwordPolicies.Where(f => !politiesExists.Contains(f.Code))
+                             .Select(x => new PasswordPolicy { Code = x.Code , Value = x.Value, Description = x.Description  });
+
+       await  _context.PasswordPolicy.AddRangeAsync(_passwordPolicies);
+       await  _context.SaveChangesAsync();
     }
 }

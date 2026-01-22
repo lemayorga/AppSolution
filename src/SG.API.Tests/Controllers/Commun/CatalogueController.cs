@@ -1,8 +1,8 @@
 using System.Net;
 using Bogus;
 using SG.API.Tests.Abstractions;
-using SG.Application.Behaviours.Commun.Catalogue;
 using SG.Application.Bussiness.Commun.Catalogues.Requests;
+using SG.Application.Bussiness.Commun.Catalogues.Responses;
 using SG.Shared.Extensions;
 using SG.Shared.Responses;
 using Xunit.Extensions.Ordering;
@@ -22,7 +22,8 @@ public class CatalogueController : BaseFunctionalTest, IClassFixture<SharedDataT
     List<CatalogueCreateRequest> InicializateCreationData(int totalRegister)
     {
         var dataRule = new Faker<CatalogueCreateRequest>()
-            .RuleFor(u => u.Group, f => f.Name.FirstName())
+            .RuleFor(u => u.Value, f => f.Name.FirstName())
+            .RuleFor(u => u. Code, f => f.Name.FirstName())
             .RuleFor(u => u.Value, f => f.Name.FirstName())
             .RuleFor(u => u.Description, f => f.Name.FirstName());
 
@@ -37,7 +38,6 @@ public class CatalogueController : BaseFunctionalTest, IClassFixture<SharedDataT
         var (response, responseResult) = await PostRequest<SuccessWithIdResponse>(_url, body);
         _sharedData.AddIdsToListIdData(responseResult.Value); 
         AssertResponseWithContent(response, HttpStatusCode.OK, responseResult);
-
     }
 
     [Fact, Order(1)]
@@ -78,7 +78,7 @@ public class CatalogueController : BaseFunctionalTest, IClassFixture<SharedDataT
     {
         var body  = new CatalogueUpdateRequest
         {
-            Group = "CambioGrupo",            
+            Code = "CambioGrupo",            
             Value = $"Cambio de dato _{id}",
             Description = "cambio de dato",
             IsActive = false,
@@ -89,12 +89,33 @@ public class CatalogueController : BaseFunctionalTest, IClassFixture<SharedDataT
     }
 
     [Theory(), Order(6), CombinatorialData]
-    public async Task Remove([CombinatorialRange(from: 1, count: 3)]int id)
+    public async Task Remove([CombinatorialRange(from: 1, count: 2)]int id)
     {
         var (response, responseResult)  = await DeleteRequest<bool>($"{_url}/{id}");
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult); 
         Assert.True(responseResult!.Value!);    
-    }    
+    }  
+
+        
+    [Fact, Order(7)]
+    public async Task PostChildren()
+    {
+        if(!_sharedData.GetListIdDataValue().Any())
+        {
+            await  Post();
+        }
+
+        var idGroup =   _sharedData.GetListIdDataValue().First();
+        var dataChildren = InicializateCreationData(2);
+        dataChildren.ForEach(p => p.IdCatalogueHigher = idGroup);
+
+        var body =  dataChildren;
+        var (response, responseResult) = await PostRequest<List<SuccessWithIdResponse>>($"{_url}/addMany", body);
+        _sharedData.AddIdsToListIdData(responseResult.Value); 
+        AssertResponseWithContent(response, HttpStatusCode.OK, responseResult); 
+    }
+
+      
 }
 
 //https://code-maze.com/dotnet-test-rest-api-xunit/

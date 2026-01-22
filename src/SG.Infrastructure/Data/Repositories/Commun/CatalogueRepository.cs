@@ -29,8 +29,10 @@ public class CatalogueRepository : BaseGenericRepository<Catalogue>, ICatalogueR
         if (!string.IsNullOrEmpty(searchTerm) && !string.IsNullOrWhiteSpace(searchTerm))
         {
             searchTerm = searchTerm.Trim().ToLower();
-            filters = x => x.Value.ToLower().Contains(searchTerm)
-                        || x.Group.ToLower().Contains(searchTerm);
+            filters = x => x.Value.ToLower().Contains(searchTerm);
+            
+            // filters = x => x.Value.ToLower().Contains(searchTerm)
+            //             || x.Group.ToLower().Contains(searchTerm);
         }
         // Then we are overwriting a filter if columnFilters has data.
         if (_columnFilters.Count > 0)
@@ -45,6 +47,7 @@ public class CatalogueRepository : BaseGenericRepository<Catalogue>, ICatalogueR
         {
             query =  query.ChainedOrderBy(_columnSorting);
         }
+
         var count= await query.CountAsync();
         var filteredData = await query.CustomPagination(pageNumber,pageSize).ToListAsync();    
         return (count, filteredData);
