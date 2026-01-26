@@ -11,5 +11,5 @@ public class Catalogue : BaseEntity<int>
     public int? IdCatalogueHigher { get; set; }
     public int Orden { get; set; }
     public  Catalogue? CatalogueHigher { get; set; }
-    public  ICollection<Catalogue> CatalogueChildren { get; } = [];
+    public  ICollection<Catalogue> CatalogueChildren { get;  set;  } = [];
 }

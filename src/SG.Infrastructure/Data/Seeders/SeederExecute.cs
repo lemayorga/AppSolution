@@ -41,6 +41,7 @@ public partial class SeederExecute
                 await CreateUsers(roles, seedersConfig.Users);
             }
              await InsertPasswordPolicies(seedersConfig.PasswordPolicies);
+             await InsertCatalogues(seedersConfig.Catalogues);
         }
         catch (Exception ex)
         {
@@ -137,7 +138,6 @@ public partial class SeederExecute
 
     private async Task InsertPasswordPolicies(List<GeneralCodesValues> passwordPolicies)
     {
-
        var politiesExists =  _context.PasswordPolicy.Select(x => x.Code).ToArray();     
        var _passwordPolicies = passwordPolicies.Where(f => !politiesExists.Contains(f.Code))
                              .Select(x => new PasswordPolicy { Code = x.Code , Value = x.Value, Description = x.Description  });
@@ -145,4 +145,64 @@ public partial class SeederExecute
        await  _context.PasswordPolicy.AddRangeAsync(_passwordPolicies);
        await  _context.SaveChangesAsync();
     }
+
+
+    private async Task InsertCatalogues(List<AppSettingCatalogue> catalogue)
+    {
+        var catalogueExists =  _context.Catalogue.ToArray();     
+        var catalogueCodeExists =  catalogueExists.Select(x => x.Code).ToArray();     
+        var cataloguesInsert  = new List<Domain.Entities.Commun.Catalogue>();
+
+        for (int i = 0; i < catalogue.Count(); i++)
+        {
+            var itemCatalogue = catalogue.ElementAt(i);
+            var itemExists =  catalogueExists.FirstOrDefault(f => f.Code == itemCatalogue.Code);
+
+            var catalogueChildrenInsert  = new List<Domain.Entities.Commun.Catalogue>();
+
+            if (itemExists == null)
+            {
+                catalogueChildrenInsert =  itemCatalogue.Children.Where(f => !catalogueCodeExists.Contains(f.Code))
+                        .Select(x =>  new Domain.Entities.Commun.Catalogue
+                        {
+                            Code = x.Code,
+                            Value = x.Value,
+                            Description = x.Description,
+                            Orden = x.Orden,
+                            IsActive = true
+                        }).ToList();
+              
+                var catalogueInsert =  new Domain.Entities.Commun.Catalogue
+                {
+                    Code = itemCatalogue.Code,
+                    Value = itemCatalogue.Value,
+                    Description = itemCatalogue.Description,
+                    Orden = itemCatalogue.Orden,
+                    CatalogueChildren = catalogueChildrenInsert,
+                    IsActive = true
+                };
+                
+                cataloguesInsert.Add(catalogueInsert);
+            }            
+            else
+            {
+                catalogueChildrenInsert =  itemCatalogue.Children.Where(f => !catalogueCodeExists.Contains(f.Code))
+                        .Select(x =>  new Domain.Entities.Commun.Catalogue
+                        {
+                            Code = x.Code,
+                            Value = x.Value,
+                            Description = x.Description,
+                            Orden = x.Orden,
+                            IdCatalogueHigher =  itemExists!.Id,
+                            IsActive = true
+                        }).ToList();
+
+                cataloguesInsert.AddRange(catalogueChildrenInsert);
+            }  
+        }
+
+       await  _context.Catalogue.AddRangeAsync(cataloguesInsert);
+       await  _context.SaveChangesAsync();
+    }    
+
 }

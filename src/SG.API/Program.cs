@@ -14,9 +14,14 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(AllowOrigins, builder =>
     {
-        builder.AllowAnyOrigin()
+        // builder.AllowAnyOrigin()
+        //         .AllowAnyMethod()
+        //         .AllowAnyHeader();
+
+        builder.WithOrigins(["http://localhost:3000"])
                 .AllowAnyMethod()
-                .AllowAnyHeader();
+                .AllowAnyHeader()
+                .WithExposedHeaders("Content-Disposition");                
     });
 });
 

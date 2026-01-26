@@ -4,8 +4,11 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using SG.Domain.Entities.Commun;
 using SG.Domain.Entities.Security;
+using SG.Infrastructure.Data.Config;
+using SG.Shared.Enumerators;
 using SG.Shared.Settings;
 using Action = SG.Domain.Entities.Security.Action;
 using Module = SG.Domain.Entities.Security.Module;
@@ -16,17 +19,24 @@ public sealed class ApplicationDbContext : DbContext
 {
     private readonly IConfiguration _configuration;
     private readonly AppSettings _settings;
+    private readonly IDatabaseConfiguration  _dbConfig;
     
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration, IOptions<AppSettings> settings) : base(options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration, IOptions<AppSettings> settings, IDatabaseConfiguration dbConfig) : base(options)
     {
         _configuration = configuration;     
         _settings =  settings.Value;
+       _dbConfig = dbConfig;
     }
 
-    public IDbConnection CreateConnection(string connectionString = "DefaultConnection")
+    public IDbConnection CreateConnection()
     {
-        string? connection = _configuration.GetConnectionString(connectionString);
-        return  new SqlConnection(connectionString);
+      string connectionString = _dbConfig.ConnectionString;
+      return _dbConfig.DatabaseProvider switch
+        {
+            EnumGestoresBD.SqlServer =>  new SqlConnection(connectionString),
+            EnumGestoresBD.PostgreSql => new NpgsqlConnection(connectionString),
+            _ => throw new NotImplementedException(),
+        };
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
