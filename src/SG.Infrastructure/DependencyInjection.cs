@@ -10,6 +10,7 @@ using SG.Infrastructure.Data.Repositories.Commun;
 using SG.Infrastructure.Data.Repositories.Security;
 using SG.Infrastructure.DatabaseFlavor;
 using SG.Shared.Enumerators;
+using SG.Shared.Settings;
 
 namespace SG.Infrastructure.Services;
 
@@ -18,7 +19,7 @@ public static class DatabaseDependencyInjection
     public static IServiceCollection AddDatabaseConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
          // Obtener el proveedor de base de datos desde la configuración
-        var databaseProvider = configuration.GetValue<string>("DatabaseProvider");         
+        var databaseProvider = configuration.GetValue<string>(NamesApplicationSettings.DatabaseProvider);         
         ArgumentNullException.ThrowIfNull(databaseProvider);
 
         var connectionStrings =  configuration.GetValue<string>($"ConnectionStrings:{databaseProvider}"); 

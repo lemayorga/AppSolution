@@ -51,11 +51,11 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
          var idUser = httpContext?.User?.GetUserIdFromClaims<int>() ?? ((int?)null);
 
         LogContext.PushProperty("UserId", idUser.HasValue ? idUser.Value : "");
-        var _logger = Log
+        var logger = Log
             .ForContext("RequestHeaders", headers.ToDictionary(h => h.Key, h => h.Value.ToString()), destructureObjects: true)
             .ForContext("RequestBody", requestBody);
 
-        _logger
+        logger
             .Error(exception, "Response information {RequestMethod} {RequestPath} {statusCode} {QueryString} , An unexpected exception was thrown: {Message}", 
                     httpContext!.Request.Method, 
                     httpContext.Request.Path, 

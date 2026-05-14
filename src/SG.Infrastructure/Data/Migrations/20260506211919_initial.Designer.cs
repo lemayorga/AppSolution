@@ -12,7 +12,7 @@ using SG.Infrastructure.Data.Context;
 namespace SG.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260121184938_Initial")]
+    [Migration("20260506211919_initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -374,6 +374,7 @@ namespace SG.Infrastructure.Data.Migrations
                     b.HasOne("SG.Domain.Entities.Commun.Catalogue", "CatalogueHigher")
                         .WithMany("CatalogueChildren")
                         .HasForeignKey("IdCatalogueHigher")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("FK_Catalogue_Catalogue_IdCatalogueHigher");
 
                     b.Navigation("CatalogueHigher");

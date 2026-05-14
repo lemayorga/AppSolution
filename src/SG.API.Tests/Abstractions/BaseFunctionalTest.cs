@@ -6,9 +6,11 @@ using SG.API.Tests.Extensions;
 using SG.Application.Base.Responses;
 using SG.Application.Bussiness.Security.Auth.Requests;
 using SG.Infrastructure.Auth.JwtAuthentication.Models;
-using SG.Shared.Responses;
 namespace SG.API.Tests.Abstractions;
 
+/// <summary>
+/// Base class for functional tests, providing auxiliary methods to perform HTTP requests and validate responses.
+/// </summary>
 public abstract class BaseFunctionalTest : IClassFixture<FunctionalTestWebAppFactory>
 {
     #region  Properties

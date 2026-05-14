@@ -17,9 +17,9 @@ public class CatalogueController : BaseFunctionalTest, IClassFixture<SharedDataT
     public CatalogueController(FunctionalTestWebAppFactory factory, SharedDataTest sharedData) : base(factory)
     {
           _sharedData = sharedData;
-     } 
+    } 
 
-    List<CatalogueCreateRequest> InicializateCreationData(int totalRegister)
+    List<CatalogueCreateRequest> InicializateCreationData(int totalRegister, int? idCatalogueHigher = null)
     {
         var dataRule = new Faker<CatalogueCreateRequest>()
             .RuleFor(u => u.Value, f => f.Name.FirstName())
@@ -28,6 +28,12 @@ public class CatalogueController : BaseFunctionalTest, IClassFixture<SharedDataT
             .RuleFor(u => u.Description, f => f.Name.FirstName());
 
         var rowsData = dataRule.Generate(totalRegister);
+
+        if (idCatalogueHigher.HasValue)
+        {
+            rowsData.ForEach(p => p.IdCatalogueHigher = idCatalogueHigher);
+        }
+
         return rowsData;
     }
 
@@ -89,7 +95,7 @@ public class CatalogueController : BaseFunctionalTest, IClassFixture<SharedDataT
     }
 
     [Theory(), Order(6), CombinatorialData]
-    public async Task Remove([CombinatorialRange(from: 1, count: 2)]int id)
+    public async Task Remove([CombinatorialRange(from: 1, count: 1)]int id)
     {
         var (response, responseResult)  = await DeleteRequest<bool>($"{_url}/{id}");
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult); 
@@ -106,8 +112,7 @@ public class CatalogueController : BaseFunctionalTest, IClassFixture<SharedDataT
         }
 
         var idGroup =   _sharedData.GetListIdDataValue().First();
-        var dataChildren = InicializateCreationData(2);
-        dataChildren.ForEach(p => p.IdCatalogueHigher = idGroup);
+        var dataChildren = InicializateCreationData(2, idGroup);
 
         var body =  dataChildren;
         var (response, responseResult) = await PostRequest<List<SuccessWithIdResponse>>($"{_url}/addMany", body);

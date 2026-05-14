@@ -16,13 +16,11 @@ public interface IBaseGenericRepository<TEntity> where TEntity : class
      Task<IEnumerable<TEntity>> GetPaginate(int skip, int take, Expression<Func<TEntity, bool>>? where = null, Action<IQueryable<TEntity>>? orderBy = null, Action<IQueryable<TEntity>>? includes = null);
      void Update(TEntity entity);
      Task<bool> UpdateById(int id, TEntity entity);
-     Task<bool> UpdateOne(Expression<Func<TEntity, bool>> where, TEntity entity);
-     Task<TEntity?> UpdateOneSave(Expression<Func<TEntity, bool>> where, TEntity entity);
      Task<bool> DeleteById(int id);
      void Delete(TEntity entity);
      void DeleteMany(Expression<Func<TEntity, bool>> where);
-     Task<bool> Any(Expression<Func<TEntity, bool>> predicate);
-     Task<int> Count(Expression<Func<TEntity, bool>> predicate);
+     Task<bool> Any(Expression<Func<TEntity, bool>> where);
+     Task<int> Count(Expression<Func<TEntity, bool>> where);
      Task<(int, IEnumerable<TEntity>)> Paginate(
         int pageNumber,
         int pageSize,

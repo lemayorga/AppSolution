@@ -371,6 +371,7 @@ namespace SG.Infrastructure.Data.Migrations
                     b.HasOne("SG.Domain.Entities.Commun.Catalogue", "CatalogueHigher")
                         .WithMany("CatalogueChildren")
                         .HasForeignKey("IdCatalogueHigher")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("FK_Catalogue_Catalogue_IdCatalogueHigher");
 
                     b.Navigation("CatalogueHigher");
