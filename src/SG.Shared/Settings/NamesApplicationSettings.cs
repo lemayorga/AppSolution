@@ -4,4 +4,5 @@ public class NamesApplicationSettings
 {
     public const string ApplicationSettings ="ApplicationSettings";
     public const string DataApplicationSeeders ="DataApplicationSeeders";
+    public const string DatabaseProvider = "DatabaseProvider";
 }

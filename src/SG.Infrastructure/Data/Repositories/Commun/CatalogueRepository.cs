@@ -9,8 +9,15 @@ using SG.Infrastructure.Data.Extensions.PaginationCustom.PaginationModels;
 
 namespace SG.Infrastructure.Data.Repositories.Commun;
 
+/// <summary>
+/// CatalogueRepository is a repository class that provides data access methods for the Catalogue entity. It inherits from BaseGenericRepository and implements the ICatalogueRepository interface. The Paginate method allows for paginated retrieval of Catalogue records with optional search, filtering, and sorting capabilities.
+/// </summary>
 public class CatalogueRepository : BaseGenericRepository<Catalogue>, ICatalogueRepository
 {
+    /// <summary>
+    /// Initializes a new instance of the CatalogueRepository class with the specified ApplicationDbContext. This constructor calls the base class constructor to set up the database context for data access operations.
+    /// </summary>
+    /// <param name="context"></param>
     public CatalogueRepository(ApplicationDbContext context) : base(context) {  }
   
 

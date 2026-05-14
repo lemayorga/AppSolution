@@ -95,4 +95,10 @@ public static class DependencyInjection
         }
         return services;
     }
+
+    public static IServiceCollection AddAutoMapperConfiguration(this IServiceCollection services)
+    {
+        services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>(), AppDomain.CurrentDomain.GetAssemblies());
+        return services;
+    }
 }

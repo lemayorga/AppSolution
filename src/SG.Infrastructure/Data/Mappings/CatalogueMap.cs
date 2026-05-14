@@ -22,6 +22,7 @@ public class CatalogueMap : IEntityTypeConfiguration<Catalogue>
             .HasOne(o => o.CatalogueHigher)
             .WithMany(c => c.CatalogueChildren)
             .HasForeignKey(o => o.IdCatalogueHigher)
-            .HasConstraintName("FK_Catalogue_Catalogue_IdCatalogueHigher");
+            .HasConstraintName("FK_Catalogue_Catalogue_IdCatalogueHigher")
+            .OnDelete(DeleteBehavior.NoAction); 
     }
 }

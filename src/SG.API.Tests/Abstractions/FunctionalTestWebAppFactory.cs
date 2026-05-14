@@ -13,17 +13,26 @@ using Testcontainers.MsSql;
 using Testcontainers.PostgreSql;
 namespace SG.API.Tests.Abstractions;
 
+/// <summary>
+/// A custom WebApplicationFactory for functional testing of the SG.API. It sets up a test environment with a PostgreSQL database using Testcontainers, applies migrations, and seeds the database with test data before running the tests. After the tests are completed, it ensures that the database container is properly stopped and cleaned up.
+/// </summary>
 public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
-{
-
+{    
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
         .WithImage("postgres:bullseye")
         .WithDatabase("productsTemporal")
         .WithUsername("postgres")
         .WithPassword("postgres")
         .Build();
-   // private readonly MsSqlContainer _dbContainer = new MsSqlBuilder().Build();
 
+        
+    //private readonly MsSqlContainer _dbContainer = new MsSqlBuilder().Build();
+
+    /// <summary>
+    /// Configures the web host for testing by setting the environment to "Testing", loading the appropriate configuration file, and replacing the application's database context with one that connects to the test database container. This allows the tests to run against a real database instance without affecting the development or production databases.
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <exception cref="NotImplementedException"></exception>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
 
