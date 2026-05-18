@@ -1,9 +1,9 @@
-using SG.API.Configuration;
 using Serilog;
-using FluentValidation;
-using SG.API.Extensions;
-using SG.Application;
 using System.Text.Json.Serialization;
+using SG.API.Configuration;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+
 
 const string AllowOrigins = "AllowAllOrigins";
 
@@ -25,16 +25,24 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddResponseCompression(opt => { opt.EnableForHttps = true; });
 
+builder.Services.AddRateLimiter(rateLimiterOptions =>
+{
+    rateLimiterOptions.AddTokenBucketLimiter("token", options =>
+    {
+        options.TokenLimit = 100;
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        options.QueueLimit = 5;
+        options.ReplenishmentPeriod = TimeSpan.FromSeconds(10);
+        options.TokensPerPeriod = 20;
+        options.AutoReplenishment = true;
+    });
+});
 
-// Configuración de los servicios (equivalente a ConfigureServices)
 builder.Services.AddControllers()
      .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
      
-
-// Agregar soporte para Swagger/OpenAPI
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
 
@@ -82,7 +90,6 @@ app.UseAuthorization();
 
 // Usar CORS
 app.UseCors(AllowOrigins);
-
 
 
 // custom jwt auth middleware

@@ -80,8 +80,7 @@ public class AuthController
     public async Task<IActionResult> MySelfUser()  
     {
         var result = _httpContextAccessor.HttpContext?.User;
-        var rr  = _principal2;
-        return Ok(rr.User);
+        return Ok(new { User =  _principal2.User, Now = DateTime.Now });
     }
 }
 

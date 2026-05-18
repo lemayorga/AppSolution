@@ -11,7 +11,6 @@ using SG.Application.Bussiness.Security.Auth.Interface;
 using SG.Application.Bussiness.Security.Roles.Interfaces;
 using SG.Domain.Base;
 using SG.Domain.Entities.Security;
-using Microsoft.EntityFrameworkCore;
 
 namespace SG.Application.Bussiness.Security.Auth.Service;
 

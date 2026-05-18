@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
@@ -27,18 +26,16 @@ public static class DependencyInjection
         })
         .AddJwtBearer(opts =>
         {
-            byte[] signingKeyBytes = Encoding.UTF8.GetBytes(jwtOptions.SigningKey);
-
             opts.TokenValidationParameters = new TokenValidationParameters
             {
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SigningKey)),
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateActor = true,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtOptions.Issuer,
-                ValidAudience = jwtOptions.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
+                ValidAudience = jwtOptions.Audience
             };
         });
 
