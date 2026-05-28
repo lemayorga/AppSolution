@@ -56,7 +56,7 @@ jobs:
       env:
         DatabaseProvider: "PostgreSql"
         ConnectionStrings__PostgreSql: "Host=localhost;Database=productsTemporal;Username=postgres;Password=postgres"    
-      run: dotnet test --no-build --logger "console;verbosity=detailed"
+      run: dotnet test --logger "console;verbosity=detailed"
       # run: dotnet test -v:detailed --consoleLoggerParameters:ErrorsOnly  
       
    # - name: Publish
