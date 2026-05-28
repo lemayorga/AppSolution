@@ -17,7 +17,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
-    
+
+    - name: Start Database
+      run: docker compose up -d db-service-name
+        
     - name: Setup dotnet
       uses: actions/setup-dotnet@v4
       with:
