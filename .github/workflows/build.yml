@@ -53,6 +53,9 @@ jobs:
       run: dotnet build  ./src/SG.API/SG.API.csproj  --configuration  Release --no-restore
 
     - name: Test with the dotnet CLI
+      env:
+        DatabaseProvider: "PostgreSql"
+        ConnectionStrings__PostgreSql: "Host=localhost;Database=productsTemporal;Username=postgres;Password=postgres"    
       run: dotnet test -v:detailed --consoleLoggerParameters:ErrorsOnly  
       
    # - name: Publish
