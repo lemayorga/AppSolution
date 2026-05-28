@@ -38,7 +38,7 @@ jobs:
       run: dotnet build  ./src/SG.API/SG.API.csproj  --configuration  Release --no-restore
 
     - name: Test with the dotnet CLI
-      run: dotnet test -v:detailed --consoleLoggerParameters:ErrorsOnly  --no-build     
+      run: dotnet test -v:detailed --consoleLoggerParameters:ErrorsOnly  
       
    # - name: Publish
       #run: dotnet publish  --configuration  Release --no-build --property:PublishDir='${{ env.AZURE_WEBAPP_PACKAGE_PATCH }}'
