@@ -43,6 +43,15 @@ public class SharedDataTest : IDisposable
         if (model is not null) { ListIdsData.AddRange(model); }
         return ListIdsData;
     }
+    public List<SuccessWithIdResponse> RemoveIdFromListIdData(int id)
+    {
+        ListIdsData ??= [];
+        var model = ListIdsData.FirstOrDefault(x => x.Id == id);
+        if (model is not null) { ListIdsData.Remove(model); }
+        return ListIdsData;
+    }
+
+
     public IEnumerable<int> GetListIdDataValue()
          => (ListIdsData ??= new List<SuccessWithIdResponse>()).Select(x => x.Id) ?? [];
 

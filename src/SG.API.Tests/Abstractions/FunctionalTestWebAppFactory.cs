@@ -36,7 +36,7 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
 
-        builder.UseEnvironment("Testing");
+        // builder.UseEnvironment("Testing");
         builder.ConfigureAppConfiguration((context, conf) =>
         {
              conf
