@@ -1,4 +1,4 @@
-name: Build_&_Publish_App
+name: dotnet package
 
 on:
   workflow_dispatch: 
@@ -16,17 +16,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
+    - uses: actions/checkout@v6
+    - name: Setup dotnet
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
         
-    - name: Restore dependencies
+    - name: Install dependencies
       run: dotnet restore ./AppSolution.sln
       
     - name: Build
       run: dotnet build  ./src/SG.API/SG.API.csproj  --configuration  Release --no-restore
+
+    - name: Test with the dotnet CLI
+      run: dotnet test --no-build    
       
    # - name: Publish
       #run: dotnet publish  --configuration  Release --no-build --property:PublishDir='${{ env.AZURE_WEBAPP_PACKAGE_PATCH }}'
