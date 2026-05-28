@@ -94,9 +94,11 @@ public class CatalogueController : BaseFunctionalTest, IClassFixture<SharedDataT
         Assert.Equal(id, responseResult!.Value!.Id);    
     }
 
-    [Theory(), Order(6), CombinatorialData]
-    public async Task Remove([CombinatorialRange(from: 1, count: 1)]int id)
+    [Fact(), Order(6)]
+    public async Task RemoveById()
     {
+        int id = _sharedData.GetListIdDataValue().First();
+        _sharedData.RemoveIdFromListIdData(id);
         var (response, responseResult)  = await DeleteRequest<bool>($"{_url}/{id}");
         AssertResponseWithContent(response,HttpStatusCode.OK, responseResult); 
         Assert.True(responseResult!.Value!);    

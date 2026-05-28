@@ -26,11 +26,11 @@ public class JwtBuilder : IJwtBuilder
         var idClaim = Guid.NewGuid().ToString();
         var claims = new List<Claim> 
         {
-            new Claim(ClaimTypes.NameIdentifier, idClaim),
-            new Claim(JwtRegisteredClaimNames.UniqueName, idClaim),
-            new Claim(JwtRegisteredClaimNames.Jti, idClaim),
-            new Claim(JwtClaimsCustomNames.IdClaim, idClaim),
-            new Claim(JwtClaimsCustomNames.AudClaim, _jwtOptions.Audience)
+            new(ClaimTypes.NameIdentifier, idClaim),
+            new(JwtRegisteredClaimNames.UniqueName, idClaim),
+            new(JwtRegisteredClaimNames.Jti, idClaim),
+            new(JwtClaimsCustomNames.IdClaim, idClaim),
+            new(JwtClaimsCustomNames.AudClaim, _jwtOptions.Audience)
         };
 
         if(claimsWithValues?.Any() ?? false)
@@ -38,18 +38,20 @@ public class JwtBuilder : IJwtBuilder
             claims.AddRange(claimsWithValues);
         }
 
-        var tokenExpiration = NewTimeTokenExpiration();
+        var curentTime = DateTime.UtcNow;
+        var timeTokenExpiration = NewTimeTokenExpiration();
+
 
         var jwtToken = new JwtSecurityToken
         (
             claims: claims,
-            notBefore: DateTime.UtcNow,
-            expires:  tokenExpiration,
+            notBefore: curentTime,
+            expires:  timeTokenExpiration,
             issuer: _jwtOptions.Issuer,
             audience: _jwtOptions.Audience,
             signingCredentials: new SigningCredentials
             (
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SigningKey)),
+                new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtOptions.SigningKey)),
                 SecurityAlgorithms.HmacSha256Signature
             )
         );
@@ -58,7 +60,14 @@ public class JwtBuilder : IJwtBuilder
         return rawToken;
     }
 
-    public  DateTime NewTimeTokenExpiration() => DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiratioMinutes);
+    public  DateTime NewTimeTokenExpiration() =>  _jwtOptions.TokenLifeTimeTypeExpiration.ToLower() switch
+       {
+           "seconds" =>  DateTime.UtcNow.AddSeconds(_jwtOptions.TokenLifeTime),
+           "minutes" =>  DateTime.UtcNow.AddMinutes(_jwtOptions.TokenLifeTime),
+           "hours" =>  DateTime.UtcNow.AddHours(_jwtOptions.TokenLifeTime),
+           "days" =>  DateTime.UtcNow.AddDays(_jwtOptions.TokenLifeTime),
+           _ =>  DateTime.UtcNow.AddMinutes(_jwtOptions.TokenLifeTime)
+       };
 
     public bool ValidateJwtToken(string token)
     {
@@ -71,11 +80,12 @@ public class JwtBuilder : IJwtBuilder
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtOptions.SigningKey)),
-                ValidateIssuer = false,
+                ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
+                ValidIssuer = _jwtOptions.Issuer,
+                ValidAudience = _jwtOptions.Audience,
                 ClockSkew = TimeSpan.Zero
             }, out SecurityToken validatedToken);
 
@@ -91,19 +101,20 @@ public class JwtBuilder : IJwtBuilder
     }
 
     public ClaimsPrincipal? GetPrincipal(string token)
-    {
+    {    
+        if (string.IsNullOrWhiteSpace(token))
+            return null;
+
         var tokenHandler = new JwtSecurityTokenHandler();
-        
         return tokenHandler.ValidateToken(token, new TokenValidationParameters
         {
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtOptions.SigningKey)),
-            ValidateIssuer = false,
+            ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ValidIssuer = _jwtOptions.Issuer,
             ValidAudience = _jwtOptions.Audience,
-            // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
             ClockSkew = TimeSpan.Zero
         }, out _);
     }
@@ -125,11 +136,6 @@ public class JwtBuilder : IJwtBuilder
 
     public string GenerateAccessTokenFromRefreshToken()
     {
-        // Implement logic to generate a new access token from the refresh token
-        // Verify the refresh token and extract necessary information (e.g., user ID)
-        // Then generate a new access token
-
-        // For demonstration purposes, return a new token with an extended expiry
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenDescriptor = new SecurityTokenDescriptor
         {
