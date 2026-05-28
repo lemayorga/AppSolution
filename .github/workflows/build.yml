@@ -11,10 +11,25 @@ env:
   #AZURE_WEBAPP_NAME:  'demoAppGithub01'
   AZURE_WEBAPP_PACKAGE_PATCH: './publish'
 jobs:
-  publish:
-
-    runs-on: ubuntu-latest
-
+  build:
+    name:  Build and Test
+    runs-on: ubuntu-latest   
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: productsTemporal
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        # Health check ensures PostgreSQL is ready before tests start
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          
     steps:
     - uses: actions/checkout@v6
 
