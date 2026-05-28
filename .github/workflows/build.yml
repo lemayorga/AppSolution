@@ -1,0 +1,71 @@
+name: dotnet package
+
+on:
+  workflow_dispatch: 
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  #AZURE_WEBAPP_NAME:  'demoAppGithub01'
+  AZURE_WEBAPP_PACKAGE_PATCH: './publish'
+jobs:
+  build:
+    name:  Build and Test
+    runs-on: ubuntu-latest   
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: productsTemporal
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        # Health check ensures PostgreSQL is ready before tests start
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          
+    steps:
+    - uses: actions/checkout@v6
+    
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+          
+    - name: Install dependencies
+      run: dotnet restore ./AppSolution.sln
+      
+    - name: Build
+      run: dotnet build  ./src/SG.API/SG.API.csproj  --configuration  Release --no-restore
+
+    - name: Test with the dotnet CLI
+      env:
+        DatabaseProvider: "PostgreSql"
+        ConnectionStrings__PostgreSql: "Host=localhost;Database=productsTemporal;Username=postgres;Password=postgres"    
+      run: dotnet test -v:detailed --consoleLoggerParameters:ErrorsOnly  
+      
+   # - name: Publish
+      #run: dotnet publish  --configuration  Release --no-build --property:PublishDir='${{ env.AZURE_WEBAPP_PACKAGE_PATCH }}'
+      #run: dotnet publish ./src/SG.API/SG.API.csproj --configuration  Release --no-build --property:PublishDir='${{ env.AZURE_WEBAPP_PACKAGE_PATCH }}'
+
+    #- name: Deploy
+      #uses: azure/webapps-deploy@v3
+      #with:
+        #app-name:  ${{ env.AZURE_WEBAPP_NAME }}
+        #publish-profile: ${{  secrets.AZURE_CREDENTIALS }}
+        #package: "${{ env.AZURE_WEBAPP_PACKAGE_PATCH }}"
+        
